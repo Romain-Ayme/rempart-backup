@@ -16,7 +16,8 @@ Sauvegarde, restauration, migration et clonage de WordPress, sans licence et san
 * Sauvegarde avant les mises à jour de WordPress, manuelles ou automatiques.
 * Emplacements : dossier local, FTP, FTPS, SFTP, WebDAV, Amazon S3 et compatibles (DigitalOcean Spaces, Linode, Vultr, Cloudflare R2, Wasabi...), Google Drive, OneDrive, Dropbox, pCloud.
 * Exclusions de tables, de dossiers, de fichiers et de motifs.
-* Notification par e-mail et commandes WP-CLI.
+* Notifications : e-mail, Pushover, Gotify, ntfy, Telegram, Discord, Slack et webhook JSON, au choix pour une réussite, un échec ou les deux.
+* Commandes WP-CLI.
 * Importe aussi les sauvegardes .tar.gz faites avec Backuply.
 
 == Installation ==

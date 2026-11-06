@@ -52,6 +52,7 @@ require_once REMPART_DIR . '/includes/class-database.php';
 require_once REMPART_DIR . '/includes/storage/class-storage.php';
 require_once REMPART_DIR . '/includes/class-locations.php';
 require_once REMPART_DIR . '/includes/class-backups.php';
+require_once REMPART_DIR . '/includes/class-notifications.php';
 require_once REMPART_DIR . '/includes/class-litespeed.php';
 require_once REMPART_DIR . '/includes/class-job.php';
 require_once REMPART_DIR . '/includes/class-restore.php';

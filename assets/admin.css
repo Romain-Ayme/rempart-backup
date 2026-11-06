@@ -47,6 +47,10 @@
 .rempart .rempart-danger { color: #b32d2e; border-color: #b32d2e; }
 .rempart .rempart-danger:hover { background: #b32d2e; border-color: #b32d2e; color: #fff; }
 .rempart-tag { display: inline-block; background: #e7f3f7; color: #1f6f8b; font-size: 11px; padding: 0 6px; border-radius: 3px; margin-left: 4px; }
+.rempart-bullets { list-style: disc; margin-left: 20px; }
+.rempart-bullets li { margin-bottom: 4px; }
+.rempart-ok { color: #1e7a36; font-weight: 600; }
+.rempart-bad { color: #b32d2e; font-weight: 600; }
 .rempart-empty { text-align: center; color: #50575e; padding: 24px !important; }
 .rempart-history-tools { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 10px; margin-bottom: 12px; }
 #rempart-upload-open .dashicons { vertical-align: text-bottom; font-size: 18px; }

@@ -404,6 +404,66 @@
 		});
 	}
 
+	/* ----- Notification channels ----- */
+
+	var chForm = $('#rempart-ch-form');
+	if (chForm) {
+		var chCard = $('#rempart-ch-card');
+		var chType = $('#rempart-ch-type');
+
+		var showChannelFields = function () {
+			$$('.rempart-ch-fields', chForm).forEach(function (g) {
+				var on = g.dataset.type === chType.value;
+				g.hidden = !on;
+				// Fields of other services must neither be sent nor block the form.
+				$$('input', g).forEach(function (el) {
+					el.disabled = !on;
+					el.required = on && el.dataset.required === '1';
+				});
+			});
+		};
+
+		var openChannelForm = function (values) {
+			chForm.elements.id.value = values ? values.id : '';
+			chForm.elements.name.value = values ? values.name : '';
+			chType.value = values ? values.type : chType.options[0].value;
+			chForm.elements.on_success.checked = values ? !!values.on_success : true;
+			chForm.elements.on_failure.checked = values ? !!values.on_failure : true;
+			chForm.elements.enabled.checked = values ? !!values.enabled : true;
+			$$('.rempart-ch-fields input', chForm).forEach(function (el) {
+				var mine = values && el.closest('.rempart-ch-fields').dataset.type === values.type;
+				el.value = mine && values[el.name] !== undefined ? values[el.name] : (el.dataset.default || '');
+			});
+			$$('.rempart-secret-note', chForm).forEach(function (n) { n.hidden = !values; });
+			$('#rempart-ch-title').textContent = values ? 'Modifier le service' : 'Ajouter un service';
+			showChannelFields();
+			chCard.hidden = false;
+			chCard.scrollIntoView({ behavior: 'smooth' });
+		};
+
+		chType.addEventListener('change', showChannelFields);
+		$('#rempart-ch-add').addEventListener('click', function () { openChannelForm(null); });
+		$('#rempart-ch-cancel').addEventListener('click', function () { chCard.hidden = true; });
+		$$('.rempart-ch-edit').forEach(function (b) {
+			b.addEventListener('click', function () { openChannelForm(JSON.parse(b.dataset.channel)); });
+		});
+		$$('.rempart-ch-test').forEach(function (b) {
+			b.addEventListener('click', function () {
+				var old = b.textContent;
+				b.disabled = true;
+				b.textContent = 'Envoi…';
+				call('test_channel', { id: b.dataset.id }).then(function (m) {
+					alert(m);
+					location.reload();
+				}).catch(function (e) {
+					alert(e.message);
+					location.reload();
+				});
+				setTimeout(function () { b.textContent = old; }, 30000);
+			});
+		});
+	}
+
 	/* ----- History ----- */
 
 	$$('.rempart-delete').forEach(function (b) {

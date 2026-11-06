@@ -104,6 +104,15 @@ class Rempart_Admin {
 					Rempart_Locations::delete(sanitize_text_field(wp_unslash($_POST['id'])));
 					self::redirect_with('location', 'Emplacement supprimé.');
 					break;
+				case 'channel':
+					$id = !empty($_POST['id']) ? sanitize_text_field(wp_unslash($_POST['id'])) : null;
+					$channel = Rempart_Notifications::save(wp_unslash($_POST), $id);
+					self::redirect_with('notifications', 'Canal « ' . $channel['name'] . ' » enregistré. Utilisez « Envoyer un test » pour vérifier qu\'il fonctionne.');
+					break;
+				case 'delete_channel':
+					Rempart_Notifications::delete(sanitize_text_field(wp_unslash($_POST['id'])));
+					self::redirect_with('notifications', 'Canal supprimé.');
+					break;
 				case 'connect':
 					$location = Rempart_Locations::get(sanitize_text_field(wp_unslash($_POST['id'])));
 					if ($location) {
@@ -216,6 +225,7 @@ class Rempart_Admin {
 				<a class="nav-tab" href="#settings">Réglages</a>
 				<a class="nav-tab" href="#location">Emplacements</a>
 				<a class="nav-tab" href="#history">Historique</a>
+				<a class="nav-tab" href="#notifications">Notifications</a>
 				<a class="nav-tab" href="#help">Aide</a>
 			</nav>
 
@@ -224,6 +234,7 @@ class Rempart_Admin {
 			self::tab_settings($settings, $locations, $protocols);
 			self::tab_locations($locations, $protocols);
 			self::tab_history($locations, $protocols);
+			self::tab_notifications();
 			self::tab_help();
 			self::modals();
 			?>
@@ -760,6 +771,118 @@ class Rempart_Admin {
 		<?php
 	}
 
+	private static function tab_notifications() {
+		$types = Rempart_Notifications::types();
+		$channels = Rempart_Notifications::all();
+		$settings = rempart_settings();
+		?>
+		<section id="tab-notifications" class="rempart-tab" hidden>
+			<div class="rempart-card">
+				<h2>Être prévenu</h2>
+				<p>Chaque sauvegarde réussie ou ratée peut envoyer un message. L'e-mail se règle dans <a href="#settings">Réglages</a>
+					<?php echo $settings['email'] !== '' ? '(actuellement : ' . esc_html($settings['email']) . ')' : '(aucune adresse pour le moment)'; ?>.
+					Les services ci-dessous s'ajoutent à l'e-mail : vous pouvez en cumuler autant que vous voulez.</p>
+				<table class="widefat striped rempart-table">
+					<thead><tr><th>Nom</th><th>Service</th><th>Prévenir en cas de</th><th>Dernier envoi</th><th>Actions</th></tr></thead>
+					<tbody>
+						<?php if (!$channels) : ?>
+							<tr><td colspan="5" class="rempart-empty">Aucun service de notification pour le moment.</td></tr>
+						<?php endif; ?>
+						<?php
+						foreach ($channels as $id => $channel) :
+							$last = $channel['last'] ?? null;
+							$events = array();
+							if (!empty($channel['on_success'])) {
+								$events[] = 'réussite';
+							}
+							if (!empty($channel['on_failure'])) {
+								$events[] = 'échec';
+							}
+							$edit = array('id' => $channel['id'], 'name' => $channel['name'], 'type' => $channel['type'], 'enabled' => !empty($channel['enabled']) ? 1 : 0, 'on_success' => !empty($channel['on_success']) ? 1 : 0, 'on_failure' => !empty($channel['on_failure']) ? 1 : 0) + (array) $channel['config'];
+							?>
+							<tr>
+								<td><strong><?php echo esc_html($channel['name']); ?></strong><?php echo empty($channel['enabled']) ? ' <span class="rempart-tag">En pause</span>' : ''; ?></td>
+								<td><?php echo esc_html($types[$channel['type']]['label'] ?? $channel['type']); ?></td>
+								<td><?php echo esc_html($events ? implode(' et ', $events) : 'rien'); ?></td>
+								<td>
+									<?php if ($last) : ?>
+										<span class="<?php echo !empty($last['ok']) ? 'rempart-ok' : 'rempart-bad'; ?>"><?php echo esc_html(!empty($last['ok']) ? 'Réussi' : 'Échec'); ?></span>
+										<?php echo esc_html(wp_date('j M H:i', (int) $last['t'])); ?>
+										<?php if (empty($last['ok'])) : ?><br><small><?php echo esc_html($last['text']); ?></small><?php endif; ?>
+									<?php else : ?>
+										-
+									<?php endif; ?>
+								</td>
+								<td class="rempart-actions">
+									<button type="button" class="button rempart-ch-test" data-id="<?php echo esc_attr($id); ?>">Envoyer un test</button>
+									<button type="button" class="button rempart-ch-edit" data-channel="<?php echo esc_attr(wp_json_encode($edit)); ?>">Modifier</button>
+									<form method="post" class="rempart-confirm" data-confirm="Supprimer ce canal de notification ?"><?php wp_nonce_field('rempart_form'); ?><input type="hidden" name="rempart_form" value="delete_channel"><input type="hidden" name="id" value="<?php echo esc_attr($id); ?>"><button class="button rempart-danger">Supprimer</button></form>
+								</td>
+							</tr>
+						<?php endforeach; ?>
+					</tbody>
+				</table>
+				<p><button type="button" class="button button-primary" id="rempart-ch-add">Ajouter un service</button></p>
+			</div>
+
+			<div class="rempart-card" id="rempart-ch-card" hidden>
+				<h2 id="rempart-ch-title">Ajouter un service</h2>
+				<form method="post" id="rempart-ch-form" autocomplete="off">
+					<?php wp_nonce_field('rempart_form'); ?>
+					<input type="hidden" name="rempart_form" value="channel">
+					<input type="hidden" name="id" value="">
+					<div class="rempart-row">
+						<label class="rempart-row-label" for="rempart-ch-type">Service</label>
+						<select name="type" id="rempart-ch-type">
+							<?php foreach ($types as $key => $type) : ?>
+								<option value="<?php echo esc_attr($key); ?>"><?php echo esc_html($type['label']); ?></option>
+							<?php endforeach; ?>
+						</select>
+					</div>
+					<div class="rempart-row">
+						<label class="rempart-row-label" for="rempart-ch-name">Nom (facultatif)</label>
+						<input type="text" name="name" id="rempart-ch-name" class="regular-text" placeholder="Par exemple : Salon alertes">
+					</div>
+					<?php
+					foreach ($types as $key => $type) {
+						echo '<div class="rempart-ch-fields" data-type="' . esc_attr($key) . '" hidden>';
+						foreach ($type['fields'] as $name => $field) {
+							$input_id = 'rempart-ch-' . $key . '-' . $name;
+							$required = !empty($field['required']) && empty($field['secret']);
+							echo '<div class="rempart-row"><label class="rempart-row-label" for="' . esc_attr($input_id) . '">' . esc_html($field['label']) . '</label><div>';
+							echo '<input type="' . (!empty($field['secret']) ? 'password' : 'text') . '" class="regular-text" autocomplete="new-password" name="' . esc_attr($name) . '" id="' . esc_attr($input_id) . '" data-default="' . esc_attr($field['default'] ?? '') . '"' . ($required ? ' data-required="1"' : '') . '>';
+							if (!empty($field['help'])) {
+								echo '<p class="description">' . esc_html($field['help']) . '</p>';
+							}
+							if (!empty($field['secret'])) {
+								echo '<p class="description rempart-secret-note" hidden>Laissez vide pour garder la valeur enregistrée.</p>';
+							}
+							echo '</div></div>';
+						}
+						echo '</div>';
+					}
+					?>
+					<div class="rempart-row">
+						<div class="rempart-row-label">Prévenir en cas de</div>
+						<div class="rempart-checks">
+							<label><input type="checkbox" name="on_success" value="1" checked> Réussite</label>
+							<label><input type="checkbox" name="on_failure" value="1" checked> Échec</label>
+						</div>
+					</div>
+					<div class="rempart-row">
+						<div class="rempart-row-label">État</div>
+						<label><input type="checkbox" name="enabled" value="1" checked> Actif</label>
+					</div>
+					<p>
+						<button type="submit" class="button button-primary">Enregistrer</button>
+						<button type="button" class="button" id="rempart-ch-cancel">Annuler</button>
+					</p>
+				</form>
+			</div>
+		</section>
+		<?php
+	}
+
 	private static function tab_help() {
 		?>
 		<section id="tab-help" class="rempart-tab" hidden>
@@ -815,6 +938,19 @@ class Rempart_Admin {
 					<li>Sur docs.pcloud.com/my_apps, créez une application avec l'accès aux fichiers.</li>
 					<li>Ajoutez l'adresse de retour puis copiez Client ID et Client secret dans le formulaire.</li>
 				</ol></details>
+			</div>
+			<div class="rempart-card">
+				<h2>Recevoir les notifications sur son téléphone ou un salon</h2>
+				<p>Dans l'onglet Notifications, ajoutez un service, collez l'adresse ou le jeton qu'il vous donne, puis cliquez sur « Envoyer un test ».</p>
+				<ul class="rempart-bullets">
+					<li><strong>Pushover</strong> : le jeton d'application se crée sur pushover.net/apps, la clé utilisateur est sur votre tableau de bord.</li>
+					<li><strong>Gotify</strong> : adresse de votre serveur, puis un jeton d'application créé dans son interface.</li>
+					<li><strong>ntfy</strong> : choisissez un sujet long et secret, abonnez-vous-y dans l'application ntfy.</li>
+					<li><strong>Telegram</strong> : créez un bot avec @BotFather, écrivez-lui, puis relevez l'identifiant de la discussion.</li>
+					<li><strong>Discord</strong> : réglages du salon, Intégrations, Webhooks, Copier l'URL.</li>
+					<li><strong>Slack</strong> : créez un « Incoming Webhook » dans votre espace de travail.</li>
+					<li><strong>Webhook</strong> : n'importe quelle adresse qui accepte un POST en JSON (Zapier, n8n, Home Assistant...).</li>
+				</ul>
 			</div>
 			<div class="rempart-card">
 				<h2>En ligne de commande</h2>

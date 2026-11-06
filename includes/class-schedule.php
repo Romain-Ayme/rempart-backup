@@ -48,8 +48,13 @@ class Rempart_Schedule {
 				'note'     => 'Sauvegarde automatique',
 			));
 		} catch (Exception $e) {
-			if (!empty($settings['email']) && is_email($settings['email'])) {
-				wp_mail($settings['email'], 'Échec de la sauvegarde automatique', 'Site : ' . home_url() . "\nRaison : " . $e->getMessage());
+			try {
+				Rempart_Notifications::event('failure', 'Échec de la sauvegarde automatique - ' . Rempart_Notifications::site_name(),
+					'Site : ' . home_url() . "\nRaison : " . $e->getMessage(),
+					array('Site' => home_url(), 'Raison' => $e->getMessage())
+				);
+			} catch (Throwable $ignored) {
+				rempart_debug('Notifications : ' . $ignored->getMessage());
 			}
 		}
 	}

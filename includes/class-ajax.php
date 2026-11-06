@@ -9,7 +9,7 @@ class Rempart_Ajax {
 		$actions = array(
 			'start_backup', 'stop', 'force_stop', 'status', 'restore_start', 'restore_ack', 'restore_force_stop',
 			'delete_backups', 'sync', 'test_location', 'quota', 'exclude_add', 'exclude_delete', 'tree', 'upload_chunk',
-			'read_log', 'hide_nag', 'diagnose', 'litespeed',
+			'read_log', 'hide_nag', 'diagnose', 'litespeed', 'test_channel',
 		);
 		foreach ($actions as $action) {
 			add_action('wp_ajax_rempart_' . $action, array(__CLASS__, 'guard'));
@@ -268,6 +268,11 @@ class Rempart_Ajax {
 		}
 		list($lines) = rempart_log_read(0, $file);
 		return $lines;
+	}
+
+	private static function do_test_channel() {
+		Rempart_Notifications::test(self::post('id'));
+		return 'Message de test envoyé : vérifiez qu\'il est bien arrivé.';
 	}
 
 	/** Adds (form 1 or 2) or removes the LiteSpeed rule in .htaccess. */

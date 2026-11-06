@@ -646,12 +646,20 @@ class Rempart_Job {
 		$state['percent'] = 100;
 		self::save($state);
 
-		self::notify(
-			'Sauvegarde réussie de votre site WordPress',
+		$where = $state['location'] !== '' ? (Rempart_Locations::get($state['location'])['name'] ?? '') : 'Dossier local';
+		$what = ($state['files'] && $state['db']) ? 'Fichiers et base de données' : ($state['files'] ? 'Fichiers' : 'Base de données');
+		$seconds = max(1, time() - (int) $state['started']);
+		$title = 'Sauvegarde réussie - ' . Rempart_Notifications::site_name();
+		self::notify('success', $title,
 			"La sauvegarde de votre site s'est bien terminée.\n\nSite : " . home_url() . "\nNom : " . $state['name']
-			. "\nTaille : " . rempart_format_size($size)
-			. ($state['location'] !== '' ? "\nEmplacement : " . (Rempart_Locations::get($state['location'])['name'] ?? '') : "\nEmplacement : dossier local")
+			. "\nContenu : " . $what . "\nTaille : " . rempart_format_size($size)
+			. "\nEmplacement : " . $where . "\nDurée : " . self::duration($seconds),
+			array('Site' => home_url(), 'Contenu' => $what, 'Taille' => rempart_format_size($size), 'Emplacement' => $where, 'Durée' => self::duration($seconds), 'Nom' => $state['name'])
 		);
+	}
+
+	private static function duration($seconds) {
+		return $seconds >= 90 ? round($seconds / 60) . ' min' : $seconds . ' s';
 	}
 
 	/** Keep a copy of the log next to the backup and on its storage. */
@@ -670,10 +678,13 @@ class Rempart_Job {
 		}
 	}
 
-	private static function notify($subject, $message) {
-		$settings = rempart_settings();
-		if (!empty($settings['email']) && is_email($settings['email'])) {
-			wp_mail($settings['email'], $subject, $message);
+	/** E-mail and every chat or push channel that asked to hear about this outcome. */
+	private static function notify($event, $title, $message, array $details = array()) {
+		try {
+			Rempart_Notifications::event($event, $title, $message, $details);
+		} catch (Throwable $e) {
+			// Telling the person must never turn a finished backup into a failed one.
+			rempart_debug('Notifications : ' . $e->getMessage());
 		}
 	}
 
@@ -714,7 +725,10 @@ class Rempart_Job {
 		$state['status'] = 'error';
 		self::save($state);
 		if ($state['kind'] === 'backup') {
-			self::notify('Échec de la sauvegarde de votre site WordPress', "La sauvegarde n'a pas abouti.\n\nSite : " . home_url() . "\nRaison : " . $message);
+			self::notify('failure', 'Échec de la sauvegarde - ' . Rempart_Notifications::site_name(),
+				"La sauvegarde n'a pas abouti.\n\nSite : " . home_url() . "\nRaison : " . $message,
+				array('Site' => home_url(), 'Raison' => $message, 'Nom' => $state['name'] ?? '')
+			);
 		}
 	}
 
