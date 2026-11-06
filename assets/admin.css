@@ -1,0 +1,90 @@
+.rempart { max-width: 1180px; }
+.rempart-top { display: flex; align-items: center; gap: 14px; margin: 14px 0 18px; }
+.rempart-logo { width: 46px; height: 46px; flex: none; }
+.rempart-top h1 { padding: 0; margin: 0; font-size: 24px; font-weight: 600; }
+.rempart-top p { margin: 2px 0 0; color: #50575e; }
+.rempart-tabs { margin-bottom: 18px; }
+
+.rempart-card { background: #fff; border: 1px solid #dcdcde; border-radius: 8px; padding: 20px 24px; margin-bottom: 18px; }
+.rempart-card h2 { margin: 0 0 14px; font-size: 16px; }
+
+.rempart-facts { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 14px; margin-bottom: 18px; }
+.rempart-fact { background: #fff; border: 1px solid #dcdcde; border-left: 4px solid #1f6f8b; border-radius: 8px; padding: 14px 18px; }
+.rempart-fact span { display: block; color: #50575e; font-size: 13px; }
+.rempart-fact strong { display: block; font-size: 16px; margin: 4px 0; }
+
+.rempart-label { display: block; font-weight: 600; margin-bottom: 5px; }
+.rempart-checks label { margin-right: 18px; }
+.rempart-stack label { display: block; margin: 0 0 6px; }
+.rempart-more { margin: 10px 0; }
+.rempart-more summary { color: #2271b1; cursor: pointer; }
+.rempart-more textarea { width: 100%; max-width: 420px; }
+
+.rempart-row { display: grid; grid-template-columns: 260px minmax(0, 1fr); gap: 16px; padding: 12px 0; border-top: 1px solid #f0f0f1; align-items: start; }
+.rempart-row:first-of-type { border-top: 0; }
+.rempart-row-label { font-weight: 600; padding-top: 4px; }
+.rempart-inline { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.rempart-warn { color: #b32d2e; font-size: 12px; }
+.rempart-code { display: inline-block; padding: 6px 8px; background: #f6f7f7; word-break: break-all; }
+.rempart-pre { background: #f6f7f7; padding: 12px; overflow: auto; margin: 0; }
+.rempart-scroll { max-height: 240px; overflow: auto; border: 1px solid #dcdcde; border-radius: 4px; padding: 8px 10px; margin-top: 8px; }
+.rempart-line { display: block; padding: 2px 0; }
+
+.rempart-cron-note p { margin: 0 0 8px; max-width: 640px; }
+.rempart-cron-status { padding: 8px 12px; border-left: 4px solid #1f6f8b; background: #e7f3f7; }
+.rempart-cron-ok { border-color: #2e9e4f; background: #edf7ef; }
+.rempart-cron-warning { border-color: #b32d2e; background: #fcf0f1; }
+
+.rempart-rule-box { border: 1px solid #dcdcde; border-radius: 6px; padding: 10px 12px; margin-bottom: 10px; }
+.rempart-rule-box > strong { display: block; margin-bottom: 8px; }
+.rempart-rules { margin: 8px 0 0; }
+.rempart-rules li { display: flex; align-items: center; justify-content: space-between; background: #f6f7f7; padding: 3px 8px; margin-bottom: 4px; border-radius: 4px; word-break: break-all; }
+.rempart-rule-del { color: #b32d2e !important; text-decoration: none; }
+
+.rempart-table td { vertical-align: middle; }
+.rempart-actions { display: flex; flex-wrap: wrap; gap: 5px; }
+.rempart-actions form { margin: 0; }
+.rempart .rempart-danger { color: #b32d2e; border-color: #b32d2e; }
+.rempart .rempart-danger:hover { background: #b32d2e; border-color: #b32d2e; color: #fff; }
+.rempart-tag { display: inline-block; background: #e7f3f7; color: #1f6f8b; font-size: 11px; padding: 0 6px; border-radius: 3px; margin-left: 4px; }
+.rempart-empty { text-align: center; color: #50575e; padding: 24px !important; }
+.rempart-history-tools { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 10px; margin-bottom: 12px; }
+#rempart-upload-open .dashicons { vertical-align: text-bottom; font-size: 18px; }
+#rempart-upload-progress { margin-bottom: 12px; }
+
+.rempart-bar { height: 12px; background: #dcdcde; border-radius: 6px; overflow: hidden; }
+.rempart-bar i { display: block; height: 100%; width: 0; background: #1f6f8b; transition: width .4s; }
+.rempart-percent { text-align: center; font-weight: 600; margin: 6px 0; }
+.rempart-hint { color: #50575e; font-size: 12px; text-align: center; margin: 0 0 8px; }
+.rempart-log { height: 220px; overflow: auto; background: #1d2327; color: #e6e6e6; padding: 10px 12px; font: 12px/1.6 Consolas, Menlo, monospace; border-radius: 4px; word-break: break-word; }
+.rempart-log .l-warning { color: #f0c33c; }
+.rempart-log .l-error { color: #ff8085; }
+.rempart-log .l-success { color: #68de7c; }
+.rempart-log .l-debug { color: #a7aaad; }
+
+.rempart-modal { position: fixed; inset: 0; z-index: 100000; background: rgba(0, 0, 0, .55); display: flex; align-items: center; justify-content: center; padding: 16px; }
+.rempart-modal[hidden] { display: none; }
+.rempart-modal-box { background: #fff; border-radius: 8px; padding: 22px 24px; width: 100%; max-width: 620px; max-height: calc(100vh - 80px); overflow: auto; box-sizing: border-box; }
+.rempart-modal-box h2 { margin-top: 0; }
+.rempart-modal-actions { display: flex; justify-content: flex-end; gap: 8px; margin: 14px 0 0; }
+.rempart-warn-box { background: #fcf0f1; border-left: 4px solid #b32d2e; padding: 10px 12px; }
+.rempart-migrate { background: #e7f3f7; border-left: 4px solid #1f6f8b; padding: 10px 12px; word-break: break-word; }
+
+.rempart-tree, .rempart-tree ul { margin: 0; padding-left: 0; }
+.rempart-tree ul { padding-left: 18px; }
+.rempart-tree { max-height: 50vh; overflow: auto; border: 1px solid #dcdcde; border-radius: 4px; padding: 6px; }
+.rempart-tree li { margin: 0; }
+.rempart-node { display: flex; align-items: center; gap: 6px; padding: 2px 4px; }
+.rempart-node:hover { background: #f6f7f7; }
+.rempart-node button.toggle { background: none; border: 0; padding: 0; width: 20px; cursor: pointer; color: #50575e; }
+.rempart-node .label { flex: 1; word-break: break-all; }
+
+.rempart-checklist li { display: flex; gap: 8px; padding: 5px 0; border-top: 1px solid #f0f0f1; }
+.rempart-checklist .ok { color: #008a20; }
+.rempart-checklist .no { color: #b32d2e; }
+.rempart-checklist .what { font-weight: 600; min-width: 240px; }
+
+@media (max-width: 782px) {
+	.rempart-row { grid-template-columns: 1fr; gap: 6px; }
+	.rempart-checklist li { flex-wrap: wrap; }
+}
