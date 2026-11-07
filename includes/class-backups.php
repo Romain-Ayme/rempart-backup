@@ -4,34 +4,34 @@ if (!defined('ABSPATH')) {
 }
 
 /** The list of existing backups: their info files, deletion, rotation and synchronising. */
-class Rempart_Backups {
+class Backup_Guard_Backups {
 	public static function info_file($name) {
-		$dir = rempart_folder('info');
-		return $dir ? $dir . '/' . rempart_safe_backup_name($name) . '.php' : false;
+		$dir = backup_guard_folder('info');
+		return $dir ? $dir . '/' . backup_guard_safe_backup_name($name) . '.php' : false;
 	}
 
 	public static function archive_path($name) {
-		$dir = rempart_folder('backups');
-		return $dir ? $dir . '/' . rempart_safe_backup_name($name) . '.tar.gz' : false;
+		$dir = backup_guard_folder('backups');
+		return $dir ? $dir . '/' . backup_guard_safe_backup_name($name) . '.tar.gz' : false;
 	}
 
 	public static function save_info(array $info) {
 		$file = self::info_file($info['name']);
-		return $file ? rempart_write_state($file, $info) : false;
+		return $file ? backup_guard_write_state($file, $info) : false;
 	}
 
 	public static function get($name) {
 		$file = self::info_file($name);
-		return $file ? rempart_read_state($file) : null;
+		return $file ? backup_guard_read_state($file) : null;
 	}
 
 	/** All backups, newest first. */
 	public static function all() {
-		$dir = rempart_folder('info');
+		$dir = backup_guard_folder('info');
 		$out = array();
 		if ($dir) {
 			foreach ((array) glob($dir . '/*.php') as $file) {
-				$info = rempart_read_state($file);
+				$info = backup_guard_read_state($file);
 				if (is_array($info) && !empty($info['name'])) {
 					$out[] = $info;
 				}
@@ -45,14 +45,14 @@ class Rempart_Backups {
 
 	/** Delete a backup: its archive where it is kept, its info and its log. */
 	public static function delete($name) {
-		$name = rempart_safe_backup_name($name);
+		$name = backup_guard_safe_backup_name($name);
 		$info = self::get($name);
 		$location_id = $info['location'] ?? '';
 
 		if ($location_id !== '' && $location_id !== null) {
-			$location = Rempart_Locations::get($location_id);
+			$location = Backup_Guard_Locations::get($location_id);
 			if ($location) {
-				$storage = Rempart_Storage::make($location);
+				$storage = Backup_Guard_Storage::make($location);
 				$storage->delete($name . '.tar.gz');
 				$storage->delete($name . '.info');
 				$storage->delete($name . '.log');
@@ -66,7 +66,7 @@ class Rempart_Backups {
 		if ($file && file_exists($file)) {
 			@unlink($file);
 		}
-		@unlink(REMPART_ROOT . 'logs/' . $name . '.log.php');
+		@unlink(BACKUP_GUARD_ROOT . 'logs/' . $name . '.log.php');
 		return true;
 	}
 
@@ -81,11 +81,11 @@ class Rempart_Backups {
 		});
 		$extra = array_slice(array_values($same), $keep);
 		foreach ($extra as $info) {
-			rempart_log(sprintf(__('Rotation : suppression de l\'ancienne sauvegarde %s', 'rempart-backup'), $info['name']));
+			backup_guard_log(sprintf(__('Rotation : suppression de l\'ancienne sauvegarde %s', 'backup-guard'), $info['name']));
 			try {
 				self::delete($info['name']);
 			} catch (Exception $e) {
-				rempart_log(sprintf(__('Rotation : %s', 'rempart-backup'), $e->getMessage()), 'warning');
+				backup_guard_log(sprintf(__('Rotation : %s', 'backup-guard'), $e->getMessage()), 'warning');
 			}
 		}
 		return count($extra);
@@ -93,13 +93,13 @@ class Rempart_Backups {
 
 	/** Add archives found in the local folder (copied or uploaded there) to the list. */
 	public static function sync_local() {
-		$dir = rempart_folder('backups');
+		$dir = backup_guard_folder('backups');
 		$added = 0;
 		if (!$dir) {
 			return 0;
 		}
 		foreach ((array) glob($dir . '/*.tar.gz') as $archive) {
-			$name = rempart_safe_backup_name(basename($archive));
+			$name = backup_guard_safe_backup_name(basename($archive));
 			if ($name === '' || self::get($name)) {
 				continue;
 			}
@@ -122,7 +122,7 @@ class Rempart_Backups {
 		$has_db = false;
 		$has_files = false;
 		try {
-			$reader = new Rempart_Tar_Reader($archive);
+			$reader = new Backup_Guard_Tar_Reader($archive);
 			$seen = 0;
 			while ($seen < 12 && ($entry = $reader->next_entry())) {
 				$seen++;
@@ -130,8 +130,8 @@ class Rempart_Backups {
 				$padded = (int) (ceil($size / 512) * 512);
 				// The other plugin names its info file after the archive, and the archive may have
 				// been renamed since. So any small root .php that isn't WordPress's own is looked at.
-				$is_candidate = $entry['name'] === '.rempart/info.json'
-					|| (strpos($entry['name'], '/') === false && substr($entry['name'], -4) === '.php' && !in_array($entry['name'], rempart_core_entries(), true));
+				$is_candidate = $entry['name'] === '.backup-guard/info.json'
+					|| (strpos($entry['name'], '/') === false && substr($entry['name'], -4) === '.php' && !in_array($entry['name'], backup_guard_core_entries(), true));
 				if ($is_candidate && $size < 1048576) {
 					$raw = substr($reader->read($padded), 0, $size);
 					if (preg_match('/\{.*\}/s', $raw, $m)) {
@@ -144,9 +144,9 @@ class Rempart_Backups {
 					$has_files = true;
 					continue;
 				}
-				if ($entry['name'] === '.rempart/database.sql' || $entry['name'] === 'softsql.sql') {
+				if ($entry['name'] === '.backup-guard/database.sql' || $entry['name'] === 'softsql.sql') {
 					$has_db = true;
-				} elseif (strpos($entry['name'], '.rempart/') !== 0 && $entry['name'] !== 'softver.txt') {
+				} elseif (strpos($entry['name'], '.backup-guard/') !== 0 && $entry['name'] !== 'softver.txt') {
 					$has_files = true;
 				}
 				// Skipping costs little: no need to read the rest once the facts are known.
@@ -163,7 +163,7 @@ class Rempart_Backups {
 			}
 			$reader->close();
 		} catch (Exception $e) {
-			rempart_debug(sprintf(__('Archive illisible : %s', 'rempart-backup'), $e->getMessage()));
+			backup_guard_debug(sprintf(__('Archive illisible : %s', 'backup-guard'), $e->getMessage()));
 			return null;
 		}
 		if (!is_array($info)) {
@@ -183,11 +183,11 @@ class Rempart_Backups {
 
 	/** Compare a storage location's backups with the list: add the new ones, drop the gone ones. */
 	public static function sync_location($location_id) {
-		$location = Rempart_Locations::get($location_id);
+		$location = Backup_Guard_Locations::get($location_id);
 		if (!$location) {
-			throw new RuntimeException(__('Cet emplacement n\'existe plus.', 'rempart-backup'));
+			throw new RuntimeException(__('Cet emplacement n\'existe plus.', 'backup-guard'));
 		}
-		$storage = Rempart_Storage::make($location);
+		$storage = Backup_Guard_Storage::make($location);
 		$files = $storage->list_files();
 		$sizes = array();
 		foreach ($files as $file) {
@@ -199,7 +199,7 @@ class Rempart_Backups {
 			if (substr($file_name, -5) !== '.info') {
 				continue;
 			}
-			$name = rempart_safe_backup_name(substr($file_name, 0, -5));
+			$name = backup_guard_safe_backup_name(substr($file_name, 0, -5));
 			if ($name === '' || self::get($name) || !isset($sizes[$name . '.tar.gz'])) {
 				continue;
 			}

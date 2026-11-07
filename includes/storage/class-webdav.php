@@ -7,7 +7,7 @@ if (!defined('ABSPATH')) {
  * WebDAV. The standard has no resumable upload, so a backup is sent in one long request
  * with the time limit lifted and a heartbeat that keeps the job alive meanwhile.
  */
-class Rempart_Storage_Webdav extends Rempart_Storage {
+class Backup_Guard_Storage_Webdav extends Backup_Guard_Storage {
 	const DOWNLOAD_CHUNK = 4194304;
 
 	private function base_url() {
@@ -37,14 +37,14 @@ class Rempart_Storage_Webdav extends Rempart_Storage {
 			$url .= '/' . rawurlencode($part);
 			$response = $this->http('MKCOL', $url . '/', $this->auth());
 			if (in_array($response['code'], array(401, 403), true)) {
-				throw new RuntimeException(sprintf(__('Le serveur WebDAV refuse l\'accès (code %s).', 'rempart-backup'), $response['code']));
+				throw new RuntimeException(sprintf(__('Le serveur WebDAV refuse l\'accès (code %s).', 'backup-guard'), $response['code']));
 			}
 		}
 	}
 
 	public function test() {
 		$this->ensure_folder();
-		$probe = '.rempart-test-' . wp_generate_password(6, false);
+		$probe = '.backup-guard-test-' . wp_generate_password(6, false);
 		$this->put_string($probe, 'ok');
 		$this->delete($probe);
 	}
@@ -56,7 +56,7 @@ class Rempart_Storage_Webdav extends Rempart_Storage {
 			return array();
 		}
 		if ($response['code'] !== 207) {
-			throw new RuntimeException(sprintf(__('Liste WebDAV refusée (code %s).', 'rempart-backup'), $response['code']));
+			throw new RuntimeException(sprintf(__('Liste WebDAV refusée (code %s).', 'backup-guard'), $response['code']));
 		}
 		$files = array();
 		if (preg_match_all('#<(?:\w+:)?response\b.*?</(?:\w+:)?response>#si', $response['body'], $blocks)) {
@@ -74,7 +74,7 @@ class Rempart_Storage_Webdav extends Rempart_Storage {
 
 	public function upload_step($local, $remote, array &$state, $deadline, $beat) {
 		if (!function_exists('curl_init')) {
-			throw new RuntimeException(__('L\'envoi WebDAV demande le module PHP cURL.', 'rempart-backup'));
+			throw new RuntimeException(__('L\'envoi WebDAV demande le module PHP cURL.', 'backup-guard'));
 		}
 		$this->ensure_folder();
 		@set_time_limit(0);
@@ -104,10 +104,10 @@ class Rempart_Storage_Webdav extends Rempart_Storage {
 		$error = curl_error($curl);
 		fclose($source);
 		if ($error !== '') {
-			throw new RuntimeException(__('Envoi WebDAV interrompu : ', 'rempart-backup') . $error);
+			throw new RuntimeException(__('Envoi WebDAV interrompu : ', 'backup-guard') . $error);
 		}
 		if ($code < 200 || $code >= 300) {
-			throw new RuntimeException(sprintf(__('Envoi WebDAV refusé (code %s).', 'rempart-backup'), $code));
+			throw new RuntimeException(sprintf(__('Envoi WebDAV refusé (code %s).', 'backup-guard'), $code));
 		}
 		$state['offset'] = $total;
 		return true;
@@ -129,7 +129,7 @@ class Rempart_Storage_Webdav extends Rempart_Storage {
 				return true;
 			}
 			if ($response['code'] !== 206) {
-				throw new RuntimeException(sprintf(__('Téléchargement WebDAV refusé (code %s).', 'rempart-backup'), $response['code']));
+				throw new RuntimeException(sprintf(__('Téléchargement WebDAV refusé (code %s).', 'backup-guard'), $response['code']));
 			}
 			self::append_local($local, $offset, $response['body']);
 			$offset += strlen($response['body']);
@@ -147,14 +147,14 @@ class Rempart_Storage_Webdav extends Rempart_Storage {
 	public function put_string($remote, $content) {
 		$response = $this->http('PUT', $this->file_url($remote), $this->auth(), $content);
 		if ($response['code'] < 200 || $response['code'] >= 300) {
-			throw new RuntimeException(sprintf(__('Écriture WebDAV refusée (code %s).', 'rempart-backup'), $response['code']));
+			throw new RuntimeException(sprintf(__('Écriture WebDAV refusée (code %s).', 'backup-guard'), $response['code']));
 		}
 	}
 
 	public function get_string($remote) {
 		$response = $this->http('GET', $this->file_url($remote), $this->auth());
 		if ($response['code'] !== 200) {
-			throw new RuntimeException(sprintf(__('Lecture WebDAV refusée (code %s).', 'rempart-backup'), $response['code']));
+			throw new RuntimeException(sprintf(__('Lecture WebDAV refusée (code %s).', 'backup-guard'), $response['code']));
 		}
 		return $response['body'];
 	}

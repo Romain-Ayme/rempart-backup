@@ -1,5 +1,5 @@
 {
-	"name": "rempart/backup-tests",
+	"name": "backup-guard/backup-guard-tests",
 	"description": "Outils de contrôle du plugin : tests, analyse statique, style et compatibilité PHP. Non livrés avec le plugin.",
 	"type": "project",
 	"license": "LGPL-2.1-only",

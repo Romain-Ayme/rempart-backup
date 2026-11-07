@@ -1,5 +1,5 @@
 <?php
-if (!defined('ABSPATH') && !defined('REMPART_RUNNER')) {
+if (!defined('ABSPATH') && !defined('BACKUP_GUARD_RUNNER')) {
 	exit;
 }
 
@@ -10,7 +10,7 @@ if (!defined('ABSPATH') && !defined('REMPART_RUNNER')) {
  * stream. After each member the file on disk is valid up to that point, so a killed
  * process can resume: cut the file back to the last recorded size and carry on.
  */
-class Rempart_Tar_Writer {
+class Backup_Guard_Tar_Writer {
 	private $handle;
 	private $buffer = '';
 	private $level;
@@ -20,7 +20,7 @@ class Rempart_Tar_Writer {
 		$this->level = $level;
 		$this->handle = @fopen($path, 'c+b');
 		if (!$this->handle) {
-			throw new RuntimeException(sprintf(__('Impossible d\'ouvrir l\'archive en écriture : %s', 'rempart-backup'), $path));
+			throw new RuntimeException(sprintf(__('Impossible d\'ouvrir l\'archive en écriture : %s', 'backup-guard'), $path));
 		}
 		ftruncate($this->handle, $committed_size);
 		fseek($this->handle, 0, SEEK_END);
@@ -40,7 +40,7 @@ class Rempart_Tar_Writer {
 			$compressed = gzencode($this->buffer, $this->level);
 			$written = fwrite($this->handle, $compressed);
 			if ($written !== strlen($compressed)) {
-				throw new RuntimeException(__('Écriture de l\'archive impossible : le disque est peut-être plein.', 'rempart-backup'));
+				throw new RuntimeException(__('Écriture de l\'archive impossible : le disque est peut-être plein.', 'backup-guard'));
 			}
 			fflush($this->handle);
 			$this->buffer = '';
@@ -131,7 +131,7 @@ class Rempart_Tar_Writer {
  * member's start). With archives from this plugin, members are small so resuming is quick;
  * an archive from elsewhere made of one big member still works but inflates from the start.
  */
-class Rempart_Tar_Reader {
+class Backup_Guard_Tar_Reader {
 	private $handle;
 	private $inflate = null;
 	private $member_start = 0;
@@ -145,7 +145,7 @@ class Rempart_Tar_Reader {
 	public function __construct($path, $member_start = 0, $skip = 0) {
 		$this->handle = @fopen($path, 'rb');
 		if (!$this->handle) {
-			throw new RuntimeException(sprintf(__('Impossible d\'ouvrir l\'archive : %s', 'rempart-backup'), $path));
+			throw new RuntimeException(sprintf(__('Impossible d\'ouvrir l\'archive : %s', 'backup-guard'), $path));
 		}
 		$this->file_size = filesize($path);
 		$this->member_start = $member_start;
@@ -201,7 +201,7 @@ class Rempart_Tar_Reader {
 		}
 		$out = @inflate_add($this->inflate, $chunk, ZLIB_SYNC_FLUSH);
 		if ($out === false) {
-			throw new RuntimeException(sprintf(__('Archive endommagée (décompression impossible près de l\'octet %s).', 'rempart-backup'), $chunk_start));
+			throw new RuntimeException(sprintf(__('Archive endommagée (décompression impossible près de l\'octet %s).', 'backup-guard'), $chunk_start));
 		}
 		$this->buffer = $out;
 		$this->member_produced += strlen($out);
@@ -242,7 +242,7 @@ class Rempart_Tar_Reader {
 			}
 			$entry = self::parse_header($block);
 			if ($entry === null) {
-				throw new RuntimeException(__('Archive endommagée : en-tête de fichier invalide.', 'rempart-backup'));
+				throw new RuntimeException(__('Archive endommagée : en-tête de fichier invalide.', 'backup-guard'));
 			}
 			if ($entry['type'] === 'L' || $entry['type'] === 'K') {
 				$value = rtrim($this->read((int) (ceil($entry['size'] / 512) * 512)), "\0");

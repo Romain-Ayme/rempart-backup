@@ -1,4 +1,4 @@
-=== Rempart Backup ===
+=== Backup Guard ===
 Requires at least: 7.1
 Requires PHP: 8.3
 Stable tag: 1.0.0
@@ -23,7 +23,7 @@ Sauvegarde, restauration, migration et clonage de WordPress, sans licence et san
 
 == Installation ==
 
-Dans WordPress : Extensions > Ajouter > Téléverser une extension, puis choisissez rempart-backup.zip et activez-la.
+Dans WordPress : Extensions > Ajouter > Téléverser une extension, puis choisissez backup-guard.zip et activez-la.
 
 == Comptes cloud ==
 

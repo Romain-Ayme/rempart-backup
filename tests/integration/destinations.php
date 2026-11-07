@@ -3,19 +3,19 @@
  * Round trip on every destination driver, against real services.
  *
  * Runs inside WordPress, because the WebDAV and S3 drivers use WordPress's HTTP functions:
- *   npx @wordpress/env run cli wp eval-file wp-content/plugins/rempart-backup/tests/integration/destinations.php
+ *   npx @wordpress/env run cli wp eval-file wp-content/plugins/backup-guard/tests/integration/destinations.php
  *
  * The services are the ones of tests/docker-compose.yml. An unreachable service is a failure, unless
  * IT_SKIP_UNREACHABLE=1 is set (to test a single destination locally). Any failure exits with status 1.
  */
-if (!defined('ABSPATH') || !class_exists('Rempart_Storage')) {
+if (!defined('ABSPATH') || !class_exists('Backup_Guard_Storage')) {
 	fwrite(STDERR, "Ce script doit être lancé dans WordPress avec le plugin actif (wp eval-file).\n");
 	exit(1);
 }
 
-require_once REMPART_DIR . '/includes/storage/class-storage.php';
+require_once BACKUP_GUARD_DIR . '/includes/storage/class-storage.php';
 foreach (array('ftp', 'sftp', 'webdav', 's3') as $driver) {
-	require_once REMPART_DIR . '/includes/storage/class-' . $driver . '.php';
+	require_once BACKUP_GUARD_DIR . '/includes/storage/class-' . $driver . '.php';
 }
 
 /** Connection settings. The environment can override each host, for CI or other setups. */
@@ -26,35 +26,35 @@ $env = function ($name, $default) {
 
 $destinations = array(
 	'sftp' => array(
-		'class'  => 'Rempart_Storage_Sftp',
-		'config' => array('host' => $env('IT_SFTP_HOST', 'rempart-sftp'), 'port' => 22, 'user' => 'bob', 'pass' => 'pass123', 'folder' => 'upload'),
+		'class'  => 'Backup_Guard_Storage_Sftp',
+		'config' => array('host' => $env('IT_SFTP_HOST', 'backup-guard-sftp'), 'port' => 22, 'user' => 'bob', 'pass' => 'pass123', 'folder' => 'upload'),
 	),
 	'ftp' => array(
-		'class'  => 'Rempart_Storage_Ftp',
-		'config' => array('host' => $env('IT_FTP_HOST', 'rempart-ftp'), 'port' => 21, 'protocol' => 'ftp', 'user' => 'bob', 'pass' => 'pass123', 'folder' => ''),
+		'class'  => 'Backup_Guard_Storage_Ftp',
+		'config' => array('host' => $env('IT_FTP_HOST', 'backup-guard-ftp'), 'port' => 21, 'protocol' => 'ftp', 'user' => 'bob', 'pass' => 'pass123', 'folder' => ''),
 	),
 	'ftps' => array(
-		'class'  => 'Rempart_Storage_Ftp',
-		'config' => array('host' => $env('IT_FTPS_HOST', 'rempart-ftps'), 'port' => 21, 'protocol' => 'ftps', 'insecure_tls' => 1, 'user' => 'bob', 'pass' => 'pass123', 'folder' => ''),
+		'class'  => 'Backup_Guard_Storage_Ftp',
+		'config' => array('host' => $env('IT_FTPS_HOST', 'backup-guard-ftps'), 'port' => 21, 'protocol' => 'ftps', 'insecure_tls' => 1, 'user' => 'bob', 'pass' => 'pass123', 'folder' => ''),
 	),
 	'webdav' => array(
-		'class'  => 'Rempart_Storage_Webdav',
-		'config' => array('url' => $env('IT_WEBDAV_URL', 'http://rempart-dav/'), 'user' => 'bob', 'pass' => 'pass123', 'folder' => ''),
+		'class'  => 'Backup_Guard_Storage_Webdav',
+		'config' => array('url' => $env('IT_WEBDAV_URL', 'http://backup-guard-dav/'), 'user' => 'bob', 'pass' => 'pass123', 'folder' => ''),
 	),
 	's3' => array(
-		'class'  => 'Rempart_Storage_S3',
-		'config' => array('endpoint' => $env('IT_S3_ENDPOINT', 'http://rempart-s3:3900'), 'region' => 'us-east-1', 'service' => 'custom', 'bucket' => 'rempart-it', 'access_key' => 'GK00000000000000000000000a', 'secret_key' => '0000000000000000000000000000000000000000000000000000000000000001', 'folder' => ''),
+		'class'  => 'Backup_Guard_Storage_S3',
+		'config' => array('endpoint' => $env('IT_S3_ENDPOINT', 'http://backup-guard-s3:3900'), 'region' => 'us-east-1', 'service' => 'custom', 'bucket' => 'backup-guard-it', 'access_key' => 'GK00000000000000000000000a', 'secret_key' => '0000000000000000000000000000000000000000000000000000000000000001', 'folder' => ''),
 	),
 );
 
 /** Run one destination: connect, write, read back, list, delete, then a 5 MB file in steps. */
-function rempart_it_roundtrip($class, array $config) {
+function backup_guard_it_roundtrip($class, array $config) {
 	$storage = new $class($config);
 	$storage->test();
 
-	$small = 'rempart-it-small.txt';
-	$storage->put_string($small, 'bonjour rempart');
-	if ($storage->get_string($small) !== 'bonjour rempart') {
+	$small = 'backup-guard-it-small.txt';
+	$storage->put_string($small, 'bonjour backup-guard');
+	if ($storage->get_string($small) !== 'bonjour backup-guard') {
 		throw new RuntimeException('Le contenu relu ne correspond pas.');
 	}
 	$names = array_column($storage->list_files(), 'name');
@@ -64,12 +64,12 @@ function rempart_it_roundtrip($class, array $config) {
 	$storage->delete($small);
 
 	$data = random_bytes(5 * 1024 * 1024 + 123);
-	$source = tempnam(sys_get_temp_dir(), 'rempart-it-');
-	$copy = tempnam(sys_get_temp_dir(), 'rempart-it-');
+	$source = tempnam(sys_get_temp_dir(), 'backup-guard-it-');
+	$copy = tempnam(sys_get_temp_dir(), 'backup-guard-it-');
 	file_put_contents($source, $data);
 	$state = array();
 	$steps = 0;
-	while (!$storage->upload_step($source, 'rempart-it-big.bin', $state, time() + 60, function () {})) {
+	while (!$storage->upload_step($source, 'backup-guard-it-big.bin', $state, time() + 60, function () {})) {
 		if (++$steps > 500) {
 			throw new RuntimeException('L\'envoi ne se termine pas.');
 		}
@@ -77,13 +77,13 @@ function rempart_it_roundtrip($class, array $config) {
 	@unlink($copy);
 	$state = array();
 	$steps = 0;
-	while (!$storage->download_step('rempart-it-big.bin', $copy, $state, time() + 60, function () {})) {
+	while (!$storage->download_step('backup-guard-it-big.bin', $copy, $state, time() + 60, function () {})) {
 		if (++$steps > 500) {
 			throw new RuntimeException('Le téléchargement ne se termine pas.');
 		}
 	}
 	$same = hash_equals(hash('sha256', $data), hash_file('sha256', $copy));
-	$storage->delete('rempart-it-big.bin');
+	$storage->delete('backup-guard-it-big.bin');
 	unlink($source);
 	unlink($copy);
 	if (!$same) {
@@ -97,7 +97,7 @@ foreach ($destinations as $name => $destination) {
 		// An FTP server that is restarting (its image sometimes dies on start) gets a few more tries.
 		for ($attempt = 1; ; $attempt++) {
 			try {
-				rempart_it_roundtrip($destination['class'], $destination['config']);
+				backup_guard_it_roundtrip($destination['class'], $destination['config']);
 				break;
 			} catch (Throwable $e) {
 				if ($attempt >= 4 || !preg_match('/getaddrinfo|Could not resolve host|Connection refused|Connexion (SFTP )?à \S+ impossible/i', $e->getMessage())) {

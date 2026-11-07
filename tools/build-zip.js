@@ -1,17 +1,17 @@
-// Packs the plugin into dist/rempart-backup.zip, ready for WordPress's "Upload plugin" screen.
+// Packs the plugin into dist/backup-guard.zip, ready for WordPress's "Upload plugin" screen.
 // Checks first that the files the plugin can't start without are there, so a bad package fails here.
 const fs = require('fs');
 const path = require('path');
 const zlib = require('zlib');
 
 const pluginDir = path.join(__dirname, '..');
-const output = path.join(pluginDir, 'dist', 'rempart-backup.zip');
-const folder = 'rempart-backup';
+const output = path.join(pluginDir, 'dist', 'backup-guard.zip');
+const folder = 'backup-guard';
 
 const required = [
-	'rempart-backup.php', 'uninstall.php', 'readme.txt', 'runner/restore-runner.php',
+	'backup-guard.php', 'uninstall.php', 'readme.txt', 'runner/restore-runner.php',
 	'includes/class-job.php', 'includes/class-restore.php', 'includes/class-admin.php',
-	'includes/storage/class-oauth.php', 'assets/admin.js', 'assets/admin.css', 'vendor/autoload.php', 'languages/rempart-backup-en_US.mo',
+	'includes/storage/class-oauth.php', 'assets/admin.js', 'assets/admin.css', 'vendor/autoload.php', 'languages/backup-guard-en_US.mo',
 ];
 for (const file of required) {
 	if (!fs.existsSync(path.join(pluginDir, file))) {
@@ -100,4 +100,4 @@ end.writeUInt32LE(offset, 16);
 
 fs.mkdirSync(path.dirname(output), { recursive: true });
 fs.writeFileSync(output, Buffer.concat([...locals, centralData, end]));
-console.log(files.length + ' fichiers emballés dans dist/rempart-backup.zip (' + Math.round(fs.statSync(output).size / 1024) + ' Ko)');
+console.log(files.length + ' fichiers emballés dans dist/backup-guard.zip (' + Math.round(fs.statSync(output).size / 1024) + ' Ko)');
