@@ -12,6 +12,7 @@ services:
 
   ftp:
     image: delfer/alpine-ftp-server
+    restart: always
     environment:
       USERS: 'bob|pass123'
       ADDRESS: rempart-ftp
