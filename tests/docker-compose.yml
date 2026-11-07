@@ -1,0 +1,75 @@
+# Services de test pour chaque destination de sauvegarde. Lancer avec `npm run services:up`.
+# Les noms réseau (rempart-sftp, …) sont ceux que tests/integration/destinations.php attend.
+name: rempart-tests
+
+services:
+  sftp:
+    image: atmoz/sftp
+    command: bob:pass123:1001::upload
+    networks:
+      default:
+        aliases: [rempart-sftp]
+
+  ftp:
+    image: delfer/alpine-ftp-server
+    environment:
+      USERS: 'bob|pass123'
+      ADDRESS: rempart-ftp
+      MIN_PORT: '21000'
+      MAX_PORT: '21010'
+    networks:
+      default:
+        aliases: [rempart-ftp]
+
+  tls-init:
+    image: alpine/openssl
+    command: req -x509 -newkey rsa:2048 -nodes -days 1 -subj /CN=rempart-ftps -keyout /tls/k.pem -out /tls/c.pem
+    volumes:
+      - tls:/tls
+    restart: 'no'
+
+  ftps:
+    image: delfer/alpine-ftp-server
+    depends_on:
+      tls-init:
+        condition: service_completed_successfully
+    environment:
+      USERS: 'bob|pass123'
+      ADDRESS: rempart-ftps
+      MIN_PORT: '21000'
+      MAX_PORT: '21010'
+      TLS_CERT: /etc/vsftpd/tls/c.pem
+      TLS_KEY: /etc/vsftpd/tls/k.pem
+    volumes:
+      - tls:/etc/vsftpd/tls:ro
+    networks:
+      default:
+        aliases: [rempart-ftps]
+
+  webdav:
+    image: bytemark/webdav
+    environment:
+      AUTH_TYPE: Basic
+      USERNAME: bob
+      PASSWORD: pass123
+    networks:
+      default:
+        aliases: [rempart-dav]
+
+  s3:
+    image: coollabsio/maxio
+    command: serve
+    environment:
+      MAXIO_ACCESS_KEY: testkey1234
+      MAXIO_SECRET_KEY: testsecret12345678
+      MAXIO_DATA_DIR: /data
+    networks:
+      default:
+        aliases: [rempart-s3]
+
+volumes:
+  tls:
+
+networks:
+  default:
+    name: rempart-tests

@@ -1,0 +1,16 @@
+{
+	"name": "rempart-backup",
+	"version": "1.0.0",
+	"private": true,
+	"description": "Plugin WordPress de sauvegarde, restauration et migration, sans licence ni verrou.",
+	"license": "LGPL-2.1",
+	"scripts": {
+		"build": "node tools/build-zip.js",
+		"env:start": "npx --yes @wordpress/env@12 start",
+		"env:stop": "npx --yes @wordpress/env@12 stop",
+		"env:destroy": "npx --yes @wordpress/env@12 destroy",
+		"services:up": "docker compose -f tests/docker-compose.yml up -d",
+		"services:down": "docker compose -f tests/docker-compose.yml down -v",
+		"test:destinations": "node tools/connect-network.js && npx --yes @wordpress/env@12 run cli wp eval-file wp-content/plugins/rempart-backup/tests/integration/destinations.php"
+	}
+}
