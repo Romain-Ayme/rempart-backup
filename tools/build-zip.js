@@ -22,7 +22,7 @@ for (const file of required) {
 
 // Development files are not shipped; the test tools and their dependencies are not even read.
 const skip = new Set(['composer.json', 'composer.lock', 'package.json', 'package-lock.json', '.wp-env.json', '.gitignore', 'phpcs.xml.dist']);
-const developmentOnly = new Set(['.git', '.github', 'tests', 'tools', 'dist']);
+const developmentOnly = new Set(['.git', '.github', 'tests', 'tools', 'dist', 'README.md']);
 function walk(dir, base) {
 	let out = [];
 	for (const item of fs.readdirSync(dir, { withFileTypes: true })) {

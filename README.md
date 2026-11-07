@@ -1,0 +1,160 @@
+# Rempart Backup
+
+Plugin WordPress de sauvegarde, restauration, migration et clonage, **sans licence et sans fonction réservée**.
+
+- PHP 8.3 ou plus, WordPress 7.1 ou plus.
+- Licence LGPL v2.1.
+
+## Fonctionnalités
+
+### Sauvegarde
+
+- Fichiers, base de données, ou les deux.
+- **Choix des fichiers à garder** :
+  - *Tout WordPress* (par défaut) ;
+  - *Mes fichiers seulement* : sans les fichiers d'origine de WordPress (`wp-admin`, `wp-includes`, `index.php`, `wp-cron.php`, etc.). Restent `wp-config.php`, `.htaccess`, `wp-content` et tout fichier que WordPress ne fournit pas ;
+  - *Mes fichiers et les fichiers WordPress modifiés* : comme le précédent, plus les fichiers d'origine que vous avez modifiés. Les empreintes officielles de votre version viennent de wordpress.org. Si elles sont injoignables, la sauvegarde est refusée tout de suite plutôt que de produire une archive incomplète.
+- Exclusions : tables, dossiers exacts, extensions, début ou fin de nom, motif n'importe où.
+- Niveau de compression réglable (1 à 9, 9 par défaut).
+- Note libre sur chaque sauvegarde, historique filtrable par emplacement, espace utilisé par emplacement.
+- Travail découpé en tranches de 25 secondes : pas de limite de temps PHP à craindre, reprise possible, arrêt à la demande.
+- Une seule tâche à la fois : un second démarrage, y compris simultané, est refusé.
+
+### Automatisation
+
+- Planification : 30 minutes, 1 heure, 2 heures, jour, semaine, mois, ou tâche cron du serveur.
+- Rotation : ne garder que les N dernières sauvegardes automatiques.
+- Sauvegarde avant les mises à jour de WordPress, manuelles ou automatiques.
+- Chien de garde : une tâche bloquée est relancée, puis déclarée en échec avec un message clair si elle ne répond plus.
+
+### Emplacements
+
+Dossier local, FTP, FTPS, SFTP (mot de passe ou clé privée, empreinte du serveur mémorisée), WebDAV, Amazon S3 et compatibles (Hetzner Object Storage, Backblaze B2, DigitalOcean Spaces, Linode, Vultr, Cloudflare R2, Wasabi, Garage, etc.), Google Drive, OneDrive, Dropbox et pCloud.
+
+Les identifiants sont chiffrés dans la base. Google Drive, OneDrive, Dropbox et pCloud demandent une application créée à votre nom (gratuit) : l'onglet Aide du plugin donne la marche à suivre.
+
+### Restauration, migration, clonage
+
+- Restauration en un clic, des fichiers, de la base, ou des deux.
+- Migration et clonage vers une autre adresse : les adresses sont remplacées dans la base, y compris dans les données sérialisées.
+- La restauration est faite par un petit programme indépendant de WordPress, qui continue de fonctionner pendant que les fichiers et les tables de WordPress sont remplacés.
+- Importe aussi les sauvegardes `.tar.gz` faites avec Backuply.
+
+### Notifications
+
+Au choix pour une réussite, un échec, ou les deux, par canal : e-mail, Pushover, Gotify, ntfy, Telegram, Discord, Slack et webhook JSON. Les secrets sont masqués dans les messages d'erreur.
+
+### WP-CLI
+
+```
+wp rempart backup [--files-only] [--db-only] [--scope=<all|content|modified>] [--location=<id>] [--note=<texte>]
+wp rempart list
+wp rempart locations
+wp rempart delete <nom>
+wp rempart restore <nom> [--files-only] [--db-only] [--yes]
+```
+
+## Installation
+
+Dans WordPress : Extensions, Ajouter, Téléverser une extension, puis choisir `rempart-backup.zip` et l'activer. Le zip se télécharge dans les [releases](../../releases) ou se construit avec `npm run build` (il est alors dans `dist/`).
+
+## Développement
+
+### Dépendances
+
+Le plugin embarque deux bibliothèques, gérées par Composer (`composer.json` à la racine) et livrées dans `vendor/` : `phpseclib/phpseclib` 4 (SFTP) et `paragonie/constant_time_encoding` 3. Pour les mettre à jour :
+
+```
+composer update --no-dev
+```
+
+Les outils de contrôle sont à part, dans `tests/composer.json`, et ne sont pas livrés avec le plugin.
+
+### Contrôles
+
+```
+composer --working-dir=tests install
+composer --working-dir=tests run check     # tout ce qui suit
+composer --working-dir=tests run lint      # syntaxe
+composer --working-dir=tests run compat    # compatibilité PHP 8.3 à 8.5 (PHPCompatibilityWP)
+composer --working-dir=tests run stan      # analyse statique (PHPStan niveau 3, stubs WordPress)
+composer --working-dir=tests run unit      # tests unitaires (PHPUnit)
+```
+
+Sans PHP installé, on peut passer par Docker :
+
+```
+docker run --rm -v "$PWD:/app" -w /app composer:2 --working-dir=tests run check
+```
+
+### Tests avec de vrais services
+
+Ils tournent dans un WordPress de test ([wp-env](https://www.npmjs.com/package/@wordpress/env)) et des services Docker locaux (`tests/docker-compose.yml`) : SFTP, FTP, FTPS, WebDAV, S3 sur [Garage](https://garagehq.deuxfleurs.fr/), Gotify, ntfy, Mailpit, et un faux serveur (`tests/mock/`) pour Pushover, Telegram, Discord, Slack et le webhook, qui n'ont pas de version auto-hébergée : rien n'est envoyé aux vrais services.
+
+Il faut Docker et Node 24.18 ou plus.
+
+```
+npm run services:up          # démarre les services et prépare Garage
+npm run env:start            # WordPress de test
+npm run test:destinations    # aller-retour (petit fichier, 5 Mo) sur chaque destination
+npm run test:notifications   # un message par type de canal, e-mail compris
+npm run test:backups         # sauvegardes complètes : locale, SFTP, refus, échec, arrêt, modes de fichiers
+npm run test:errors          # erreurs provoquées (voir ci-dessous)
+npm run services:down
+npm run env:destroy
+```
+
+Les erreurs provoquées par `test:errors` : mauvais identifiants (SFTP, FTP, FTPS, WebDAV, S3), bucket inexistant, wordpress.org injoignable, deuxième sauvegarde refusée, démarrages simultanés (4 processus, un seul démarre), tâche bloquée relancée par le chien de garde, tâche perdue déclarée en échec, réseau coupé pendant l'envoi d'un gros fichier, fichier illisible, archive tronquée, sauvegarde inconnue, restauration de la base réussie.
+
+Un service injoignable est un échec. Pour tester une seule destination en local, mettre `IT_SKIP_UNREACHABLE=1`.
+
+Choisir les versions de PHP et de WordPress avant `npm run env:start` :
+
+```
+WP_ENV_PHP_VERSION=8.4
+WP_ENV_CORE=https://wordpress.org/wordpress-7.1.4.zip
+```
+
+### Intégration continue (GitHub Actions)
+
+À chaque pull request et à chaque push sur `main` (`.github/workflows/ci.yml`) :
+
+| Job | Ce qu'il fait |
+|---|---|
+| Contrôles PHP 8.3 / 8.4 / 8.5 | syntaxe, compatibilité, PHPStan, PHPUnit |
+| Paquet du plugin | construit le zip et le garde comme artefact |
+| Services sur WordPress / PHP | destinations, notifications, sauvegardes et erreurs, dans wp-env avec les services Docker |
+
+Les versions testées sont dans `tests/wordpress.json` : `branch` (la branche de WordPress la plus récente), `minimum`, et `php` (la première version de PHP pour chaque WordPress, les suivantes pour le plus récent). La CI en déduit la matrice avec `tools/wp-versions.js`, qui prend la dernière version corrective de chaque branche. **Quand WordPress 7.2 sort, il suffit de changer `branch`** (et `minimum` pour abandonner une branche).
+
+Les composants Composer et les actions GitHub sont surveillés chaque semaine par Dependabot (`.github/dependabot.yml`).
+
+### Travailler avec des branches
+
+On ne pousse pas sur `main` : on crée une branche, on ouvre une pull request, et on fusionne quand la CI est verte.
+
+### Release
+
+1. Changer la version à deux endroits, qui doivent être identiques : `Version:` dans `rempart-backup.php` (et `REMPART_VERSION`) et `Stable tag:` dans `readme.txt`.
+2. Fusionner sur `main`, puis créer et pousser le tag :
+
+   ```
+   git tag v1.0.1
+   git push origin v1.0.1
+   ```
+
+3. Le workflow `.github/workflows/release.yml` vérifie que le tag, `Version:` et `Stable tag:` concordent, construit `rempart-backup.zip` et crée la release GitHub avec les notes générées.
+
+### Organisation du dépôt
+
+```
+rempart-backup.php     point d'entrée du plugin
+includes/              le plugin (tâches, archive tar.gz, destinations, notifications, admin, WP-CLI)
+includes/storage/      un fichier par type d'emplacement
+runner/                programme de restauration, indépendant de WordPress
+assets/                CSS et JS de l'administration
+vendor/                bibliothèques embarquées (Composer)
+tests/                 contrôles, tests unitaires, tests d'intégration, services Docker
+tools/                 construction du zip, versions de WordPress, préparation des services
+.github/               CI, release, Dependabot
+```
