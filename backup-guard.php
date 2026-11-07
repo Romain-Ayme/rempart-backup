@@ -1,6 +1,7 @@
 <?php
 /**
  * Plugin Name: Backup Guard
+ * Plugin URI: https://karom.studio/wp/plugin/backup-guard
  * Description: Sauvegarde, restauration, migration et clonage de WordPress. Toutes les fonctions sont incluses, sans licence : planification, rotation, FTP, FTPS, SFTP, WebDAV, Amazon S3 et compatibles, Google Drive, OneDrive, Dropbox, pCloud et WP-CLI.
  * Version: 1.0.0
  * Requires at least: 7.1

@@ -2719,3 +2719,8 @@ msgstr "Karom Studio - Romain AYME"
 #: backup-guard.php
 msgid "https://karom.studio"
 msgstr "https://karom.studio"
+
+#. Plugin URI of the plugin
+#: backup-guard.php
+msgid "https://karom.studio/wp/plugin/backup-guard"
+msgstr "https://karom.studio/wp/plugin/backup-guard"
