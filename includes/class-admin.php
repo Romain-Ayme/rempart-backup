@@ -146,6 +146,8 @@ class Rempart_Admin {
 		$settings = rempart_settings();
 		$settings['backup_files'] = !empty($_POST['backup_files']) ? 1 : 0;
 		$settings['backup_db'] = !empty($_POST['backup_db']) ? 1 : 0;
+		$settings['backup_scope'] = rempart_valid_scope(isset($_POST['backup_scope']) ? sanitize_key($_POST['backup_scope']) : 'all');
+		$settings['auto_scope'] = rempart_valid_scope(isset($_POST['auto_scope']) ? sanitize_key($_POST['auto_scope']) : 'all');
 		$settings['location'] = isset($_POST['location']) ? sanitize_text_field(wp_unslash($_POST['location'])) : '';
 		$settings['pre_update_backup'] = !empty($_POST['pre_update_backup']) ? 1 : 0;
 		$settings['auto_update_backup'] = !empty($_POST['auto_update_backup']) ? 1 : 0;
@@ -238,6 +240,12 @@ class Rempart_Admin {
 		<?php
 	}
 
+	private static function scope_options($selected) {
+		foreach (rempart_scopes() as $key => $scope) {
+			printf('<option value="%s"%s>%s</option>', esc_attr($key), selected($selected, $key, false), esc_html($scope['label']));
+		}
+	}
+
 	private static function location_options($selected, $locations, $protocols) {
 		echo '<option value="">Dossier local (par défaut)</option>';
 		foreach ($locations as $id => $location) {
@@ -298,6 +306,11 @@ class Rempart_Admin {
 						<label><input type="checkbox" name="db" value="1" <?php checked(!empty($settings['backup_db'])); ?>> Base de données</label>
 					</p>
 					<p>
+						<label for="rempart-backup-scope" class="rempart-label">Fichiers à garder</label>
+						<select name="scope" id="rempart-backup-scope"><?php self::scope_options($settings['backup_scope']); ?></select>
+						<span class="description">Sans le cœur de WordPress, la sauvegarde se restaure sur un WordPress déjà installé, de la même version.</span>
+					</p>
+					<p>
 						<label for="rempart-backup-location" class="rempart-label">Où la garder</label>
 						<select name="location" id="rempart-backup-location"><?php self::location_options($settings['location'], $locations, $protocols); ?></select>
 					</p>
@@ -333,6 +346,10 @@ class Rempart_Admin {
 							<label><input type="checkbox" name="backup_files" value="1" <?php checked(!empty($settings['backup_files'])); ?>> Fichiers du site</label>
 							<label><input type="checkbox" name="backup_db" value="1" <?php checked(!empty($settings['backup_db'])); ?>> Base de données</label>
 						</div>
+					</div>
+					<div class="rempart-row">
+						<label class="rempart-row-label" for="rempart-default-scope">Fichiers à garder par défaut</label>
+						<select name="backup_scope" id="rempart-default-scope"><?php self::scope_options($settings['backup_scope']); ?></select>
 					</div>
 					<div class="rempart-row">
 						<label class="rempart-row-label" for="rempart-default-location">Emplacement par défaut</label>
@@ -399,6 +416,10 @@ class Rempart_Admin {
 							<label><input type="checkbox" name="auto_files" value="1" <?php checked(!empty($settings['auto_files'])); ?>> Fichiers du site</label>
 							<label><input type="checkbox" name="auto_db" value="1" <?php checked(!empty($settings['auto_db'])); ?>> Base de données</label>
 						</div>
+					</div>
+					<div class="rempart-row">
+						<label class="rempart-row-label" for="rempart-auto-scope">Fichiers à garder</label>
+						<select name="auto_scope" id="rempart-auto-scope"><?php self::scope_options($settings['auto_scope']); ?></select>
 					</div>
 					<div class="rempart-row">
 						<label class="rempart-row-label" for="rempart-auto-location">Emplacement</label>

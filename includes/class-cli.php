@@ -25,6 +25,9 @@ class Rempart_CLI {
 	 * [--db-only]
 	 * : Only the database.
 	 *
+	 * [--scope=<scope>]
+	 * : Which files to keep. all (default), content (only the site's own files) or modified (those plus the edited WordPress files).
+	 *
 	 * [--location=<id>]
 	 * : A storage location's id (see `wp rempart locations`). Default: the local folder.
 	 *
@@ -39,6 +42,7 @@ class Rempart_CLI {
 				'files'    => $files,
 				'db'       => $db,
 				'location' => $assoc['location'] ?? '',
+				'scope'    => $assoc['scope'] ?? 'all',
 				'note'     => $assoc['note'] ?? '',
 			));
 		} catch (Exception $e) {

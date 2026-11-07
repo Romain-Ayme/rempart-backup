@@ -51,6 +51,27 @@ function rempart_it_clear($mock) {
 	wp_remote_request($mock . '/_requests', array('method' => 'DELETE'));
 }
 
+/** Names of the entries of an archive. */
+function rempart_it_entries($archive) {
+	$names = array();
+	$reader = new Rempart_Tar_Reader($archive);
+	while ($entry = $reader->next_entry()) {
+		$names[] = $entry['name'];
+		$reader->read((int) (ceil($entry['size'] / 512) * 512));
+	}
+	$reader->close();
+	return $names;
+}
+
+/** Run a files-only backup with a scope and return the names it holds. */
+function rempart_it_scoped($scope, array &$created_backups) {
+	$job = Rempart_Job::start_backup(array('files' => true, 'db' => false, 'location' => '', 'scope' => $scope));
+	$created_backups[] = $job['name'];
+	$state = rempart_it_finish();
+	rempart_it_expect($state['status'] === 'success', 'État : ' . $state['status'] . ' ' . implode(' ', $state['errors']));
+	return rempart_it_entries(Rempart_Backups::archive_path($job['name']));
+}
+
 function rempart_it_sftp() {
 	return Rempart_Locations::save(array(
 		'protocol' => 'sftp', 'name' => 'IT SFTP', 'host' => getenv('IT_SFTP_HOST') ?: 'rempart-sftp', 'port' => 22,
@@ -133,6 +154,30 @@ $cases = array(
 		rempart_it_expect(Rempart_Backups::get($job['name']) === null, 'Une sauvegarde ratée a laissé une fiche.');
 		$events = array_column(rempart_it_received($mock), 'event');
 		rempart_it_expect(in_array('failure', $events, true), 'Aucune notification d\'échec reçue.');
+	},
+	'fichiers : mes fichiers seulement' => function () use (&$created_backups) {
+		$names = rempart_it_scoped('content', $created_backups);
+		rempart_it_expect(in_array('wp-config.php', $names, true), 'wp-config.php devrait être gardé.');
+		foreach (array('index.php', 'wp-cron.php', 'wp-load.php', 'readme.html') as $core) {
+			rempart_it_expect(!in_array($core, $names, true), $core . ' est un fichier de WordPress, il ne devrait pas être gardé.');
+		}
+	},
+	'fichiers : mes fichiers et les fichiers WordPress modifiés' => function () use (&$created_backups) {
+		$edited = ABSPATH . 'readme.html';
+		$original = file_get_contents($edited);
+		rempart_it_expect(is_writable($edited), "readme.html n'est pas modifiable pour le test.");
+		file_put_contents($edited, $original . "
+<!-- modifié par le test -->");
+		try {
+			$names = rempart_it_scoped('modified', $created_backups);
+		} finally {
+			file_put_contents($edited, $original);
+		}
+		rempart_it_expect(in_array('readme.html', $names, true), 'Le fichier WordPress modifié devrait être gardé.');
+		rempart_it_expect(in_array('wp-config.php', $names, true), 'wp-config.php devrait être gardé.');
+		foreach (array('index.php', 'wp-cron.php', 'wp-load.php') as $core) {
+			rempart_it_expect(!in_array($core, $names, true), $core . ' est inchangé, il ne devrait pas être gardé.');
+		}
 	},
 	'arrêt demandé par la personne' => function () use (&$created_backups) {
 		$job = Rempart_Job::start_backup(array('files' => true, 'db' => true, 'location' => ''));

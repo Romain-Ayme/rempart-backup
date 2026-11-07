@@ -42,6 +42,7 @@ class Rempart_Schedule {
 			Rempart_Job::start_backup(array(
 				'files'    => !empty($settings['auto_files']),
 				'db'       => !empty($settings['auto_db']),
+				'scope'    => $settings['auto_scope'] ?? 'all',
 				'location' => $settings['auto_location'],
 				'auto'     => true,
 				'rotation' => (int) $settings['rotation'],

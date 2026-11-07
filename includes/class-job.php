@@ -49,6 +49,10 @@ class Rempart_Job {
 			Rempart_Storage::make(Rempart_Locations::get($location))->test();
 		}
 
+		$scope = rempart_valid_scope($options['scope'] ?? 'all');
+		// The list of WordPress's own files is fetched now, so a failure shows before any work is done.
+		$core = ($files && $scope !== 'all') ? rempart_core_checksums() : array();
+
 		$host = preg_replace('/[^A-Za-z0-9.-]/', '', (string) wp_parse_url(home_url(), PHP_URL_HOST));
 		$name = 'wp_' . $host . '_' . gmdate('Y-m-d_H-i-s') . '_' . rempart_random(6);
 		$note = isset($options['note']) ? mb_substr(sanitize_text_field((string) $options['note']), 0, REMPART_NOTE_MAX) : '';
@@ -70,6 +74,7 @@ class Rempart_Job {
 			'files'    => $files ? 1 : 0,
 			'db'       => $db ? 1 : 0,
 			'location' => $location,
+			'scope'    => $scope,
 			'note'     => $note,
 			'auto'     => !empty($options['auto']) ? 1 : 0,
 			'rotation' => (int) ($options['rotation'] ?? 0),
@@ -82,6 +87,9 @@ class Rempart_Job {
 		);
 		$tmp = self::tmp_dir($name);
 		wp_mkdir_p($tmp);
+		if ($core) {
+			file_put_contents($tmp . '/core.json', wp_json_encode($core));
+		}
 		rempart_log_reset();
 		rempart_log('Sauvegarde démarrée : ' . $name);
 		self::save($state);
@@ -274,7 +282,12 @@ class Rempart_Job {
 		if (empty($state['scan'])) {
 			rempart_log('Inventaire des fichiers');
 			file_put_contents($list, '');
-			$state['scan'] = array('stack' => array(''), 'count' => 0, 'bytes' => 0, 'committed' => 0);
+			$state['scan'] = array('stack' => array(''), 'count' => 0, 'bytes' => 0, 'committed' => 0, 'core' => 0);
+		}
+		$scope = $state['scope'] ?? 'all';
+		$core = array();
+		if ($scope !== 'all') {
+			$core = (array) json_decode((string) @file_get_contents(self::tmp_dir($state['name']) . '/core.json'), true);
 		}
 		$excludes = rempart_excludes();
 		$excludes['exact'][] = ltrim(self::relative(REMPART_ROOT), '/');
@@ -312,6 +325,10 @@ class Rempart_Job {
 					continue;
 				}
 				$full = $root . '/' . $child;
+				if ($core && is_file($full) && !is_link($full) && rempart_skips_core_file($scope, $child, $full, $core)) {
+					$state['scan']['core']++;
+					continue;
+				}
 				if (is_link($full)) {
 					fwrite($handle, 'l 0 ' . rawurlencode($child) . "\n");
 				} elseif (is_dir($full)) {
@@ -330,6 +347,9 @@ class Rempart_Job {
 		$state['percent'] = max($state['percent'], $state['db'] ? 28 : 8);
 
 		if (!$state['scan']['stack']) {
+			if ($scope !== 'all') {
+				rempart_log(sprintf('%d fichiers de WordPress %s, non sauvegardés', $state['scan']['core'], $scope === 'content' ? 'd\'origine' : 'inchangés'));
+			}
 			rempart_log(sprintf('%d éléments à sauvegarder, %s', $state['scan']['count'], rempart_format_size($state['scan']['bytes'])));
 			$state['bytes_total'] = $state['scan']['bytes'];
 			$state['phase'] = 'archive';
@@ -357,6 +377,7 @@ class Rempart_Job {
 			'name'         => $state['name'],
 			'backup_dir'   => $state['files'],
 			'backup_db'    => $state['db'],
+			'scope'        => $state['scope'] ?? 'all',
 			'email'        => $state['user_email'] ?? '',
 			'date_time'    => wp_date('Y-m-d H:i:s'),
 			'btime'        => (int) $state['started'],
