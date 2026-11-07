@@ -30,3 +30,22 @@ docker run --rm -v "$PWD:/app" -w /app composer:2 --working-dir=tests run check
 
 Les bibliothèques livrées (phpseclib, constant_time_encoding) sont dans `composer.json` à la racine,
 installées avec `composer install --no-dev`. Le script `tools/build-zip.js` n'embarque pas `tests/`.
+
+## Tests avec de vrais services
+
+Ils tournent dans un WordPress de test (wp-env) et des services Docker locaux (`tests/docker-compose.yml`) :
+SFTP, FTP, FTPS, WebDAV, S3 (Garage), Gotify, ntfy, Mailpit et un faux serveur (`tests/mock/`) pour Pushover,
+Telegram, Discord, Slack et le webhook, qui n'ont pas de version auto-hébergée : rien n'est envoyé aux vrais services.
+
+```
+npm run services:up          # démarre les services et prépare Garage
+npm run env:start            # WordPress de test (PHP et WordPress au choix, voir ci-dessous)
+npm run test:destinations    # aller-retour sur chaque destination
+npm run test:notifications   # un message par type de canal
+npm run test:backups         # sauvegardes complètes : locale, SFTP, refus, échec, arrêt, notifications
+npm run test:errors          # erreurs provoquées : identifiants, réseau coupé, tâche bloquée, archive tronquée, restauration
+npm run services:down
+```
+
+Choisir les versions : `WP_ENV_PHP_VERSION=8.4` et `WP_ENV_CORE=https://wordpress.org/wordpress-7.0.8.zip`
+avant `npm run env:start`. La CI les fait varier selon `tests/wordpress.json`.

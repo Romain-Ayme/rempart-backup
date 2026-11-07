@@ -1,0 +1,110 @@
+# Services de test pour chaque destination de sauvegarde. Lancer avec `npm run services:up`.
+# Les noms réseau (rempart-sftp, …) sont ceux que tests/integration/destinations.php attend.
+name: rempart-tests
+
+services:
+  sftp:
+    image: atmoz/sftp
+    command: bob:pass123:1001::upload
+    networks:
+      default:
+        aliases: [rempart-sftp]
+
+  ftp:
+    image: delfer/alpine-ftp-server
+    restart: always
+    environment:
+      USERS: 'bob|pass123'
+      ADDRESS: rempart-ftp
+      MIN_PORT: '21000'
+      MAX_PORT: '21010'
+    networks:
+      default:
+        aliases: [rempart-ftp]
+
+  tls-init:
+    image: alpine/openssl
+    command: req -x509 -newkey rsa:2048 -nodes -days 1 -subj /CN=rempart-ftps -keyout /tls/k.pem -out /tls/c.pem
+    volumes:
+      - tls:/tls
+    restart: 'no'
+
+  ftps:
+    image: delfer/alpine-ftp-server
+    # vsftpd s'arrête parfois au démarrage (« process has died ») : on le relance.
+    restart: always
+    depends_on:
+      tls-init:
+        condition: service_completed_successfully
+    environment:
+      USERS: 'bob|pass123'
+      ADDRESS: rempart-ftps
+      MIN_PORT: '21000'
+      MAX_PORT: '21010'
+      TLS_CERT: /etc/vsftpd/tls/c.pem
+      TLS_KEY: /etc/vsftpd/tls/k.pem
+    volumes:
+      - tls:/etc/vsftpd/tls:ro
+    networks:
+      default:
+        aliases: [rempart-ftps]
+
+  webdav:
+    image: bytemark/webdav
+    environment:
+      AUTH_TYPE: Basic
+      USERNAME: bob
+      PASSWORD: pass123
+    networks:
+      default:
+        aliases: [rempart-dav]
+
+  # S3 : Garage, un vrai serveur S3 auto-hébergé. `npm run services:up` crée ensuite la clé et le
+  # bucket (tools/init-services.js).
+  s3:
+    image: dxflrs/garage:v2.5.0
+    volumes:
+      - ./garage.toml:/etc/garage.toml:ro
+    networks:
+      default:
+        aliases: [rempart-s3]
+
+  # Notifications auto-hébergées.
+  gotify:
+    image: gotify/server
+    environment:
+      GOTIFY_DEFAULTUSER_NAME: admin
+      GOTIFY_DEFAULTUSER_PASS: admin
+    networks:
+      default:
+        aliases: [rempart-gotify]
+
+  ntfy:
+    image: binwiederhier/ntfy
+    command: serve
+    networks:
+      default:
+        aliases: [rempart-ntfy]
+
+  mail:
+    image: axllent/mailpit
+    networks:
+      default:
+        aliases: [rempart-mail]
+
+  # Pushover, Telegram, Discord, Slack et le webhook : un faux serveur qui garde les requêtes reçues.
+  mock:
+    image: node:26-alpine
+    command: node /app/server.js
+    volumes:
+      - ./mock/server.js:/app/server.js:ro
+    networks:
+      default:
+        aliases: [rempart-mock]
+
+volumes:
+  tls:
+
+networks:
+  default:
+    name: rempart-tests

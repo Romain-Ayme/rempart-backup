@@ -23,14 +23,14 @@ class Rempart_Storage_Sftp extends Rempart_Storage {
 			// Remember the server's identity on first contact and refuse a change afterwards.
 			$host_key = $sftp->getServerPublicHostKey();
 		} catch (Exception $e) {
-			throw new RuntimeException('Connexion SFTP à ' . $this->config['host'] . ' impossible : ' . $e->getMessage());
+			throw new RuntimeException(sprintf(__('Connexion SFTP à %1$s impossible : %2$s', 'rempart-backup'), $this->config['host'], $e->getMessage()));
 		}
 		if ($host_key === false) {
-			throw new RuntimeException('Connexion SFTP à ' . $this->config['host'] . ' impossible.');
+			throw new RuntimeException(sprintf(__('Connexion SFTP à %s impossible.', 'rempart-backup'), $this->config['host']));
 		}
 		$fingerprint = hash('sha256', $host_key);
 		if (!empty($this->config['host_key']) && !hash_equals($this->config['host_key'], $fingerprint)) {
-			throw new RuntimeException('L\'identité du serveur SFTP a changé. Si c\'est normal, modifiez l\'emplacement et enregistrez-le de nouveau.');
+			throw new RuntimeException(__('L\'identité du serveur SFTP a changé. Si c\'est normal, modifiez l\'emplacement et enregistrez-le de nouveau.', 'rempart-backup'));
 		}
 		if (empty($this->config['host_key']) && !empty($this->config['id'])) {
 			Rempart_Locations::remember($this->config['id'], array('host_key' => $fingerprint));
@@ -42,7 +42,7 @@ class Rempart_Storage_Sftp extends Rempart_Storage {
 			try {
 				$credential = \phpseclib4\Crypt\PublicKeyLoader::load($this->config['private_key'], $passphrase);
 			} catch (Exception $e) {
-				throw new RuntimeException('Clé SFTP illisible : ' . $e->getMessage());
+				throw new RuntimeException(sprintf(__('Clé SFTP illisible : %s', 'rempart-backup'), $e->getMessage()));
 			}
 		} else {
 			$credential = $this->config['pass'];
@@ -50,10 +50,10 @@ class Rempart_Storage_Sftp extends Rempart_Storage {
 		try {
 			$logged = $sftp->login($this->config['user'], $credential);
 		} catch (Exception $e) {
-			throw new RuntimeException('Connexion SFTP refusée : ' . $e->getMessage());
+			throw new RuntimeException(sprintf(__('Connexion SFTP refusée : %s', 'rempart-backup'), $e->getMessage()));
 		}
 		if (!$logged) {
-			throw new RuntimeException('Identifiant, mot de passe ou clé SFTP refusé.');
+			throw new RuntimeException(__('Identifiant, mot de passe ou clé SFTP refusé.', 'rempart-backup'));
 		}
 		$this->sftp = $sftp;
 	}
@@ -75,7 +75,7 @@ class Rempart_Storage_Sftp extends Rempart_Storage {
 			try {
 				$this->sftp->mkdir($base, -1, true);
 			} catch (Exception $e) {
-				throw new RuntimeException('Impossible de créer le dossier ' . $base . ' sur le serveur SFTP : ' . $e->getMessage());
+				throw new RuntimeException(sprintf(__('Impossible de créer le dossier %1$s sur le serveur SFTP : %2$s', 'rempart-backup'), $base, $e->getMessage()));
 			}
 		}
 		$probe = '.rempart-test-' . wp_generate_password(6, false);
@@ -121,7 +121,7 @@ class Rempart_Storage_Sftp extends Rempart_Storage {
 				$this->sftp->put($this->path($remote), $chunk, \phpseclib4\Net\SFTP::SOURCE_STRING, (int) $state['offset']);
 			} catch (Exception $e) {
 				fclose($source);
-				throw new RuntimeException('Envoi SFTP interrompu : ' . $e->getMessage());
+				throw new RuntimeException(__('Envoi SFTP interrompu : ', 'rempart-backup') . $e->getMessage());
 			}
 			$state['offset'] += strlen($chunk);
 			call_user_func($beat, $state['offset'], $total);
@@ -140,7 +140,7 @@ class Rempart_Storage_Sftp extends Rempart_Storage {
 				$state['total'] = 0;
 			}
 			if (!$state['total']) {
-				throw new RuntimeException('Fichier introuvable sur le serveur SFTP : ' . $remote);
+				throw new RuntimeException(sprintf(__('Fichier introuvable sur le serveur SFTP : %s', 'rempart-backup'), $remote));
 			}
 		}
 		while ($offset < $state['total'] && time() < $deadline) {
@@ -151,7 +151,7 @@ class Rempart_Storage_Sftp extends Rempart_Storage {
 				$chunk = false;
 			}
 			if ($chunk === null || $chunk === false || $chunk === '') {
-				throw new RuntimeException('Lecture SFTP interrompue.');
+				throw new RuntimeException(__('Lecture SFTP interrompue.', 'rempart-backup'));
 			}
 			self::append_local($local, $offset, $chunk);
 			$offset += strlen($chunk);
@@ -166,7 +166,7 @@ class Rempart_Storage_Sftp extends Rempart_Storage {
 		try {
 			$this->sftp->put($this->path($remote), $content);
 		} catch (Exception $e) {
-			throw new RuntimeException('Écriture refusée par le serveur SFTP : ' . $e->getMessage());
+			throw new RuntimeException(sprintf(__('Écriture refusée par le serveur SFTP : %s', 'rempart-backup'), $e->getMessage()));
 		}
 	}
 
@@ -178,7 +178,7 @@ class Rempart_Storage_Sftp extends Rempart_Storage {
 			$content = false;
 		}
 		if ($content === false || $content === null) {
-			throw new RuntimeException('Fichier illisible sur le serveur SFTP : ' . $remote);
+			throw new RuntimeException(sprintf(__('Fichier illisible sur le serveur SFTP : %s', 'rempart-backup'), $remote));
 		}
 		return $content;
 	}

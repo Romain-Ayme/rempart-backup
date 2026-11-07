@@ -38,7 +38,7 @@ abstract class Rempart_Storage {
 		try {
 			$this->delete($remote);
 		} catch (Exception $e) {
-			rempart_debug('Nettoyage distant : ' . $e->getMessage());
+			rempart_debug(__('Nettoyage distant : ', 'rempart-backup') . $e->getMessage());
 		}
 	}
 
@@ -72,7 +72,7 @@ abstract class Rempart_Storage {
 		}
 		$response = wp_remote_request($url, $args);
 		if (is_wp_error($response)) {
-			throw new RuntimeException('Connexion impossible : ' . $response->get_error_message());
+			throw new RuntimeException(sprintf(__('Connexion impossible : %s', 'rempart-backup'), $response->get_error_message()));
 		}
 		return array(
 			'code'    => (int) wp_remote_retrieve_response_code($response),
@@ -84,7 +84,7 @@ abstract class Rempart_Storage {
 	protected static function read_range($local, $offset, $length) {
 		$handle = fopen($local, 'rb');
 		if (!$handle) {
-			throw new RuntimeException('Lecture impossible du fichier local.');
+			throw new RuntimeException(__('Lecture impossible du fichier local.', 'rempart-backup'));
 		}
 		fseek($handle, $offset);
 		$data = fread($handle, $length);
@@ -95,14 +95,14 @@ abstract class Rempart_Storage {
 	protected static function append_local($local, $offset, $data) {
 		$handle = fopen($local, 'c+b');
 		if (!$handle) {
-			throw new RuntimeException('Écriture impossible du fichier local.');
+			throw new RuntimeException(__('Écriture impossible du fichier local.', 'rempart-backup'));
 		}
 		ftruncate($handle, $offset);
 		fseek($handle, $offset);
 		$written = fwrite($handle, $data);
 		fclose($handle);
 		if ($written !== strlen($data)) {
-			throw new RuntimeException('Écriture impossible : le disque est peut-être plein.');
+			throw new RuntimeException(__('Écriture impossible : le disque est peut-être plein.', 'rempart-backup'));
 		}
 	}
 
@@ -121,7 +121,7 @@ abstract class Rempart_Storage {
 			'pcloud'   => 'Rempart_Storage_Pcloud',
 		);
 		if (empty($map[$protocol])) {
-			throw new RuntimeException('Type de stockage inconnu : ' . $protocol);
+			throw new RuntimeException(sprintf(__('Type de stockage inconnu : %s', 'rempart-backup'), $protocol));
 		}
 		$file = in_array($protocol, array('gdrive', 'onedrive', 'dropbox', 'pcloud'), true) ? 'oauth' : ($protocol === 'ftps' ? 'ftp' : $protocol);
 		require_once __DIR__ . '/class-' . $file . '.php';

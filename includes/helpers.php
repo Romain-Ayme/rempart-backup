@@ -13,10 +13,72 @@ function rempart_core_entries() {
 	);
 }
 
+/** Which files a backup keeps: everything, only the site's own files, or those plus the edited WordPress files. */
+function rempart_scopes() {
+	return array(
+		'all'      => array('label' => __('Tout WordPress', 'rempart-backup'), 'help' => __('Le cœur de WordPress, vos thèmes, extensions et médias.', 'rempart-backup')),
+		'content'  => array('label' => __('Mes fichiers seulement', 'rempart-backup'), 'help' => __('Sans les fichiers d\'origine de WordPress (wp-admin, wp-includes, index.php, etc.).', 'rempart-backup')),
+		'modified' => array('label' => __('Mes fichiers et les fichiers WordPress modifiés', 'rempart-backup'), 'help' => __('Comme le précédent, plus les fichiers d\'origine de WordPress que vous avez modifiés.', 'rempart-backup')),
+	);
+}
+
+function rempart_valid_scope($scope) {
+	return isset(rempart_scopes()[$scope]) ? $scope : 'all';
+}
+
+/**
+ * The official fingerprint (MD5) of every WordPress core file for this version, as wordpress.org
+ * publishes them. Paths are relative to the site root; wp-content is left out, since what lives there
+ * is the site's own. Throws when they cannot be fetched.
+ *
+ * @return array<string,string>
+ */
+function rempart_core_checksums() {
+	$filtered = apply_filters('rempart_core_checksums', null);
+	if (is_array($filtered)) {
+		return $filtered;
+	}
+	$version = get_bloginfo('version');
+	$locale = get_locale();
+	$key = 'rempart_core_' . md5($version . $locale);
+	$cached = get_transient($key);
+	if (is_array($cached) && $cached) {
+		return $cached;
+	}
+	foreach (array_unique(array($locale, 'en_US')) as $try) {
+		$response = wp_remote_get('https://api.wordpress.org/core/checksums/1.0/?' . http_build_query(array('version' => $version, 'locale' => $try)), array('timeout' => 20));
+		if (is_wp_error($response) || (int) wp_remote_retrieve_response_code($response) !== 200) {
+			continue;
+		}
+		$body = json_decode(wp_remote_retrieve_body($response), true);
+		if (!empty($body['checksums']) && is_array($body['checksums'])) {
+			$sums = array();
+			foreach ($body['checksums'] as $path => $sum) {
+				if (strpos($path, 'wp-content/') !== 0) {
+					$sums[$path] = is_array($sum) ? reset($sum) : $sum;
+				}
+			}
+			set_transient($key, $sums, DAY_IN_SECONDS);
+			return $sums;
+		}
+	}
+	throw new RuntimeException(sprintf(__('Impossible de récupérer la liste des fichiers d\'origine de WordPress %s (wordpress.org). Choisissez « Tout WordPress » ou réessayez.', 'rempart-backup'), $version));
+}
+
+/** Is this file left out of the backup because it is an untouched WordPress file? */
+function rempart_skips_core_file($scope, $relative, $full_path, array $core) {
+	if ($scope === 'all' || !isset($core[$relative])) {
+		return false;
+	}
+	return $scope === 'content' || md5_file($full_path) === $core[$relative];
+}
+
 function rempart_default_settings() {
 	return array(
 		'backup_files'       => 1,
 		'backup_db'          => 1,
+		'backup_scope'       => 'all',
+		'auto_scope'         => 'all',
 		// gzip level of the archive, 1 (fastest, biggest) to 9 (smallest, slowest).
 		'gzip_level'         => 9,
 		'location'           => '',
@@ -195,7 +257,7 @@ function rempart_rmdir($dir) {
 
 function rempart_format_size($bytes) {
 	$bytes = (float) $bytes;
-	$units = array('o', 'Ko', 'Mo', 'Go', 'To');
+	$units = array(_x('o', 'byte unit', 'rempart-backup'), _x('Ko', 'kilobyte unit', 'rempart-backup'), _x('Mo', 'megabyte unit', 'rempart-backup'), _x('Go', 'gigabyte unit', 'rempart-backup'), _x('To', 'terabyte unit', 'rempart-backup'));
 	$i = 0;
 	while ($bytes >= 1024 && $i < count($units) - 1) {
 		$bytes /= 1024;

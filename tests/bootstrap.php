@@ -16,5 +16,18 @@ if (!function_exists('number_format_i18n')) {
 	}
 }
 
+// No translation in the unit tests: the texts stay as written in the code (in French).
+if (!function_exists('__')) {
+	function __($text, $domain = '') {
+		return $text;
+	}
+	function _x($text, $context, $domain = '') {
+		return $text;
+	}
+	function esc_html__($text, $domain = '') {
+		return $text;
+	}
+}
+
 require_once dirname(__DIR__) . '/includes/helpers.php';
 require_once dirname(__DIR__) . '/includes/class-tar.php';

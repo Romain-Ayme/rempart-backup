@@ -13,39 +13,39 @@ class Rempart_Notifications {
 
 	/** Every kind of channel with the fields of its form. */
 	public static function types() {
-		$username = array('label' => 'Nom affiché (facultatif)', 'default' => 'Rempart Backup');
+		$username = array('label' => __('Nom affiché (facultatif)', 'rempart-backup'), 'default' => 'Rempart Backup');
 		return array(
-			'email' => array('label' => 'E-mail', 'fields' => array(
-				'address' => array('label' => 'Adresse e-mail', 'required' => true, 'help' => 'Utilise la messagerie de WordPress. Pour plusieurs adresses, séparez-les par une virgule.'),
+			'email' => array('label' => __('E-mail', 'rempart-backup'), 'fields' => array(
+				'address' => array('label' => __('Adresse e-mail', 'rempart-backup'), 'required' => true, 'help' => __('Utilise la messagerie de WordPress. Pour plusieurs adresses, séparez-les par une virgule.', 'rempart-backup')),
 			)),
 			'pushover' => array('label' => 'Pushover', 'fields' => array(
-				'token'  => array('label' => 'Jeton de l\'application (API token)', 'secret' => true, 'required' => true),
-				'user'   => array('label' => 'Clé utilisateur ou groupe', 'secret' => true, 'required' => true),
-				'device' => array('label' => 'Appareil (facultatif)', 'help' => 'Laissez vide pour tous vos appareils.'),
+				'token'  => array('label' => __('Jeton de l\'application (API token)', 'rempart-backup'), 'secret' => true, 'required' => true),
+				'user'   => array('label' => __('Clé utilisateur ou groupe', 'rempart-backup'), 'secret' => true, 'required' => true),
+				'device' => array('label' => __('Appareil (facultatif)', 'rempart-backup'), 'help' => __('Laissez vide pour tous vos appareils.', 'rempart-backup')),
 			)),
 			'gotify' => array('label' => 'Gotify', 'fields' => array(
-				'url'   => array('label' => 'Adresse du serveur', 'help' => 'Par exemple https://gotify.mondomaine.fr', 'required' => true),
-				'token' => array('label' => 'Jeton de l\'application', 'secret' => true, 'required' => true),
+				'url'   => array('label' => __('Adresse du serveur', 'rempart-backup'), 'help' => __('Par exemple https://gotify.mondomaine.fr', 'rempart-backup'), 'required' => true),
+				'token' => array('label' => __('Jeton de l\'application', 'rempart-backup'), 'secret' => true, 'required' => true),
 			)),
 			'ntfy' => array('label' => 'ntfy', 'fields' => array(
-				'server' => array('label' => 'Serveur', 'default' => 'https://ntfy.sh', 'required' => true),
-				'topic'  => array('label' => 'Sujet (topic)', 'secret' => true, 'required' => true, 'help' => 'Sur ntfy.sh, le nom du sujet sert de mot de passe : choisissez-en un long.'),
-				'token'  => array('label' => 'Jeton d\'accès (facultatif)', 'secret' => true),
+				'server' => array('label' => __('Serveur', 'rempart-backup'), 'default' => 'https://ntfy.sh', 'required' => true),
+				'topic'  => array('label' => __('Sujet (topic)', 'rempart-backup'), 'secret' => true, 'required' => true, 'help' => __('Sur ntfy.sh, le nom du sujet sert de mot de passe : choisissez-en un long.', 'rempart-backup')),
+				'token'  => array('label' => __('Jeton d\'accès (facultatif)', 'rempart-backup'), 'secret' => true),
 			)),
 			'telegram' => array('label' => 'Telegram', 'fields' => array(
-				'bot_token' => array('label' => 'Jeton du bot', 'secret' => true, 'required' => true, 'help' => 'Obtenu auprès de @BotFather.'),
-				'chat_id'   => array('label' => 'Identifiant de la discussion', 'required' => true, 'help' => 'Écrivez d\'abord au bot, puis relevez le « chat id ».'),
+				'bot_token' => array('label' => __('Jeton du bot', 'rempart-backup'), 'secret' => true, 'required' => true, 'help' => __('Obtenu auprès de @BotFather.', 'rempart-backup')),
+				'chat_id'   => array('label' => __('Identifiant de la discussion', 'rempart-backup'), 'required' => true, 'help' => __('Écrivez d\'abord au bot, puis relevez le « chat id ».', 'rempart-backup')),
 			)),
 			'discord' => array('label' => 'Discord', 'fields' => array(
-				'webhook_url' => array('label' => 'Adresse du webhook', 'secret' => true, 'required' => true, 'help' => 'Réglages du salon, Intégrations, Webhooks.'),
+				'webhook_url' => array('label' => __('Adresse du webhook', 'rempart-backup'), 'secret' => true, 'required' => true, 'help' => __('Réglages du salon, Intégrations, Webhooks.', 'rempart-backup')),
 				'username'    => $username,
 			)),
 			'slack' => array('label' => 'Slack', 'fields' => array(
-				'webhook_url' => array('label' => 'Adresse du webhook entrant', 'secret' => true, 'required' => true, 'help' => 'Elle commence par https://hooks.slack.com/'),
+				'webhook_url' => array('label' => __('Adresse du webhook entrant', 'rempart-backup'), 'secret' => true, 'required' => true, 'help' => __('Elle commence par https://hooks.slack.com/', 'rempart-backup')),
 			)),
-			'webhook' => array('label' => 'Webhook (JSON)', 'fields' => array(
-				'url'  => array('label' => 'Adresse à appeler', 'secret' => true, 'required' => true, 'help' => 'Reçoit un POST en JSON : événement, titre, message et détails.'),
-				'auth' => array('label' => 'En-tête Authorization (facultatif)', 'secret' => true, 'help' => 'Par exemple Bearer abc123. Envoyé tel quel.'),
+			'webhook' => array('label' => __('Webhook (JSON)', 'rempart-backup'), 'fields' => array(
+				'url'  => array('label' => __('Adresse à appeler', 'rempart-backup'), 'secret' => true, 'required' => true, 'help' => __('Reçoit un POST en JSON : événement, titre, message et détails.', 'rempart-backup')),
+				'auth' => array('label' => __('En-tête Authorization (facultatif)', 'rempart-backup'), 'secret' => true, 'help' => __('Par exemple Bearer abc123. Envoyé tel quel.', 'rempart-backup')),
 			)),
 		);
 	}
@@ -82,7 +82,7 @@ class Rempart_Notifications {
 		}
 		$json = rempart_decrypt($channel['secrets']);
 		if ($json === false) {
-			throw new RuntimeException('Les identifiants de « ' . $channel['name'] . ' » ne sont plus lisibles (site déplacé ?). Modifiez ce canal et saisissez-les de nouveau.');
+			throw new RuntimeException(sprintf(__('Les identifiants de « %s » ne sont plus lisibles (site déplacé ?). Modifiez ce canal et saisissez-les de nouveau.', 'rempart-backup'), $channel['name']));
 		}
 		return (array) json_decode($json, true);
 	}
@@ -97,7 +97,7 @@ class Rempart_Notifications {
 		$types = self::types();
 		$type = $values['type'] ?? '';
 		if (empty($types[$type])) {
-			throw new RuntimeException('Type de notification inconnu.');
+			throw new RuntimeException(__('Type de notification inconnu.', 'rempart-backup'));
 		}
 		$all = self::all();
 		$existing = ($id !== null && isset($all[$id])) ? $all[$id] : null;
@@ -118,30 +118,30 @@ class Rempart_Notifications {
 					$secrets[$key] = $value;
 				}
 				if (!empty($field['required']) && empty($secrets[$key])) {
-					throw new RuntimeException('Champ obligatoire manquant : ' . $field['label']);
+					throw new RuntimeException(sprintf(__('Champ obligatoire manquant : %s', 'rempart-backup'), $field['label']));
 				}
 				continue;
 			}
 			if (!empty($field['required']) && $value === '') {
-				throw new RuntimeException('Champ obligatoire manquant : ' . $field['label']);
+				throw new RuntimeException(sprintf(__('Champ obligatoire manquant : %s', 'rempart-backup'), $field['label']));
 			}
 			$config[$key] = sanitize_text_field($value);
 		}
 		foreach (array('url', 'server') as $key) {
 			if (!empty($config[$key]) && !preg_match('#^https?://[^\s]+$#i', $config[$key])) {
-				throw new RuntimeException('L\'adresse doit commencer par http:// ou https://');
+				throw new RuntimeException(__('L\'adresse doit commencer par http:// ou https://', 'rempart-backup'));
 			}
 		}
 		foreach (array('webhook_url', 'url') as $key) {
 			if (!empty($secrets[$key]) && !preg_match('#^https?://[^\s]+$#i', $secrets[$key])) {
-				throw new RuntimeException('L\'adresse doit commencer par http:// ou https://');
+				throw new RuntimeException(__('L\'adresse doit commencer par http:// ou https://', 'rempart-backup'));
 			}
 		}
 		if ($type === 'email') {
 			$addresses = array_filter(array_map('trim', explode(',', $config['address'])));
 			foreach ($addresses as $address) {
 				if (!is_email($address)) {
-					throw new RuntimeException('Cette adresse e-mail n\'est pas valide : ' . $address);
+					throw new RuntimeException(sprintf(__('Cette adresse e-mail n\'est pas valide : %s', 'rempart-backup'), $address));
 				}
 			}
 			$config['address'] = implode(', ', $addresses);
@@ -197,10 +197,10 @@ class Rempart_Notifications {
 			}
 			try {
 				self::send($channel, $event, $title, $message, $details);
-				self::remember_result($id, true, 'Envoyé');
+				self::remember_result($id, true, __('Envoyé', 'rempart-backup'));
 			} catch (Exception $e) {
 				self::remember_result($id, false, $e->getMessage());
-				rempart_log('Notification « ' . $channel['name'] . ' » non envoyée : ' . $e->getMessage(), 'warning');
+				rempart_log(sprintf(__('Notification « %1$s » non envoyée : %2$s', 'rempart-backup'), $channel['name'], $e->getMessage()), 'warning');
 			}
 		}
 	}
@@ -209,16 +209,16 @@ class Rempart_Notifications {
 	public static function test($id) {
 		$channel = self::get($id);
 		if (!$channel) {
-			throw new RuntimeException('Ce canal n\'existe plus.');
+			throw new RuntimeException(__('Ce canal n\'existe plus.', 'rempart-backup'));
 		}
-		$details = array('Site' => home_url(), 'Exemple' => 'Message de test');
+		$details = array(__('Site', 'rempart-backup') => home_url(), __('Exemple', 'rempart-backup') => __('Message de test', 'rempart-backup'));
 		try {
-			self::send($channel, 'test', 'Test de notification - ' . self::site_name(), "Si vous lisez ce message, ce canal fonctionne.\n\nSite : " . home_url(), $details);
+			self::send($channel, 'test', sprintf(__('Test de notification - %s', 'rempart-backup'), self::site_name()), sprintf(__("Si vous lisez ce message, ce canal fonctionne.\n\nSite : %s", 'rempart-backup'), home_url()), $details);
 		} catch (Exception $e) {
 			self::remember_result($id, false, $e->getMessage());
 			throw $e;
 		}
-		self::remember_result($id, true, 'Test envoyé');
+		self::remember_result($id, true, __('Test envoyé', 'rempart-backup'));
 	}
 
 	public static function site_name() {
@@ -236,7 +236,7 @@ class Rempart_Notifications {
 		$c = self::config_of($channel);
 		$send = array(__CLASS__, 'send_' . $channel['type']);
 		if (!is_callable($send)) {
-			throw new RuntimeException('Type de notification inconnu.');
+			throw new RuntimeException(__('Type de notification inconnu.', 'rempart-backup'));
 		}
 		$context = array('event' => $event, 'title' => $title, 'message' => $message, 'details' => $details);
 		try {
@@ -257,12 +257,12 @@ class Rempart_Notifications {
 	private static function post($url, $body, array $headers = array()) {
 		$response = wp_remote_post($url, array('timeout' => self::TIMEOUT, 'headers' => $headers, 'body' => $body, 'redirection' => 2));
 		if (is_wp_error($response)) {
-			throw new RuntimeException('Connexion impossible : ' . $response->get_error_message());
+			throw new RuntimeException(sprintf(__('Connexion impossible : %s', 'rempart-backup'), $response->get_error_message()));
 		}
 		$code = (int) wp_remote_retrieve_response_code($response);
 		if ($code < 200 || $code >= 300) {
 			$said = trim(wp_strip_all_tags(mb_substr((string) wp_remote_retrieve_body($response), 0, 160)));
-			throw new RuntimeException('Le service a répondu HTTP ' . $code . ($said !== '' ? ' : ' . $said : '') . '.');
+			throw new RuntimeException(sprintf(__('Le service a répondu HTTP %1$s%2$s.', 'rempart-backup'), $code, $said !== '' ? ' : ' . $said : ''));
 		}
 		return wp_remote_retrieve_body($response);
 	}
@@ -282,10 +282,10 @@ class Rempart_Notifications {
 	private static function send_email($c, $ctx) {
 		$to = array_filter(array_map('trim', explode(',', (string) $c['address'])));
 		if (!$to) {
-			throw new RuntimeException('Aucune adresse e-mail renseignée.');
+			throw new RuntimeException(__('Aucune adresse e-mail renseignée.', 'rempart-backup'));
 		}
 		if (!wp_mail($to, $ctx['title'], $ctx['message'])) {
-			throw new RuntimeException('WordPress n\'a pas pu envoyer l\'e-mail : vérifiez la messagerie de ce site.');
+			throw new RuntimeException(__('WordPress n\'a pas pu envoyer l\'e-mail : vérifiez la messagerie de ce site.', 'rempart-backup'));
 		}
 	}
 

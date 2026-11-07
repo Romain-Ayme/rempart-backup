@@ -25,29 +25,64 @@ class Rempart_Job {
 		return is_array($state) && empty($state['finished']);
 	}
 
+	/**
+	 * Checking that no job runs and writing the new job's state must happen as one step, or two
+	 * requests arriving together would both pass the check and one backup would silently replace the other.
+	 * The lock is kept for the whole start; a second start meanwhile is refused as if the first had finished starting.
+	 *
+	 * @return mixed Whatever the callback returns.
+	 */
+	private static function exclusive_start(callable $start) {
+		rempart_prepare_folders();
+		$lock = @fopen(REMPART_ROOT . 'state/start.lock', 'c');
+		if (!$lock || !flock($lock, LOCK_EX | LOCK_NB)) {
+			if ($lock) {
+				fclose($lock);
+			}
+			throw new RuntimeException(__('Une tâche est déjà en cours. Attendez sa fin ou arrêtez-la.', 'rempart-backup'));
+		}
+		try {
+			return call_user_func($start);
+		} finally {
+			flock($lock, LOCK_UN);
+			fclose($lock);
+		}
+	}
+
 	/** @return array The job, once started. Throws if one is already running. */
 	public static function start_backup(array $options) {
+		return self::exclusive_start(function () use ($options) {
+			return Rempart_Job::begin_backup($options);
+		});
+	}
+
+	/** Only called through start_backup(), under the start lock. */
+	public static function begin_backup(array $options) {
 		rempart_prepare_folders();
 		$active = self::current();
 		if ($active && empty($active['finished'])) {
-			throw new RuntimeException('Une tâche est déjà en cours. Attendez sa fin ou arrêtez-la.');
+			throw new RuntimeException(__('Une tâche est déjà en cours. Attendez sa fin ou arrêtez-la.', 'rempart-backup'));
 		}
 		if (file_exists(REMPART_ROOT . 'state/restore.php')) {
-			throw new RuntimeException('Une restauration est en cours.');
+			throw new RuntimeException(__('Une restauration est en cours.', 'rempart-backup'));
 		}
 		$files = !empty($options['files']);
 		$db = !empty($options['db']);
 		if (!$files && !$db) {
-			throw new RuntimeException('Choisissez au moins les fichiers ou la base de données.');
+			throw new RuntimeException(__('Choisissez au moins les fichiers ou la base de données.', 'rempart-backup'));
 		}
 		$location = isset($options['location']) ? (string) $options['location'] : '';
 		if ($location !== '' && !Rempart_Locations::get($location)) {
-			throw new RuntimeException('L\'emplacement choisi n\'existe plus.');
+			throw new RuntimeException(__('L\'emplacement choisi n\'existe plus.', 'rempart-backup'));
 		}
 		if ($location !== '') {
 			// A bad password should stop the job now rather than after an hour of compressing.
 			Rempart_Storage::make(Rempart_Locations::get($location))->test();
 		}
+
+		$scope = rempart_valid_scope($options['scope'] ?? 'all');
+		// The list of WordPress's own files is fetched now, so a failure shows before any work is done.
+		$core = ($files && $scope !== 'all') ? rempart_core_checksums() : array();
 
 		$host = preg_replace('/[^A-Za-z0-9.-]/', '', (string) wp_parse_url(home_url(), PHP_URL_HOST));
 		$name = 'wp_' . $host . '_' . gmdate('Y-m-d_H-i-s') . '_' . rempart_random(6);
@@ -70,6 +105,7 @@ class Rempart_Job {
 			'files'    => $files ? 1 : 0,
 			'db'       => $db ? 1 : 0,
 			'location' => $location,
+			'scope'    => $scope,
 			'note'     => $note,
 			'auto'     => !empty($options['auto']) ? 1 : 0,
 			'rotation' => (int) ($options['rotation'] ?? 0),
@@ -82,8 +118,11 @@ class Rempart_Job {
 		);
 		$tmp = self::tmp_dir($name);
 		wp_mkdir_p($tmp);
+		if ($core) {
+			file_put_contents($tmp . '/core.json', wp_json_encode($core));
+		}
 		rempart_log_reset();
-		rempart_log('Sauvegarde démarrée : ' . $name);
+		rempart_log(sprintf(__('Sauvegarde démarrée : %s', 'rempart-backup'), $name));
 		self::save($state);
 		if (!wp_next_scheduled('rempart_watchdog')) {
 			wp_schedule_event(time() + 300, 'rempart_five_minutes', 'rempart_watchdog');
@@ -94,13 +133,20 @@ class Rempart_Job {
 
 	/** Bring a backup kept on a storage back to this server. */
 	public static function start_fetch($name, array $restore_options) {
+		return self::exclusive_start(function () use ($name, $restore_options) {
+			return Rempart_Job::begin_fetch($name, $restore_options);
+		});
+	}
+
+	/** Only called through start_fetch(), under the start lock. */
+	public static function begin_fetch($name, array $restore_options) {
 		$active = self::current();
 		if ($active && empty($active['finished'])) {
-			throw new RuntimeException('Une tâche est déjà en cours. Attendez sa fin ou arrêtez-la.');
+			throw new RuntimeException(__('Une tâche est déjà en cours. Attendez sa fin ou arrêtez-la.', 'rempart-backup'));
 		}
 		$info = Rempart_Backups::get($name);
 		if (!$info || empty($info['location'])) {
-			throw new RuntimeException('Sauvegarde introuvable.');
+			throw new RuntimeException(__('Sauvegarde introuvable.', 'rempart-backup'));
 		}
 		$state = array(
 			'kind'      => 'fetch',
@@ -121,7 +167,7 @@ class Rempart_Job {
 			'download'  => array(),
 		);
 		rempart_log_reset();
-		rempart_log('Récupération de la sauvegarde depuis son emplacement…');
+		rempart_log(__('Récupération de la sauvegarde depuis son emplacement…', 'rempart-backup'));
 		self::save($state);
 		self::spawn($state);
 		return $state;
@@ -151,7 +197,7 @@ class Rempart_Job {
 		$token = isset($_POST['token']) ? sanitize_text_field(wp_unslash($_POST['token'])) : '';
 		$state = self::current();
 		if (!$state || $token === '' || !hash_equals((string) $state['token'], $token)) {
-			wp_send_json_error('Jeton refusé.', 403);
+			wp_send_json_error(__('Jeton refusé.', 'rempart-backup'), 403);
 		}
 		ignore_user_abort(true);
 		self::run_slice(true);
@@ -251,17 +297,17 @@ class Rempart_Job {
 	private static function phase_database(array &$state, $deadline) {
 		$file = self::tmp_dir($state['name']) . '/database.sql';
 		if (empty($state['dump'])) {
-			rempart_log('Export de la base de données');
+			rempart_log(__('Export de la base de données', 'rempart-backup'));
 			$state['dump'] = Rempart_Database::begin($file, rempart_excludes()['db']);
 			$state['percent'] = 5;
 		}
 		$done = Rempart_Database::step($file, $state['dump'], $deadline, function ($cursor) {
-			rempart_debug('Table terminée : ' . $cursor['tables'][$cursor['index'] - 1]);
+			rempart_debug(sprintf(__('Table terminée : %s', 'rempart-backup'), $cursor['tables'][$cursor['index'] - 1]));
 		});
 		$count = max(1, count($state['dump']['tables']));
 		$state['percent'] = 5 + (int) (20 * min(1, $state['dump']['index'] / $count));
 		if ($done) {
-			rempart_log(sprintf('Base de données exportée : %d tables, %d lignes, %s', $count, $state['dump']['rows'], rempart_format_size(filesize($file))));
+			rempart_log(sprintf(__('Base de données exportée : %1$d tables, %2$d lignes, %3$s', 'rempart-backup'), $count, $state['dump']['rows'], rempart_format_size(filesize($file))));
 			$state['phase'] = $state['files'] ? 'scan' : 'archive';
 			$state['archive'] = null;
 		}
@@ -272,9 +318,14 @@ class Rempart_Job {
 	private static function phase_scan(array &$state, $deadline) {
 		$list = self::tmp_dir($state['name']) . '/files.list';
 		if (empty($state['scan'])) {
-			rempart_log('Inventaire des fichiers');
+			rempart_log(__('Inventaire des fichiers', 'rempart-backup'));
 			file_put_contents($list, '');
-			$state['scan'] = array('stack' => array(''), 'count' => 0, 'bytes' => 0, 'committed' => 0);
+			$state['scan'] = array('stack' => array(''), 'count' => 0, 'bytes' => 0, 'committed' => 0, 'core' => 0);
+		}
+		$scope = $state['scope'] ?? 'all';
+		$core = array();
+		if ($scope !== 'all') {
+			$core = (array) json_decode((string) @file_get_contents(self::tmp_dir($state['name']) . '/core.json'), true);
 		}
 		$excludes = rempart_excludes();
 		$excludes['exact'][] = ltrim(self::relative(REMPART_ROOT), '/');
@@ -297,7 +348,7 @@ class Rempart_Job {
 			$relative = array_pop($state['scan']['stack']);
 			$items = @scandir($root . ($relative === '' ? '' : '/' . $relative));
 			if ($items === false) {
-				rempart_log('Dossier illisible, ignoré : ' . $relative, 'warning');
+				rempart_log(sprintf(__('Dossier illisible, ignoré : %s', 'rempart-backup'), $relative), 'warning');
 				continue;
 			}
 			foreach ($items as $item) {
@@ -312,6 +363,10 @@ class Rempart_Job {
 					continue;
 				}
 				$full = $root . '/' . $child;
+				if ($core && is_file($full) && !is_link($full) && rempart_skips_core_file($scope, $child, $full, $core)) {
+					$state['scan']['core']++;
+					continue;
+				}
 				if (is_link($full)) {
 					fwrite($handle, 'l 0 ' . rawurlencode($child) . "\n");
 				} elseif (is_dir($full)) {
@@ -330,7 +385,10 @@ class Rempart_Job {
 		$state['percent'] = max($state['percent'], $state['db'] ? 28 : 8);
 
 		if (!$state['scan']['stack']) {
-			rempart_log(sprintf('%d éléments à sauvegarder, %s', $state['scan']['count'], rempart_format_size($state['scan']['bytes'])));
+			if ($scope !== 'all') {
+				rempart_log($scope === 'content' ? sprintf(__("%d fichiers d'origine de WordPress, non sauvegardés", 'rempart-backup'), $state['scan']['core']) : sprintf(__('%d fichiers de WordPress inchangés, non sauvegardés', 'rempart-backup'), $state['scan']['core']));
+			}
+			rempart_log(sprintf(__('%1$d éléments à sauvegarder, %2$s', 'rempart-backup'), $state['scan']['count'], rempart_format_size($state['scan']['bytes'])));
 			$state['bytes_total'] = $state['scan']['bytes'];
 			$state['phase'] = 'archive';
 			$state['archive'] = null;
@@ -357,6 +415,7 @@ class Rempart_Job {
 			'name'         => $state['name'],
 			'backup_dir'   => $state['files'],
 			'backup_db'    => $state['db'],
+			'scope'        => $state['scope'] ?? 'all',
 			'email'        => $state['user_email'] ?? '',
 			'date_time'    => wp_date('Y-m-d H:i:s'),
 			'btime'        => (int) $state['started'],
@@ -380,7 +439,7 @@ class Rempart_Job {
 		$archive_path = self::working_archive($state);
 
 		if (empty($state['archive'])) {
-			rempart_log('Création de l\'archive');
+			rempart_log(__('Création de l\'archive', 'rempart-backup'));
 			file_put_contents($tmp . '/info.json', wp_json_encode(self::build_info($state, 0)));
 			$state['archive'] = array(
 				'committed' => 0,
@@ -448,7 +507,7 @@ class Rempart_Job {
 
 				if ($type === 'f') {
 					if (!is_readable($full)) {
-						rempart_log('Fichier illisible, ignoré : ' . $relative, 'warning');
+						rempart_log(sprintf(__('Fichier illisible, ignoré : %s', 'rempart-backup'), $relative), 'warning');
 						$state['skipped']++;
 						$cursor['list_pos'] = ftell($list);
 						continue;
@@ -481,7 +540,7 @@ class Rempart_Job {
 			$high = $state['location'] !== '' ? 80 : 97;
 			$state['percent'] = $low + (int) (($high - $low) * min(1, $state['bytes_done'] / $bytes_total));
 			if ($state['loop'] % 2 === 0) {
-				rempart_log(sprintf('Archive : %d éléments ajoutés, %s traités', $state['added'], rempart_format_size($state['bytes_done'])));
+				rempart_log(sprintf(__('Archive : %1$d éléments ajoutés, %2$s traités', 'rempart-backup'), $state['added'], rempart_format_size($state['bytes_done'])));
 			}
 		}
 
@@ -489,9 +548,9 @@ class Rempart_Job {
 			$size = $writer->finish();
 			$cursor['committed'] = $size;
 			if (!@rename($archive_path, self::final_archive($state))) {
-				throw new RuntimeException('Impossible de finaliser l\'archive.');
+				throw new RuntimeException(__('Impossible de finaliser l\'archive.', 'rempart-backup'));
 			}
-			rempart_log('Archive terminée : ' . rempart_format_size($size));
+			rempart_log(sprintf(__('Archive terminée : %s', 'rempart-backup'), rempart_format_size($size)));
 			$state['size'] = $size;
 			$state['phase'] = $state['location'] !== '' ? 'upload' : 'finish';
 			$state['upload'] = array();
@@ -555,13 +614,13 @@ class Rempart_Job {
 	private static function phase_upload(array &$state, $deadline) {
 		$location = Rempart_Locations::get($state['location']);
 		if (!$location) {
-			throw new RuntimeException('L\'emplacement choisi n\'existe plus.');
+			throw new RuntimeException(__('L\'emplacement choisi n\'existe plus.', 'rempart-backup'));
 		}
 		$storage = Rempart_Storage::make($location);
 		$local = self::final_archive($state);
 		$remote = $state['name'] . '.tar.gz';
 		if (empty($state['upload'])) {
-			rempart_log('Envoi vers ' . $location['name']);
+			rempart_log(sprintf(__('Envoi vers %s', 'rempart-backup'), $location['name']));
 			$state['upload'] = array('begun' => 1);
 		}
 		$self = __CLASS__;
@@ -583,12 +642,12 @@ class Rempart_Job {
 					break;
 				} catch (RuntimeException $e) {
 					if ($try === 2) {
-						rempart_log('Le fichier d\'informations n\'a pas pu être envoyé : ' . $e->getMessage() . ' La sauvegarde est bien stockée, mais un autre site ne la retrouvera pas en synchronisant.', 'warning');
+						rempart_log(sprintf(__('Le fichier d\'informations n\'a pas pu être envoyé : %s La sauvegarde est bien stockée, mais un autre site ne la retrouvera pas en synchronisant.', 'rempart-backup'), $e->getMessage()), 'warning');
 					}
 				}
 			}
 			@unlink($local);
-			rempart_log('Envoi terminé');
+			rempart_log(__('Envoi terminé', 'rempart-backup'));
 			$state['phase'] = 'finish';
 		}
 	}
@@ -598,7 +657,7 @@ class Rempart_Job {
 	private static function phase_fetch(array &$state, $deadline) {
 		$location = Rempart_Locations::get($state['location']);
 		if (!$location) {
-			throw new RuntimeException('L\'emplacement de cette sauvegarde n\'existe plus.');
+			throw new RuntimeException(__('L\'emplacement de cette sauvegarde n\'existe plus.', 'rempart-backup'));
 		}
 		$storage = Rempart_Storage::make($location);
 		$local = rempart_folder('backups') . '/.' . $state['name'] . '.tar.gz';
@@ -616,7 +675,7 @@ class Rempart_Job {
 		}
 		$final = rempart_folder('backups') . '/' . $state['name'] . '.tar.gz';
 		@rename($local, $final);
-		rempart_log('Sauvegarde récupérée : ' . rempart_format_size(filesize($final)));
+		rempart_log(sprintf(__('Sauvegarde récupérée : %s', 'rempart-backup'), rempart_format_size(filesize($final))));
 		$state['finished'] = 1;
 		$state['status'] = 'success';
 		$state['percent'] = 100;
@@ -639,27 +698,25 @@ class Rempart_Job {
 		}
 		rempart_rmdir(self::tmp_dir($state['name']));
 		@unlink(REMPART_ROOT . 'state/stop');
-		rempart_log(sprintf('Sauvegarde terminée : %d éléments, %s', $state['added'], rempart_format_size($size)), 'success');
+		rempart_log(sprintf(__('Sauvegarde terminée : %1$d éléments, %2$s', 'rempart-backup'), $state['added'], rempart_format_size($size)), 'success');
 
 		$state['finished'] = 1;
 		$state['status'] = 'success';
 		$state['percent'] = 100;
 		self::save($state);
 
-		$where = $state['location'] !== '' ? (Rempart_Locations::get($state['location'])['name'] ?? '') : 'Dossier local';
-		$what = ($state['files'] && $state['db']) ? 'Fichiers et base de données' : ($state['files'] ? 'Fichiers' : 'Base de données');
+		$where = $state['location'] !== '' ? (Rempart_Locations::get($state['location'])['name'] ?? '') : __('Dossier local', 'rempart-backup');
+		$what = ($state['files'] && $state['db']) ? __('Fichiers et base de données', 'rempart-backup') : ($state['files'] ? __('Fichiers', 'rempart-backup') : __('Base de données', 'rempart-backup'));
 		$seconds = max(1, time() - (int) $state['started']);
-		$title = 'Sauvegarde réussie - ' . Rempart_Notifications::site_name();
+		$title = sprintf(__('Sauvegarde réussie - %s', 'rempart-backup'), Rempart_Notifications::site_name());
 		self::notify('success', $title,
-			"La sauvegarde de votre site s'est bien terminée.\n\nSite : " . home_url() . "\nNom : " . $state['name']
-			. "\nContenu : " . $what . "\nTaille : " . rempart_format_size($size)
-			. "\nEmplacement : " . $where . "\nDurée : " . self::duration($seconds),
-			array('Site' => home_url(), 'Contenu' => $what, 'Taille' => rempart_format_size($size), 'Emplacement' => $where, 'Durée' => self::duration($seconds), 'Nom' => $state['name'])
+			sprintf(__("La sauvegarde de votre site s'est bien terminée.\n\nSite : %1\$s\nNom : %2\$s\nContenu : %3\$s\nTaille : %4\$s\nEmplacement : %5\$s\nDurée : %6\$s", 'rempart-backup'), home_url(), $state['name'], $what, rempart_format_size($size), $where, self::duration($seconds)),
+			array(__('Site', 'rempart-backup') => home_url(), __('Contenu', 'rempart-backup') => $what, __('Taille', 'rempart-backup') => rempart_format_size($size), __('Emplacement', 'rempart-backup') => $where, __('Durée', 'rempart-backup') => self::duration($seconds), __('Nom', 'rempart-backup') => $state['name'])
 		);
 	}
 
 	private static function duration($seconds) {
-		return $seconds >= 90 ? round($seconds / 60) . ' min' : $seconds . ' s';
+		return $seconds >= 90 ? sprintf(__('%d min', 'rempart-backup'), round($seconds / 60)) : sprintf(__('%d s', 'rempart-backup'), $seconds);
 	}
 
 	/** Keep a copy of the log next to the backup and on its storage. */
@@ -672,7 +729,7 @@ class Rempart_Job {
 					$content = preg_replace('/^<\?php exit;\?>\n/', '', (string) file_get_contents(rempart_log_file()));
 					Rempart_Storage::make($location)->put_string($state['name'] . '.log', $content);
 				} catch (Exception $e) {
-					rempart_debug('Envoi du journal : ' . $e->getMessage());
+					rempart_debug(sprintf(__('Envoi du journal : %s', 'rempart-backup'), $e->getMessage()));
 				}
 			}
 		}
@@ -684,7 +741,7 @@ class Rempart_Job {
 			Rempart_Notifications::event($event, $title, $message, $details);
 		} catch (Throwable $e) {
 			// Telling the person must never turn a finished backup into a failed one.
-			rempart_debug('Notifications : ' . $e->getMessage());
+			rempart_debug(sprintf(__('Notifications : %s', 'rempart-backup'), $e->getMessage()));
 		}
 	}
 
@@ -711,7 +768,7 @@ class Rempart_Job {
 
 	private static function finish_stopped(array &$state) {
 		self::clean_partial($state);
-		rempart_log('Tâche arrêtée à votre demande.', 'warning');
+		rempart_log(__('Tâche arrêtée à votre demande.', 'rempart-backup'), 'warning');
 		$state['finished'] = 1;
 		$state['status'] = 'stopped';
 		self::save($state);
@@ -725,9 +782,9 @@ class Rempart_Job {
 		$state['status'] = 'error';
 		self::save($state);
 		if ($state['kind'] === 'backup') {
-			self::notify('failure', 'Échec de la sauvegarde - ' . Rempart_Notifications::site_name(),
-				"La sauvegarde n'a pas abouti.\n\nSite : " . home_url() . "\nRaison : " . $message,
-				array('Site' => home_url(), 'Raison' => $message, 'Nom' => $state['name'] ?? '')
+			self::notify('failure', sprintf(__('Échec de la sauvegarde - %s', 'rempart-backup'), Rempart_Notifications::site_name()),
+				sprintf(__("La sauvegarde n'a pas abouti.\n\nSite : %1\$s\nRaison : %2\$s", 'rempart-backup'), home_url(), $message),
+				array(__('Site', 'rempart-backup') => home_url(), __('Raison', 'rempart-backup') => $message, __('Nom', 'rempart-backup') => $state['name'] ?? '')
 			);
 		}
 	}
@@ -737,7 +794,7 @@ class Rempart_Job {
 		$state = self::current();
 		if ($state && empty($state['finished'])) {
 			self::clean_partial($state);
-			rempart_log('Tâche arrêtée de force.', 'warning');
+			rempart_log(__('Tâche arrêtée de force.', 'rempart-backup'), 'warning');
 			$state['finished'] = 1;
 			$state['status'] = 'stopped';
 			self::save($state);
@@ -764,7 +821,7 @@ class Rempart_Job {
 		$state['direct'] = 1;
 		$state['stalls'] = (int) $state['stalls'] + 1;
 		if ($state['stalls'] > REMPART_MAX_STALLS && $quiet >= REMPART_TIMEOUT_SECONDS) {
-			self::fail($state, 'La tâche ne répond plus depuis ' . round($quiet / 60) . ' minutes : le serveur l\'a probablement arrêtée.' . Rempart_Litespeed::stall_hint());
+			self::fail($state, sprintf(__('La tâche ne répond plus depuis %d minutes : le serveur l\'a probablement arrêtée.', 'rempart-backup'), round($quiet / 60)) . Rempart_Litespeed::stall_hint());
 			return $state;
 		}
 		self::save($state);

@@ -1,6 +1,16 @@
 (function () {
 	'use strict';
 
+	// Texts come from the page in the site's language; the French text itself is the fallback.
+	function T(text) {
+		var map = (window.RempartData && RempartData.i18n) || {};
+		var out = Object.prototype.hasOwnProperty.call(map, text) ? map[text] : text;
+		var args = Array.prototype.slice.call(arguments, 1);
+		var next = 0;
+		return out.replace(/%(?:(\d+)\$)?s/g, function (m, n) { return String(args[n ? n - 1 : next++]); });
+	}
+
+
 	var D = window.RempartData;
 	var $ = function (s, r) { return (r || document).querySelector(s); };
 	var $$ = function (s, r) { return Array.prototype.slice.call((r || document).querySelectorAll(s)); };
@@ -22,8 +32,8 @@
 			.then(function (r) { return r.text(); })
 			.then(function (t) {
 				var j;
-				try { j = JSON.parse(t); } catch (e) { throw new Error('Réponse illisible du serveur.'); }
-				if (!j.success) { throw new Error(typeof j.data === 'string' ? j.data : 'Erreur inconnue.'); }
+				try { j = JSON.parse(t); } catch (e) { throw new Error(T('Réponse illisible du serveur.')); }
+				if (!j.success) { throw new Error(typeof j.data === 'string' ? j.data : T('Erreur inconnue.')); }
 				return j.data;
 			});
 	}
@@ -97,15 +107,15 @@
 				return;
 			}
 			if (d.status === 'success') {
-				finishProgress('Sauvegarde terminée');
+				finishProgress(T('Sauvegarde terminée'));
 				return;
 			}
 			if (d.status === 'error') {
-				finishProgress('La tâche n\'a pas abouti');
+				finishProgress(T('La tâche n\'a pas abouti'));
 				return;
 			}
 			if (d.status === 'stopped') {
-				finishProgress('Tâche arrêtée');
+				finishProgress(T('Tâche arrêtée'));
 				return;
 			}
 			timer = setTimeout(pollJob, 2000);
@@ -116,9 +126,9 @@
 
 	var restoreFailures = 0;
 	function pollRestore(r) {
-		P.title.textContent = 'Restauration en cours';
+		P.title.textContent = T('Restauration en cours');
 		P.stop.hidden = true;
-		P.hint.textContent = 'Gardez cette page ouverte jusqu\'à la fin.';
+		P.hint.textContent = T('Gardez cette page ouverte jusqu\'à la fin.');
 		P.hint.hidden = false;
 		var url = r.url + '?op=status&key=' + encodeURIComponent(r.key) + '&from=' + from;
 		fetch(url, { credentials: 'omit', cache: 'no-store' }).then(function (res) {
@@ -131,12 +141,12 @@
 			from = d.next || from;
 			setPercent(d.percent || 0);
 			if (d.finished) {
-				finishProgress(d.status === 'success' ? 'Restauration terminée' : 'La restauration n\'a pas abouti');
+				finishProgress(d.status === 'success' ? T('Restauration terminée') : T('La restauration n\'a pas abouti'));
 				P.close.dataset.reload = '1';
 				if (d.status === 'success') {
 					var row = document.createElement('div');
 					row.className = 'l-success';
-					row.textContent = 'Si la page vous demande de vous connecter, c\'est normal : vos comptes sont ceux de la sauvegarde.';
+					row.textContent = T('Si la page vous demande de vous connecter, c\'est normal : vos comptes sont ceux de la sauvegarde.');
 					P.log.appendChild(row);
 					P.log.scrollTop = P.log.scrollHeight;
 				}
@@ -150,7 +160,7 @@
 				P.force.hidden = false;
 				P.force.dataset.mode = 'restore';
 				if (restoreFailures === 8) {
-					addLog(P.log, [{ t: Date.now() / 1000, l: 'warning', m: 'Le programme de restauration ne répond plus. Un pare-feu bloque peut-être les fichiers PHP dans wp-content. Attendez encore, ou forcez l\'arrêt.' }]);
+					addLog(P.log, [{ t: Date.now() / 1000, l: 'warning', m: T('Le programme de restauration ne répond plus. Un pare-feu bloque peut-être les fichiers PHP dans wp-content. Attendez encore, ou forcez l\'arrêt.') }]);
 				}
 			}
 			timer = setTimeout(function () { pollRestore(r); }, 4000);
@@ -166,7 +176,7 @@
 	P.force.addEventListener('click', function () {
 		var action = P.force.dataset.mode === 'restore' ? 'restore_force_stop' : 'force_stop';
 		call(action).then(function () {
-			if (P.force.dataset.mode === 'restore') { P.close.dataset.reload = '1'; finishProgress('Restauration arrêtée'); }
+			if (P.force.dataset.mode === 'restore') { P.close.dataset.reload = '1'; finishProgress(T('Restauration arrêtée')); }
 		}).catch(function (e) { alert(e.message); });
 	});
 	P.close.addEventListener('click', function () { location.reload(); });
@@ -178,6 +188,7 @@
 			var data = {
 				files: form.elements.files.checked ? 1 : '',
 				db: form.elements.db.checked ? 1 : '',
+				scope: form.elements.scope.value,
 				location: form.elements.location.value,
 				note: form.elements.note.value
 			};
@@ -185,7 +196,7 @@
 			btn.disabled = true;
 			P.hint.hidden = false;
 			call('start_backup', data).then(function () {
-				openProgress('Sauvegarde en cours');
+				openProgress(T('Sauvegarde en cours'));
 				pollJob();
 			}).catch(function (err) {
 				alert(err.message);
@@ -224,7 +235,7 @@
 			var text = $(b.dataset.copy).textContent;
 			navigator.clipboard.writeText(text).then(function () {
 				var old = b.textContent;
-				b.textContent = 'Copié';
+				b.textContent = T('Copié');
 				setTimeout(function () { b.textContent = old; }, 1500);
 			});
 		});
@@ -239,7 +250,7 @@
 		var del = document.createElement('button');
 		del.type = 'button';
 		del.className = 'button-link rempart-rule-del';
-		del.setAttribute('aria-label', 'Retirer');
+		del.setAttribute('aria-label', T('Retirer'));
 		del.innerHTML = '<span class="dashicons dashicons-no-alt"></span>';
 		li.appendChild(span);
 		li.appendChild(document.createTextNode(' '));
@@ -247,7 +258,7 @@
 		return li;
 	}
 
-	var ruleLabels = { extension: 'Extension', beginning: 'Commence par', end: 'Finit par', anywhere: 'Contient' };
+	var ruleLabels = { extension: T('Extension'), beginning: T('Commence par'), end: T('Finit par'), anywhere: T('Contient') };
 	var ruleAdd = $('#rempart-rule-add');
 	if (ruleAdd) {
 		ruleAdd.addEventListener('click', function () {
@@ -270,7 +281,7 @@
 	/* ----- Folder picker ----- */
 
 	function renderTree(ul, path) {
-		ul.textContent = 'Chargement…';
+		ul.textContent = T('Chargement…');
 		call('tree', { path: path }).then(function (items) {
 			ul.textContent = '';
 			items.forEach(function (item) {
@@ -287,12 +298,12 @@
 				var add = document.createElement('button');
 				add.type = 'button';
 				add.className = 'button button-small';
-				add.textContent = 'Exclure';
+				add.textContent = T('Exclure');
 				add.addEventListener('click', function () {
 					call('exclude_add', { type: 'exact', pattern: item.path }).then(function (d) {
 						$('#rempart-rules-exact').appendChild(ruleRow('exact', d.key, d.pattern));
 						add.disabled = true;
-						add.textContent = 'Exclu';
+						add.textContent = T('Exclu');
 					}).catch(function (e) { alert(e.message); });
 				});
 				node.appendChild(toggle);
@@ -338,7 +349,7 @@
 		if (!service) { return; }
 		var all = JSON.parse(service.dataset.presets || '{}');
 		var preset = all[service.value] || {};
-		$('#rempart-s3-region').placeholder = preset.region ? 'par exemple ' + preset.region : '';
+		$('#rempart-s3-region').placeholder = preset.region ? T('par exemple %s', preset.region) : '';
 		$('#rempart-s3-endpoint').placeholder = preset.example || '';
 		var hint = $('#rempart-s3-hint');
 		if (!hint) {
@@ -365,7 +376,7 @@
 		});
 		applyS3Preset();
 		$('.rempart-oauth-help', locForm).hidden = !oauth;
-		$('#rempart-loc-submit').textContent = oauth && !locForm.elements.id.value ? 'Enregistrer et connecter le compte' : 'Enregistrer';
+		$('#rempart-loc-submit').textContent = oauth && !locForm.elements.id.value ? T('Enregistrer et connecter le compte') : T('Enregistrer');
 	}
 
 	function resetLocationForm(values) {
@@ -386,7 +397,7 @@
 			}
 		});
 		$$('.rempart-secret-note', locForm).forEach(function (n) { n.hidden = !values; });
-		$('#rempart-location-form-title').textContent = values ? 'Modifier l\'emplacement' : 'Ajouter un emplacement';
+		$('#rempart-location-form-title').textContent = values ? T('Modifier l\'emplacement') : T('Ajouter un emplacement');
 		showLocationFields();
 		locCard.hidden = false;
 		locCard.scrollIntoView({ behavior: 'smooth' });
@@ -405,7 +416,7 @@
 			b.addEventListener('click', function () {
 				var old = b.textContent;
 				b.disabled = true;
-				b.textContent = 'Test…';
+				b.textContent = T('Test…');
 				call('test_location', { id: b.dataset.id }).then(function (m) { alert(m); }).catch(function (e) { alert(e.message); }).then(function () {
 					b.disabled = false;
 					b.textContent = old;
@@ -456,7 +467,7 @@
 				el.value = mine && values[el.name] !== undefined ? values[el.name] : (el.dataset.default || '');
 			});
 			$$('.rempart-secret-note', chForm).forEach(function (n) { n.hidden = !values; });
-			$('#rempart-ch-title').textContent = values ? 'Modifier le service' : 'Ajouter un service';
+			$('#rempart-ch-title').textContent = values ? T('Modifier le service') : T('Ajouter un service');
 			showChannelFields();
 			chCard.hidden = false;
 			chCard.scrollIntoView({ behavior: 'smooth' });
@@ -472,7 +483,7 @@
 			b.addEventListener('click', function () {
 				var old = b.textContent;
 				b.disabled = true;
-				b.textContent = 'Envoi…';
+				b.textContent = T('Envoi…');
 				call('test_channel', { id: b.dataset.id }).then(function (m) {
 					alert(m);
 					location.reload();
@@ -489,7 +500,7 @@
 
 	$$('.rempart-delete').forEach(function (b) {
 		b.addEventListener('click', function () {
-			if (!confirm('Supprimer définitivement cette sauvegarde ?')) { return; }
+			if (!confirm(T('Supprimer définitivement cette sauvegarde ?'))) { return; }
 			b.disabled = true;
 			call('delete_backups', { names: [b.dataset.name] }).then(function () { location.reload(); }).catch(function (e) { b.disabled = false; alert(e.message); });
 		});
@@ -504,15 +515,15 @@
 		});
 		$('#rempart-delete-selected').addEventListener('click', function () {
 			var names = $$('.rempart-pick').filter(function (p) { return p.checked; }).map(function (p) { return p.value; });
-			if (!names.length) { alert('Sélectionnez au moins une sauvegarde.'); return; }
-			if (!confirm('Supprimer définitivement ' + names.length + ' sauvegarde(s) ?')) { return; }
+			if (!names.length) { alert(T('Sélectionnez au moins une sauvegarde.')); return; }
+			if (!confirm(T('Supprimer définitivement %s sauvegarde(s) ?', names.length))) { return; }
 			call('delete_backups', { names: names }).then(function () { location.reload(); }).catch(function (e) { alert(e.message); });
 		});
 		$('#rempart-sync').addEventListener('click', function () {
 			var b = this;
 			b.disabled = true;
 			call('sync', { location: $('#rempart-sync-location').value }).then(function (d) {
-				alert(d.added + ' sauvegarde(s) ajoutée(s), ' + d.removed + ' retirée(s) de la liste.');
+				alert(T('%1$s sauvegarde(s) ajoutée(s), %2$s retirée(s) de la liste.', d.added, d.removed));
 				location.reload();
 			}).catch(function (e) { alert(e.message); b.disabled = false; });
 		});
@@ -537,7 +548,7 @@
 			var piece = file.slice((n - 1) * size, n * size);
 			call('upload_chunk', { file_name: file.name, chunk: n, total: total }, piece).then(function (d) {
 				bar.style.width = Math.round(n / total * 100) + '%';
-				text.textContent = 'Envoi : ' + Math.round(n / total * 100) + ' %';
+				text.textContent = T('Envoi : %s', Math.round(n / total * 100) + ' %');
 				if (d.done) {
 					location.reload();
 				} else {
@@ -573,7 +584,7 @@
 				var moving = source && source.replace(/\/$/, '').indexOf(here) !== 0;
 				R.migrate.hidden = !moving;
 				if (moving) {
-					R.migrate.textContent = 'Cette sauvegarde vient de ' + source + '. Son adresse sera remplacée par celle de ce site.';
+					R.migrate.textContent = T('Cette sauvegarde vient de %s. Son adresse sera remplacée par celle de ce site.', source);
 				}
 				R.box.hidden = false;
 			});
@@ -585,7 +596,7 @@
 			R.go.disabled = true;
 			call('restore_start', wanted).then(function (d) {
 				R.box.hidden = true;
-				openProgress(d.mode === 'fetch' ? 'Récupération de la sauvegarde' : 'Restauration en cours');
+				openProgress(d.mode === 'fetch' ? T('Récupération de la sauvegarde') : T('Restauration en cours'));
 				if (d.mode === 'fetch') {
 					pollJob();
 				} else {
@@ -601,10 +612,10 @@
 	$$('.rempart-show-log').forEach(function (b) {
 		b.addEventListener('click', function () {
 			var out = $('#rempart-log-content');
-			out.textContent = 'Chargement…';
+			out.textContent = T('Chargement…');
 			logBox.hidden = false;
 			call('read_log', { what: b.dataset.log }).then(function (lines) {
-				out.textContent = lines.length ? '' : 'Ce journal est vide.';
+				out.textContent = lines.length ? '' : T('Ce journal est vide.');
 				addLog(out, lines);
 			}).catch(function (e) { out.textContent = e.message; });
 		});
@@ -653,10 +664,10 @@
 	/* ----- Back to a job already running ----- */
 
 	if (D.restore) {
-		openProgress('Restauration en cours');
+		openProgress(T('Restauration en cours'));
 		pollRestore(D.restore);
 	} else if (D.active) {
-		openProgress('Tâche en cours');
+		openProgress(T('Tâche en cours'));
 		pollJob();
 	}
 })();
