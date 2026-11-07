@@ -25,8 +25,39 @@ class Rempart_Job {
 		return is_array($state) && empty($state['finished']);
 	}
 
+	/**
+	 * Checking that no job runs and writing the new job's state must happen as one step, or two
+	 * requests arriving together would both pass the check and one backup would silently replace the other.
+	 * The lock is kept for the whole start; a second start meanwhile is refused as if the first had finished starting.
+	 *
+	 * @return mixed Whatever the callback returns.
+	 */
+	private static function exclusive_start(callable $start) {
+		rempart_prepare_folders();
+		$lock = @fopen(REMPART_ROOT . 'state/start.lock', 'c');
+		if (!$lock || !flock($lock, LOCK_EX | LOCK_NB)) {
+			if ($lock) {
+				fclose($lock);
+			}
+			throw new RuntimeException('Une tâche est déjà en cours. Attendez sa fin ou arrêtez-la.');
+		}
+		try {
+			return call_user_func($start);
+		} finally {
+			flock($lock, LOCK_UN);
+			fclose($lock);
+		}
+	}
+
 	/** @return array The job, once started. Throws if one is already running. */
 	public static function start_backup(array $options) {
+		return self::exclusive_start(function () use ($options) {
+			return Rempart_Job::begin_backup($options);
+		});
+	}
+
+	/** Only called through start_backup(), under the start lock. */
+	public static function begin_backup(array $options) {
 		rempart_prepare_folders();
 		$active = self::current();
 		if ($active && empty($active['finished'])) {
@@ -102,6 +133,13 @@ class Rempart_Job {
 
 	/** Bring a backup kept on a storage back to this server. */
 	public static function start_fetch($name, array $restore_options) {
+		return self::exclusive_start(function () use ($name, $restore_options) {
+			return Rempart_Job::begin_fetch($name, $restore_options);
+		});
+	}
+
+	/** Only called through start_fetch(), under the start lock. */
+	public static function begin_fetch($name, array $restore_options) {
 		$active = self::current();
 		if ($active && empty($active['finished'])) {
 			throw new RuntimeException('Une tâche est déjà en cours. Attendez sa fin ou arrêtez-la.');

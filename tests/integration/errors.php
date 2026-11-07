@@ -126,6 +126,45 @@ $cases = array(
 		rempart_it_expect(!Rempart_Job::is_active(), 'La tâche est restée active.');
 	},
 
+	'deux démarrages en même temps : le verrou refuse le second' => function () use (&$created_backups) {
+		$lock = fopen(REMPART_ROOT . 'state/start.lock', 'c');
+		rempart_it_expect($lock && flock($lock, LOCK_EX | LOCK_NB), 'Impossible de prendre le verrou de démarrage pour le test.');
+		try {
+			// Another request is in the middle of starting: this one must be refused, not start a second job.
+			$message = rempart_it_throws(function () {
+				Rempart_Job::start_backup(array('files' => false, 'db' => true, 'location' => ''));
+			}, array(), 'Le second démarrage');
+			rempart_it_expect(strpos($message, 'déjà en cours') !== false, 'Message inattendu : ' . $message);
+			rempart_it_expect(!Rempart_Job::is_active(), 'Une tâche a démarré malgré le verrou.');
+		} finally {
+			flock($lock, LOCK_UN);
+			fclose($lock);
+		}
+	},
+
+	'deux processus lancent une sauvegarde ensemble : une seule démarre' => function () use (&$created_backups) {
+		$code = 'try { $j = Rempart_Job::start_backup(array("files" => false, "db" => true, "location" => "")); echo "DEMARRE:" . $j["name"]; } catch (Exception $e) { echo "REFUSE"; }';
+		$processes = array();
+		for ($i = 0; $i < 4; $i++) {
+			$command = 'wp eval ' . escapeshellarg($code) . ' --path=' . escapeshellarg(rtrim(ABSPATH, '/')) . ' --skip-themes 2>/dev/null';
+			$processes[] = proc_open($command, array(1 => array('pipe', 'w')), $pipes[$i]);
+		}
+		$started = 0;
+		$refused = 0;
+		foreach ($processes as $i => $process) {
+			$out = stream_get_contents($pipes[$i][1]);
+			proc_close($process);
+			if (preg_match('/DEMARRE:(\S+)/', $out, $m)) {
+				$started++;
+				$created_backups[] = $m[1];
+			} elseif (strpos($out, 'REFUSE') !== false) {
+				$refused++;
+			}
+		}
+		Rempart_Job::force_stop();
+		rempart_it_expect($started === 1 && $refused === 3, 'Attendu : 1 démarrée et 3 refusées, obtenu : ' . $started . ' démarrée(s), ' . $refused . ' refusée(s).');
+	},
+
 	'tâche bloquée : le chien de garde la relance' => function () use (&$created_backups) {
 		$job = Rempart_Job::start_backup(array('files' => false, 'db' => true, 'location' => ''));
 		$created_backups[] = $job['name'];
