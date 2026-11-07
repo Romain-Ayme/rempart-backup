@@ -132,6 +132,9 @@ jobs:
       - name: Notifications
         run: npm run test:notifications
 
+      - name: Sauvegardes complètes (réussite, échec, arrêt)
+        run: npm run test:backups
+
       - name: Journaux des services
         if: failure()
         run: docker compose -f tests/docker-compose.yml ps -a && docker compose -f tests/docker-compose.yml logs --tail 40 ftps
