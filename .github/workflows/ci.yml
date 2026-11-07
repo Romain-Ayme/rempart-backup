@@ -19,7 +19,7 @@ jobs:
       matrix:
         php: ['8.3', '8.4', '8.5']
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - uses: shivammathur/setup-php@v2
         with:
@@ -30,6 +30,24 @@ jobs:
         run: |
           composer validate --no-check-publish
           composer validate --no-check-publish --working-dir=tests
+
+      - name: Dossier du cache Composer
+        id: composer-cache
+        run: echo "dir=$(composer config cache-files-dir)" >> "$GITHUB_OUTPUT"
+
+      - name: Cache Composer
+        uses: actions/cache@v6
+        with:
+          path: ${{ steps.composer-cache.outputs.dir }}
+          key: composer-${{ matrix.php }}-${{ hashFiles('tests/composer.lock') }}
+          restore-keys: composer-${{ matrix.php }}-
+
+      - name: Cache PHPStan
+        uses: actions/cache@v6
+        with:
+          path: tests/.phpstan.cache
+          key: phpstan-${{ matrix.php }}-${{ github.sha }}
+          restore-keys: phpstan-${{ matrix.php }}-
 
       - name: Dépendances de développement
         run: composer install --working-dir=tests --no-interaction --prefer-dist --no-progress
@@ -42,16 +60,16 @@ jobs:
     runs-on: ubuntu-latest
     needs: checks
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v7
         with:
-          node-version: '20'
+          node-version: '24'
 
       - name: Construire le zip
         run: node tools/build-zip.js
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: rempart-backup
           path: dist/rempart-backup.zip
@@ -62,11 +80,11 @@ jobs:
     outputs:
       matrix: ${{ steps.list.outputs.matrix }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v7
         with:
-          node-version: '20'
+          node-version: '24'
 
       # Dernière version de chaque branche entre le minimum et la branche courante (tests/wordpress.json).
       - id: list
@@ -82,11 +100,11 @@ jobs:
     env:
       WP_ENV_CORE: ${{ matrix.zip }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v7
         with:
-          node-version: '20'
+          node-version: '24'
 
       - name: Services de test
         run: docker compose -f tests/docker-compose.yml up -d
