@@ -29,14 +29,14 @@ async function main() {
 	}
 	await sleep(2000);
 	try {
-		garage('bucket', 'create', 'rempart-it');
-		garage('key', 'import', '--yes', '-n', 'rempart-it', 'GK00000000000000000000000a', '0000000000000000000000000000000000000000000000000000000000000001');
-		garage('bucket', 'allow', '--read', '--write', '--owner', 'rempart-it', '--key', 'rempart-it');
+		garage('bucket', 'create', 'backup-guard-it');
+		garage('key', 'import', '--yes', '-n', 'backup-guard-it', 'GK00000000000000000000000a', '0000000000000000000000000000000000000000000000000000000000000001');
+		garage('bucket', 'allow', '--read', '--write', '--owner', 'backup-guard-it', '--key', 'backup-guard-it');
 	} catch (error) {
 		console.error(String(error.stderr || error.message));
 		throw error;
 	}
-	console.log('Garage prêt : bucket rempart-it.');
+	console.log('Garage prêt : bucket backup-guard-it.');
 }
 
 main().catch((error) => {

@@ -1,5 +1,7 @@
 {
-	"plugins": ["."],
+	"mappings": {
+		"wp-content/plugins/backup-guard": "."
+	},
 	"port": 8890,
 	"testsEnvironment": false,
 	"config": {

@@ -1,5 +1,5 @@
 {
-	"name": "rempart/backup",
+	"name": "backup-guard/backup-guard",
 	"description": "Plugin WordPress de sauvegarde, restauration et migration, sans licence ni verrou.",
 	"type": "wordpress-plugin",
 	"license": "LGPL-2.1-only",

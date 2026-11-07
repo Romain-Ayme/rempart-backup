@@ -1,4 +1,4 @@
-# Rempart Backup
+# Backup Guard
 
 Plugin WordPress de sauvegarde, restauration, migration et clonage, **sans licence et sans fonction réservée**.
 
@@ -9,7 +9,7 @@ Plugin WordPress de sauvegarde, restauration, migration et clonage, **sans licen
 
 ### Langues
 
-Le plugin est écrit en français. Un site en français affiche les textes tels qu'ils sont dans le code ; tous les autres sites (anglais et autres langues) reçoivent la traduction anglaise, `languages/rempart-backup-en_US.mo`. Les textes sont traduisibles avec les fonctions WordPress habituelles (`__()`, `esc_html__()`, etc.), domaine `rempart-backup`.
+Le plugin est écrit en français. Un site en français affiche les textes tels qu'ils sont dans le code ; tous les autres sites (anglais et autres langues) reçoivent la traduction anglaise, `languages/backup-guard-en_US.mo`. Les textes sont traduisibles avec les fonctions WordPress habituelles (`__()`, `esc_html__()`, etc.), domaine `backup-guard`.
 
 ### Sauvegarde
 
@@ -51,16 +51,16 @@ Au choix pour une réussite, un échec, ou les deux, par canal : e-mail, Pushove
 ### WP-CLI
 
 ```
-wp rempart backup [--files-only] [--db-only] [--scope=<all|content|modified>] [--location=<id>] [--note=<texte>]
-wp rempart list
-wp rempart locations
-wp rempart delete <nom>
-wp rempart restore <nom> [--files-only] [--db-only] [--yes]
+wp backup-guard backup [--files-only] [--db-only] [--scope=<all|content|modified>] [--location=<id>] [--note=<texte>]
+wp backup-guard list
+wp backup-guard locations
+wp backup-guard delete <nom>
+wp backup-guard restore <nom> [--files-only] [--db-only] [--yes]
 ```
 
 ## Installation
 
-Dans WordPress : Extensions, Ajouter, Téléverser une extension, puis choisir `rempart-backup.zip` et l'activer. Le zip se télécharge dans les [releases](../../releases) ou se construit avec `npm run build` (il est alors dans `dist/`).
+Dans WordPress : Extensions, Ajouter, Téléverser une extension, puis choisir `backup-guard.zip` et l'activer. Le zip se télécharge dans les [releases](../../releases) ou se construit avec `npm run build` (il est alors dans `dist/`).
 
 ## Développement
 
@@ -124,8 +124,8 @@ WP_ENV_CORE=https://wordpress.org/wordpress-7.1.4.zip
 
 Les textes sont écrits en français dans le code. Après avoir ajouté ou modifié un texte :
 
-1. `npm run i18n:build` (avec `npm run env:start` lancé) régénère `languages/rempart-backup.pot` et recompile les `.mo`.
-2. Ajouter la traduction anglaise du nouveau texte dans `languages/rempart-backup-en_US.po` (un texte sans traduction ou des `%s` qui ne correspondent pas font échouer `npm run test:i18n`).
+1. `npm run i18n:build` (avec `npm run env:start` lancé) régénère `languages/backup-guard.pot` et recompile les `.mo`.
+2. Ajouter la traduction anglaise du nouveau texte dans `languages/backup-guard-en_US.po` (un texte sans traduction ou des `%s` qui ne correspondent pas font échouer `npm run test:i18n`).
 3. `npm run i18n:build` une seconde fois pour recompiler le `.mo`.
 
 Les textes du script de l'administration (`assets/admin.js`) passent par `T('texte')` et la liste `js_strings()` de `includes/class-admin.php`. Le programme de restauration n'a pas WordPress : ses messages utilisent `__()` et sont traduits au lancement de la restauration.
@@ -150,7 +150,7 @@ On ne pousse pas sur `main` : on crée une branche, on ouvre une pull request, e
 
 ### Release
 
-1. Changer la version à deux endroits, qui doivent être identiques : `Version:` dans `rempart-backup.php` (et `REMPART_VERSION`) et `Stable tag:` dans `readme.txt`.
+1. Changer la version à deux endroits, qui doivent être identiques : `Version:` dans `backup-guard.php` (et `BACKUP_GUARD_VERSION`) et `Stable tag:` dans `readme.txt`.
 2. Fusionner sur `main`, puis créer et pousser le tag :
 
    ```
@@ -158,12 +158,12 @@ On ne pousse pas sur `main` : on crée une branche, on ouvre une pull request, e
    git push origin v1.0.1
    ```
 
-3. Le workflow `.github/workflows/release.yml` vérifie que le tag, `Version:` et `Stable tag:` concordent, construit `rempart-backup.zip` et crée la release GitHub avec les notes générées.
+3. Le workflow `.github/workflows/release.yml` vérifie que le tag, `Version:` et `Stable tag:` concordent, construit `backup-guard.zip` et crée la release GitHub avec les notes générées.
 
 ### Organisation du dépôt
 
 ```
-rempart-backup.php     point d'entrée du plugin
+backup-guard.php     point d'entrée du plugin
 includes/              le plugin (tâches, archive tar.gz, destinations, notifications, admin, WP-CLI)
 includes/storage/      un fichier par type d'emplacement
 runner/                programme de restauration, indépendant de WordPress

@@ -3,11 +3,11 @@ if (!defined('WP_UNINSTALL_PLUGIN')) {
 	exit;
 }
 
-// Settings go. The backups themselves stay in wp-content/rempart: deleting a plugin
+// Settings go. The backups themselves stay in wp-content/backup-guard: deleting a plugin
 // should never silently destroy the copies someone may still need.
-foreach (array('rempart_settings', 'rempart_excludes', 'rempart_locations', 'rempart_channels', 'rempart_email_migrated', 'rempart_cron_key', 'rempart_last_backup', 'rempart_last_restore', 'rempart_nag_time') as $option) {
+foreach (array('backup_guard_settings', 'backup_guard_excludes', 'backup_guard_locations', 'backup_guard_channels', 'backup_guard_email_migrated', 'backup_guard_cron_key', 'backup_guard_last_backup', 'backup_guard_last_restore', 'backup_guard_nag_time') as $option) {
 	delete_option($option);
 }
-wp_clear_scheduled_hook('rempart_auto_backup');
-wp_clear_scheduled_hook('rempart_daily_cleanup');
-wp_clear_scheduled_hook('rempart_watchdog');
+wp_clear_scheduled_hook('backup_guard_auto_backup');
+wp_clear_scheduled_hook('backup_guard_daily_cleanup');
+wp_clear_scheduled_hook('backup_guard_watchdog');

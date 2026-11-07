@@ -7,12 +7,12 @@ if (!defined('ABSPATH')) {
  * Cloud accounts reached with OAuth. Each uses the person's own application credentials,
  * so no third-party relay ever sees their tokens.
  */
-abstract class Rempart_Storage_Oauth extends Rempart_Storage {
+abstract class Backup_Guard_Storage_Oauth extends Backup_Guard_Storage {
 	const CHUNK = 8388608;
 
 	/** The page the provider sends the person back to after they accept. */
 	public static function redirect_uri() {
-		return admin_url('admin.php?page=rempart-backup');
+		return admin_url('admin.php?page=backup-guard');
 	}
 
 	abstract public static function authorize_url(array $config, $state);
@@ -25,7 +25,7 @@ abstract class Rempart_Storage_Oauth extends Rempart_Storage {
 
 	protected function access_token() {
 		$id = $this->config['id'] ?? 'new';
-		$cache = 'rempart_token_' . md5($id . '|' . ($this->config['refresh_token'] ?? ''));
+		$cache = 'backup_guard_token_' . md5($id . '|' . ($this->config['refresh_token'] ?? ''));
 		$token = get_transient($cache);
 		if ($token) {
 			return $token;
@@ -34,9 +34,9 @@ abstract class Rempart_Storage_Oauth extends Rempart_Storage {
 		if (!empty($fresh['refresh']) && $fresh['refresh'] !== ($this->config['refresh_token'] ?? '')) {
 			$this->config['refresh_token'] = $fresh['refresh'];
 			if (!empty($this->config['id'])) {
-				Rempart_Locations::remember($this->config['id'], array('refresh_token' => $fresh['refresh']));
+				Backup_Guard_Locations::remember($this->config['id'], array('refresh_token' => $fresh['refresh']));
 			}
-			$cache = 'rempart_token_' . md5($id . '|' . $fresh['refresh']);
+			$cache = 'backup_guard_token_' . md5($id . '|' . $fresh['refresh']);
 		}
 		set_transient($cache, $fresh['token'], max(60, (int) $fresh['expires'] - time() - 120));
 		return $fresh['token'];
@@ -49,13 +49,13 @@ abstract class Rempart_Storage_Oauth extends Rempart_Storage {
 	protected static function post_form($url, array $fields) {
 		$response = wp_remote_post($url, array('body' => $fields, 'timeout' => 60));
 		if (is_wp_error($response)) {
-			throw new RuntimeException(sprintf(__('Connexion impossible : %s', 'rempart-backup'), $response->get_error_message()));
+			throw new RuntimeException(sprintf(__('Connexion impossible : %s', 'backup-guard'), $response->get_error_message()));
 		}
 		$data = json_decode(wp_remote_retrieve_body($response), true);
 		$code = (int) wp_remote_retrieve_response_code($response);
 		if (!is_array($data) || $code >= 400) {
 			$why = is_array($data) ? (string) ($data['error_description'] ?? $data['error'] ?? 'code ' . $code) : 'code ' . $code;
-			throw new RuntimeException(sprintf(__('Le service refuse l\'autorisation : %s', 'rempart-backup'), $why));
+			throw new RuntimeException(sprintf(__('Le service refuse l\'autorisation : %s', 'backup-guard'), $why));
 		}
 		return $data;
 	}
@@ -85,18 +85,18 @@ abstract class Rempart_Storage_Oauth extends Rempart_Storage {
 				return $json['error'];
 			}
 		}
-		return sprintf(__('code %s', 'rempart-backup'), $response['code']);
+		return sprintf(__('code %s', 'backup-guard'), $response['code']);
 	}
 
 	public function test() {
-		$probe = '.rempart-test-' . wp_generate_password(6, false);
+		$probe = '.backup-guard-test-' . wp_generate_password(6, false);
 		$this->put_string($probe, 'ok');
 		$this->delete($probe);
 	}
 }
 
 /** Google Drive, limited to the files this plugin creates (scope drive.file). */
-class Rempart_Storage_Gdrive extends Rempart_Storage_Oauth {
+class Backup_Guard_Storage_Gdrive extends Backup_Guard_Storage_Oauth {
 	// Must be a multiple of 256 KiB.
 	const CHUNK = 2097152;
 	const API = 'https://www.googleapis.com/drive/v3';
@@ -123,7 +123,7 @@ class Rempart_Storage_Gdrive extends Rempart_Storage_Oauth {
 			'grant_type'    => 'authorization_code',
 		));
 		if (empty($data['refresh_token'])) {
-			throw new RuntimeException(__('Google n\'a pas donné d\'autorisation durable. Retirez l\'accès dans votre compte Google puis recommencez.', 'rempart-backup'));
+			throw new RuntimeException(__('Google n\'a pas donné d\'autorisation durable. Retirez l\'accès dans votre compte Google puis recommencez.', 'backup-guard'));
 		}
 		return array('refresh_token' => $data['refresh_token']);
 	}
@@ -145,12 +145,12 @@ class Rempart_Storage_Gdrive extends Rempart_Storage_Oauth {
 			return $this->folder_id;
 		}
 		$parent = 'root';
-		$folder = $this->folder() === '' ? 'Rempart Backup' : $this->folder();
+		$folder = $this->folder() === '' ? 'Backup Guard' : $this->folder();
 		foreach (explode('/', $folder) as $name) {
 			$q = "name = '" . addcslashes($name, "'\\") . "' and mimeType = 'application/vnd.google-apps.folder' and '" . $parent . "' in parents and trashed = false";
 			$found = $this->json('GET', self::API . '/files?' . http_build_query(array('q' => $q, 'fields' => 'files(id)')));
 			if ($found['code'] !== 200) {
-				throw new RuntimeException(sprintf(__('Google Drive : %s', 'rempart-backup'), self::why($found)));
+				throw new RuntimeException(sprintf(__('Google Drive : %s', 'backup-guard'), self::why($found)));
 			}
 			if (!empty($found['json']['files'][0]['id'])) {
 				$parent = $found['json']['files'][0]['id'];
@@ -158,7 +158,7 @@ class Rempart_Storage_Gdrive extends Rempart_Storage_Oauth {
 			}
 			$made = $this->json('POST', self::API . '/files', array('name' => $name, 'mimeType' => 'application/vnd.google-apps.folder', 'parents' => array($parent)));
 			if ($made['code'] !== 200 || empty($made['json']['id'])) {
-				throw new RuntimeException(sprintf(__('Google Drive : création du dossier impossible (%s).', 'rempart-backup'), self::why($made)));
+				throw new RuntimeException(sprintf(__('Google Drive : création du dossier impossible (%s).', 'backup-guard'), self::why($made)));
 			}
 			$parent = $made['json']['id'];
 		}
@@ -182,7 +182,7 @@ class Rempart_Storage_Gdrive extends Rempart_Storage_Oauth {
 			}
 			$response = $this->json('GET', self::API . '/files?' . http_build_query($query));
 			if ($response['code'] !== 200) {
-				throw new RuntimeException(sprintf(__('Google Drive : %s', 'rempart-backup'), self::why($response)));
+				throw new RuntimeException(sprintf(__('Google Drive : %s', 'backup-guard'), self::why($response)));
 			}
 			foreach ((array) ($response['json']['files'] ?? array()) as $file) {
 				$files[] = array('name' => $file['name'], 'size' => (float) ($file['size'] ?? 0));
@@ -197,7 +197,7 @@ class Rempart_Storage_Gdrive extends Rempart_Storage_Oauth {
 		if (empty($state['session'])) {
 			$response = $this->json('POST', self::UPLOAD . '/files?uploadType=resumable', array('name' => $remote, 'parents' => array($this->folder_id())), array('X-Upload-Content-Length' => (string) $total, 'X-Upload-Content-Type' => 'application/gzip'));
 			if ($response['code'] !== 200 || empty($response['headers']['location'])) {
-				throw new RuntimeException(sprintf(__('Google Drive : envoi refusé (%s).', 'rempart-backup'), self::why($response)));
+				throw new RuntimeException(sprintf(__('Google Drive : envoi refusé (%s).', 'backup-guard'), self::why($response)));
 			}
 			$state['session'] = (string) $response['headers']['location'];
 			$state['offset'] = 0;
@@ -216,7 +216,7 @@ class Rempart_Storage_Gdrive extends Rempart_Storage_Oauth {
 			} elseif ($response['code'] === 200 || $response['code'] === 201) {
 				$state['offset'] = $total;
 			} else {
-				throw new RuntimeException(sprintf(__('Google Drive : envoi interrompu (%s).', 'rempart-backup'), self::why($response)));
+				throw new RuntimeException(sprintf(__('Google Drive : envoi interrompu (%s).', 'backup-guard'), self::why($response)));
 			}
 			call_user_func($beat, $state['offset'], $total);
 		}
@@ -228,7 +228,7 @@ class Rempart_Storage_Gdrive extends Rempart_Storage_Oauth {
 			try {
 				$this->http('DELETE', $state['session'], array('Content-Length' => '0'));
 			} catch (Exception $e) {
-				rempart_debug($e->getMessage());
+				backup_guard_debug($e->getMessage());
 			}
 		}
 	}
@@ -237,7 +237,7 @@ class Rempart_Storage_Gdrive extends Rempart_Storage_Oauth {
 		if (empty($state['file_id'])) {
 			$state['file_id'] = $this->file_id($remote);
 			if (!$state['file_id']) {
-				throw new RuntimeException(sprintf(__('Fichier introuvable sur Google Drive : %s', 'rempart-backup'), $remote));
+				throw new RuntimeException(sprintf(__('Fichier introuvable sur Google Drive : %s', 'backup-guard'), $remote));
 			}
 		}
 		$offset = (int) ($state['offset'] ?? 0);
@@ -249,7 +249,7 @@ class Rempart_Storage_Gdrive extends Rempart_Storage_Oauth {
 				return true;
 			}
 			if ($response['code'] !== 206 && $response['code'] !== 200) {
-				throw new RuntimeException(sprintf(__('Google Drive : téléchargement refusé (%s).', 'rempart-backup'), self::why($response)));
+				throw new RuntimeException(sprintf(__('Google Drive : téléchargement refusé (%s).', 'backup-guard'), self::why($response)));
 			}
 			self::append_local($local, $offset, $response['body']);
 			$offset += strlen($response['body']);
@@ -264,7 +264,7 @@ class Rempart_Storage_Gdrive extends Rempart_Storage_Oauth {
 	}
 
 	public function put_string($remote, $content) {
-		$boundary = 'rempart' . wp_generate_password(16, false);
+		$boundary = 'backup-guard' . wp_generate_password(16, false);
 		$existing = $this->file_id($remote);
 		$meta = $existing ? array('name' => $remote) : array('name' => $remote, 'parents' => array($this->folder_id()));
 		$body = "--{$boundary}\r\nContent-Type: application/json; charset=UTF-8\r\n\r\n" . wp_json_encode($meta)
@@ -272,18 +272,18 @@ class Rempart_Storage_Gdrive extends Rempart_Storage_Oauth {
 		$url = $existing ? self::UPLOAD . '/files/' . $existing . '?uploadType=multipart' : self::UPLOAD . '/files?uploadType=multipart';
 		$response = $this->http($existing ? 'PATCH' : 'POST', $url, $this->bearer() + array('Content-Type' => 'multipart/related; boundary=' . $boundary), $body);
 		if ($response['code'] !== 200) {
-			throw new RuntimeException(sprintf(__('Google Drive : écriture refusée (%s).', 'rempart-backup'), self::why($response)));
+			throw new RuntimeException(sprintf(__('Google Drive : écriture refusée (%s).', 'backup-guard'), self::why($response)));
 		}
 	}
 
 	public function get_string($remote) {
 		$id = $this->file_id($remote);
 		if (!$id) {
-			throw new RuntimeException(sprintf(__('Fichier introuvable sur Google Drive : %s', 'rempart-backup'), $remote));
+			throw new RuntimeException(sprintf(__('Fichier introuvable sur Google Drive : %s', 'backup-guard'), $remote));
 		}
 		$response = $this->http('GET', self::API . '/files/' . $id . '?alt=media', $this->bearer());
 		if ($response['code'] !== 200) {
-			throw new RuntimeException(sprintf(__('Google Drive : lecture refusée (%s).', 'rempart-backup'), self::why($response)));
+			throw new RuntimeException(sprintf(__('Google Drive : lecture refusée (%s).', 'backup-guard'), self::why($response)));
 		}
 		return $response['body'];
 	}
@@ -306,7 +306,7 @@ class Rempart_Storage_Gdrive extends Rempart_Storage_Oauth {
 }
 
 /** Microsoft OneDrive through Microsoft Graph. */
-class Rempart_Storage_Onedrive extends Rempart_Storage_Oauth {
+class Backup_Guard_Storage_Onedrive extends Backup_Guard_Storage_Oauth {
 	const API = 'https://graph.microsoft.com/v1.0/me/drive';
 	const LOGIN = 'https://login.microsoftonline.com/common/oauth2/v2.0';
 	const SCOPE = 'offline_access Files.ReadWrite';
@@ -347,7 +347,7 @@ class Rempart_Storage_Onedrive extends Rempart_Storage_Oauth {
 	}
 
 	private function drive_path($name = '') {
-		$folder = $this->folder() === '' ? 'Rempart Backup' : $this->folder();
+		$folder = $this->folder() === '' ? 'Backup Guard' : $this->folder();
 		$path = $folder . ($name === '' ? '' : '/' . $name);
 		return '/root:/' . implode('/', array_map('rawurlencode', explode('/', $path)));
 	}
@@ -361,7 +361,7 @@ class Rempart_Storage_Onedrive extends Rempart_Storage_Oauth {
 				return array();
 			}
 			if ($response['code'] !== 200) {
-				throw new RuntimeException(sprintf(__('OneDrive : %s', 'rempart-backup'), self::why($response)));
+				throw new RuntimeException(sprintf(__('OneDrive : %s', 'backup-guard'), self::why($response)));
 			}
 			foreach ((array) ($response['json']['value'] ?? array()) as $item) {
 				if (isset($item['file'])) {
@@ -378,7 +378,7 @@ class Rempart_Storage_Onedrive extends Rempart_Storage_Oauth {
 		if (empty($state['session'])) {
 			$response = $this->json('POST', self::API . $this->drive_path($remote) . ':/createUploadSession', array('item' => array('@microsoft.graph.conflictBehavior' => 'replace')));
 			if ($response['code'] !== 200 || empty($response['json']['uploadUrl'])) {
-				throw new RuntimeException(sprintf(__('OneDrive : envoi refusé (%s).', 'rempart-backup'), self::why($response)));
+				throw new RuntimeException(sprintf(__('OneDrive : envoi refusé (%s).', 'backup-guard'), self::why($response)));
 			}
 			$state['session'] = $response['json']['uploadUrl'];
 			$state['offset'] = 0;
@@ -392,7 +392,7 @@ class Rempart_Storage_Onedrive extends Rempart_Storage_Oauth {
 			$end = $state['offset'] + strlen($chunk) - 1;
 			$response = $this->http('PUT', $state['session'], array('Content-Range' => "bytes {$state['offset']}-{$end}/{$total}"), $chunk);
 			if (!in_array($response['code'], array(200, 201, 202), true)) {
-				throw new RuntimeException(sprintf(__('OneDrive : envoi interrompu (%s).', 'rempart-backup'), self::why($response)));
+				throw new RuntimeException(sprintf(__('OneDrive : envoi interrompu (%s).', 'backup-guard'), self::why($response)));
 			}
 			$state['offset'] += strlen($chunk);
 			call_user_func($beat, $state['offset'], $total);
@@ -405,7 +405,7 @@ class Rempart_Storage_Onedrive extends Rempart_Storage_Oauth {
 			try {
 				$this->http('DELETE', $state['session']);
 			} catch (Exception $e) {
-				rempart_debug($e->getMessage());
+				backup_guard_debug($e->getMessage());
 			}
 		}
 	}
@@ -420,7 +420,7 @@ class Rempart_Storage_Onedrive extends Rempart_Storage_Oauth {
 				return true;
 			}
 			if ($response['code'] !== 206 && $response['code'] !== 200) {
-				throw new RuntimeException(sprintf(__('OneDrive : téléchargement refusé (%s).', 'rempart-backup'), self::why($response)));
+				throw new RuntimeException(sprintf(__('OneDrive : téléchargement refusé (%s).', 'backup-guard'), self::why($response)));
 			}
 			self::append_local($local, $offset, $response['body']);
 			$offset += strlen($response['body']);
@@ -437,14 +437,14 @@ class Rempart_Storage_Onedrive extends Rempart_Storage_Oauth {
 	public function put_string($remote, $content) {
 		$response = $this->http('PUT', self::API . $this->drive_path($remote) . ':/content', $this->bearer() + array('Content-Type' => 'application/octet-stream'), $content);
 		if ($response['code'] !== 200 && $response['code'] !== 201) {
-			throw new RuntimeException(sprintf(__('OneDrive : écriture refusée (%s).', 'rempart-backup'), self::why($response)));
+			throw new RuntimeException(sprintf(__('OneDrive : écriture refusée (%s).', 'backup-guard'), self::why($response)));
 		}
 	}
 
 	public function get_string($remote) {
 		$response = $this->http('GET', self::API . $this->drive_path($remote) . ':/content', $this->bearer());
 		if ($response['code'] !== 200) {
-			throw new RuntimeException(sprintf(__('OneDrive : lecture refusée (%s).', 'rempart-backup'), self::why($response)));
+			throw new RuntimeException(sprintf(__('OneDrive : lecture refusée (%s).', 'backup-guard'), self::why($response)));
 		}
 		return $response['body'];
 	}
@@ -464,7 +464,7 @@ class Rempart_Storage_Onedrive extends Rempart_Storage_Oauth {
 }
 
 /** Dropbox. */
-class Rempart_Storage_Dropbox extends Rempart_Storage_Oauth {
+class Backup_Guard_Storage_Dropbox extends Backup_Guard_Storage_Oauth {
 	const API = 'https://api.dropboxapi.com/2';
 	const CONTENT = 'https://content.dropboxapi.com/2';
 
@@ -502,7 +502,7 @@ class Rempart_Storage_Dropbox extends Rempart_Storage_Oauth {
 	}
 
 	private function drive_path($name = '') {
-		$folder = $this->folder() === '' ? 'Rempart Backup' : $this->folder();
+		$folder = $this->folder() === '' ? 'Backup Guard' : $this->folder();
 		return '/' . $folder . ($name === '' ? '' : '/' . $name);
 	}
 
@@ -529,7 +529,7 @@ class Rempart_Storage_Dropbox extends Rempart_Storage_Oauth {
 		}
 		while (true) {
 			if ($response['code'] !== 200) {
-				throw new RuntimeException(sprintf(__('Dropbox : %s', 'rempart-backup'), self::why($response)));
+				throw new RuntimeException(sprintf(__('Dropbox : %s', 'backup-guard'), self::why($response)));
 			}
 			foreach ((array) ($response['json']['entries'] ?? array()) as $entry) {
 				if (($entry['.tag'] ?? '') === 'file') {
@@ -550,7 +550,7 @@ class Rempart_Storage_Dropbox extends Rempart_Storage_Oauth {
 			$response = $this->content_call('/files/upload_session/start', array('close' => false), '');
 			$json = json_decode($response['body'], true);
 			if ($response['code'] !== 200 || empty($json['session_id'])) {
-				throw new RuntimeException(sprintf(__('Dropbox : envoi refusé (%s).', 'rempart-backup'), self::why($response)));
+				throw new RuntimeException(sprintf(__('Dropbox : envoi refusé (%s).', 'backup-guard'), self::why($response)));
 			}
 			$state['session'] = $json['session_id'];
 			$state['offset'] = 0;
@@ -563,7 +563,7 @@ class Rempart_Storage_Dropbox extends Rempart_Storage_Oauth {
 			$chunk = self::read_range($local, (int) $state['offset'], self::CHUNK);
 			$response = $this->content_call('/files/upload_session/append_v2', array('cursor' => array('session_id' => $state['session'], 'offset' => (int) $state['offset']), 'close' => false), $chunk);
 			if ($response['code'] !== 200) {
-				throw new RuntimeException(sprintf(__('Dropbox : envoi interrompu (%s).', 'rempart-backup'), self::why($response)));
+				throw new RuntimeException(sprintf(__('Dropbox : envoi interrompu (%s).', 'backup-guard'), self::why($response)));
 			}
 			$state['offset'] += strlen($chunk);
 			call_user_func($beat, $state['offset'], $total);
@@ -573,7 +573,7 @@ class Rempart_Storage_Dropbox extends Rempart_Storage_Oauth {
 			'commit' => array('path' => $this->drive_path($remote), 'mode' => 'overwrite', 'mute' => true),
 		), '');
 		if ($response['code'] !== 200) {
-			throw new RuntimeException(sprintf(__('Dropbox : fin de l\'envoi refusée (%s).', 'rempart-backup'), self::why($response)));
+			throw new RuntimeException(sprintf(__('Dropbox : fin de l\'envoi refusée (%s).', 'backup-guard'), self::why($response)));
 		}
 		return true;
 	}
@@ -596,7 +596,7 @@ class Rempart_Storage_Dropbox extends Rempart_Storage_Oauth {
 				return true;
 			}
 			if ($response['code'] !== 206 && $response['code'] !== 200) {
-				throw new RuntimeException(sprintf(__('Dropbox : téléchargement refusé (%s).', 'rempart-backup'), self::why($response)));
+				throw new RuntimeException(sprintf(__('Dropbox : téléchargement refusé (%s).', 'backup-guard'), self::why($response)));
 			}
 			self::append_local($local, $offset, $response['body']);
 			$offset += strlen($response['body']);
@@ -613,7 +613,7 @@ class Rempart_Storage_Dropbox extends Rempart_Storage_Oauth {
 	public function put_string($remote, $content) {
 		$response = $this->content_call('/files/upload', array('path' => $this->drive_path($remote), 'mode' => 'overwrite', 'mute' => true), $content);
 		if ($response['code'] !== 200) {
-			throw new RuntimeException(sprintf(__('Dropbox : écriture refusée (%s).', 'rempart-backup'), self::why($response)));
+			throw new RuntimeException(sprintf(__('Dropbox : écriture refusée (%s).', 'backup-guard'), self::why($response)));
 		}
 	}
 
@@ -623,7 +623,7 @@ class Rempart_Storage_Dropbox extends Rempart_Storage_Oauth {
 			'Content-Type'    => 'text/plain',
 		), '');
 		if ($response['code'] !== 200) {
-			throw new RuntimeException(sprintf(__('Dropbox : lecture refusée (%s).', 'rempart-backup'), self::why($response)));
+			throw new RuntimeException(sprintf(__('Dropbox : lecture refusée (%s).', 'backup-guard'), self::why($response)));
 		}
 		return $response['body'];
 	}
@@ -642,7 +642,7 @@ class Rempart_Storage_Dropbox extends Rempart_Storage_Oauth {
 }
 
 /** pCloud. Its tokens don't expire; the API host depends on the account's region. */
-class Rempart_Storage_Pcloud extends Rempart_Storage_Oauth {
+class Backup_Guard_Storage_Pcloud extends Backup_Guard_Storage_Oauth {
 	public static function authorize_url(array $config, $state) {
 		return 'https://my.pcloud.com/oauth2/authorize?' . http_build_query(array(
 			'client_id'     => $config['client_id'],
@@ -660,11 +660,11 @@ class Rempart_Storage_Pcloud extends Rempart_Storage_Oauth {
 			'code'          => $code,
 		)), array('timeout' => 60));
 		if (is_wp_error($response)) {
-			throw new RuntimeException(sprintf(__('Connexion impossible : %s', 'rempart-backup'), $response->get_error_message()));
+			throw new RuntimeException(sprintf(__('Connexion impossible : %s', 'backup-guard'), $response->get_error_message()));
 		}
 		$data = json_decode(wp_remote_retrieve_body($response), true);
 		if (empty($data['access_token'])) {
-			throw new RuntimeException(sprintf(__('pCloud refuse l\'autorisation : %s', 'rempart-backup'), $data['error'] ?? __('réponse inconnue', 'rempart-backup')));
+			throw new RuntimeException(sprintf(__('pCloud refuse l\'autorisation : %s', 'backup-guard'), $data['error'] ?? __('réponse inconnue', 'backup-guard')));
 		}
 		return array('refresh_token' => $data['access_token'], 'api_host' => $host);
 	}
@@ -679,13 +679,13 @@ class Rempart_Storage_Pcloud extends Rempart_Storage_Oauth {
 		$response = $this->http($body === null ? 'GET' : 'PUT', $url, $this->bearer(), $body);
 		$json = json_decode($response['body'], true);
 		if (!is_array($json) || !empty($json['result'])) {
-			throw new RuntimeException(sprintf(__('pCloud : %s', 'rempart-backup'), is_array($json) ? ($json['error'] ?? sprintf(__('erreur %s', 'rempart-backup'), $json['result'])) : __('réponse illisible', 'rempart-backup')));
+			throw new RuntimeException(sprintf(__('pCloud : %s', 'backup-guard'), is_array($json) ? ($json['error'] ?? sprintf(__('erreur %s', 'backup-guard'), $json['result'])) : __('réponse illisible', 'backup-guard')));
 		}
 		return $json;
 	}
 
 	private function path($name = '') {
-		$folder = $this->folder() === '' ? 'Rempart Backup' : $this->folder();
+		$folder = $this->folder() === '' ? 'Backup Guard' : $this->folder();
 		return '/' . $folder . ($name === '' ? '' : '/' . $name);
 	}
 
@@ -755,7 +755,7 @@ class Rempart_Storage_Pcloud extends Rempart_Storage_Oauth {
 				return true;
 			}
 			if ($response['code'] !== 206 && $response['code'] !== 200) {
-				throw new RuntimeException(sprintf(__('pCloud : téléchargement refusé (code %s).', 'rempart-backup'), $response['code']));
+				throw new RuntimeException(sprintf(__('pCloud : téléchargement refusé (code %s).', 'backup-guard'), $response['code']));
 			}
 			self::append_local($local, $offset, $response['body']);
 			$offset += strlen($response['body']);
@@ -779,7 +779,7 @@ class Rempart_Storage_Pcloud extends Rempart_Storage_Oauth {
 	public function get_string($remote) {
 		$response = $this->http('GET', $this->file_link($remote));
 		if ($response['code'] !== 200) {
-			throw new RuntimeException(sprintf(__('pCloud : lecture refusée (code %s).', 'rempart-backup'), $response['code']));
+			throw new RuntimeException(sprintf(__('pCloud : lecture refusée (code %s).', 'backup-guard'), $response['code']));
 		}
 		return $response['body'];
 	}
@@ -788,7 +788,7 @@ class Rempart_Storage_Pcloud extends Rempart_Storage_Oauth {
 		try {
 			$this->call('deletefile', array('path' => $this->path($remote)));
 		} catch (RuntimeException $e) {
-			rempart_debug($e->getMessage());
+			backup_guard_debug($e->getMessage());
 		}
 	}
 

@@ -7,7 +7,7 @@ if (!defined('ABSPATH')) {
  * Dumps the database to an SQL file, a little at a time.
  * Progress lives in the $cursor array so the next slice can carry on.
  */
-class Rempart_Database {
+class Backup_Guard_Database {
 	const ROWS_PER_BATCH = 500;
 	const MAX_STATEMENT_BYTES = 524288;
 
@@ -26,13 +26,13 @@ class Rempart_Database {
 				$tables[] = $row[0];
 			}
 		}
-		$header = "-- Rempart Backup SQL dump\n"
+		$header = "-- Backup Guard SQL dump\n"
 			. '-- Date: ' . gmdate('Y-m-d H:i:s') . " UTC\n"
 			. "SET NAMES utf8mb4;\n"
 			. "SET FOREIGN_KEY_CHECKS=0;\n"
 			. "SET SQL_MODE='NO_AUTO_VALUE_ON_ZERO';\n\n";
 		if (file_put_contents($file, $header) === false) {
-			throw new RuntimeException(__('Impossible de créer le fichier de la base de données.', 'rempart-backup'));
+			throw new RuntimeException(__('Impossible de créer le fichier de la base de données.', 'backup-guard'));
 		}
 		return array(
 			'tables'    => $tables,
@@ -55,7 +55,7 @@ class Rempart_Database {
 		$wpdb->query('SET NAMES utf8mb4');
 		$handle = @fopen($file, 'c+b');
 		if (!$handle) {
-			throw new RuntimeException(__('Impossible d\'ouvrir le fichier de la base de données.', 'rempart-backup'));
+			throw new RuntimeException(__('Impossible d\'ouvrir le fichier de la base de données.', 'backup-guard'));
 		}
 		ftruncate($handle, $cursor['committed']);
 		fseek($handle, 0, SEEK_END);
@@ -72,7 +72,7 @@ class Rempart_Database {
 			if ($cursor['stage'] === 'structure') {
 				$create = $wpdb->get_row('SHOW CREATE TABLE `' . self::ident($table) . '`', ARRAY_N);
 				if (empty($create[1])) {
-					throw new RuntimeException(sprintf(__('Lecture impossible de la table %1$s : %2$s', 'rempart-backup'), $table, $wpdb->last_error));
+					throw new RuntimeException(sprintf(__('Lecture impossible de la table %1$s : %2$s', 'backup-guard'), $table, $wpdb->last_error));
 				}
 				fwrite($handle, 'DROP TABLE IF EXISTS `' . self::ident($table) . "`;\n" . $create[1] . ";\n\n");
 				$cursor['stage'] = 'rows';
@@ -147,7 +147,7 @@ class Rempart_Database {
 		}
 		$rows = $wpdb->get_results($sql, ARRAY_N);
 		if ($wpdb->last_error) {
-			throw new RuntimeException(sprintf(__('Lecture impossible de la table %1$s : %2$s', 'rempart-backup'), $table, $wpdb->last_error));
+			throw new RuntimeException(sprintf(__('Lecture impossible de la table %1$s : %2$s', 'backup-guard'), $table, $wpdb->last_error));
 		}
 		if (!$rows) {
 			return true;

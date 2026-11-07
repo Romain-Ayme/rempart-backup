@@ -7,7 +7,7 @@ if (!defined('ABSPATH')) {
  * A place backups can be kept. Uploads and downloads move in steps that stop at a deadline
  * and keep their progress in $state, so a large file can span many requests.
  */
-abstract class Rempart_Storage {
+abstract class Backup_Guard_Storage {
 	/** @var array The location's settings, secrets included. */
 	protected $config;
 
@@ -38,7 +38,7 @@ abstract class Rempart_Storage {
 		try {
 			$this->delete($remote);
 		} catch (Exception $e) {
-			rempart_debug(__('Nettoyage distant : ', 'rempart-backup') . $e->getMessage());
+			backup_guard_debug(__('Nettoyage distant : ', 'backup-guard') . $e->getMessage());
 		}
 	}
 
@@ -72,7 +72,7 @@ abstract class Rempart_Storage {
 		}
 		$response = wp_remote_request($url, $args);
 		if (is_wp_error($response)) {
-			throw new RuntimeException(sprintf(__('Connexion impossible : %s', 'rempart-backup'), $response->get_error_message()));
+			throw new RuntimeException(sprintf(__('Connexion impossible : %s', 'backup-guard'), $response->get_error_message()));
 		}
 		return array(
 			'code'    => (int) wp_remote_retrieve_response_code($response),
@@ -84,7 +84,7 @@ abstract class Rempart_Storage {
 	protected static function read_range($local, $offset, $length) {
 		$handle = fopen($local, 'rb');
 		if (!$handle) {
-			throw new RuntimeException(__('Lecture impossible du fichier local.', 'rempart-backup'));
+			throw new RuntimeException(__('Lecture impossible du fichier local.', 'backup-guard'));
 		}
 		fseek($handle, $offset);
 		$data = fread($handle, $length);
@@ -95,14 +95,14 @@ abstract class Rempart_Storage {
 	protected static function append_local($local, $offset, $data) {
 		$handle = fopen($local, 'c+b');
 		if (!$handle) {
-			throw new RuntimeException(__('Écriture impossible du fichier local.', 'rempart-backup'));
+			throw new RuntimeException(__('Écriture impossible du fichier local.', 'backup-guard'));
 		}
 		ftruncate($handle, $offset);
 		fseek($handle, $offset);
 		$written = fwrite($handle, $data);
 		fclose($handle);
 		if ($written !== strlen($data)) {
-			throw new RuntimeException(__('Écriture impossible : le disque est peut-être plein.', 'rempart-backup'));
+			throw new RuntimeException(__('Écriture impossible : le disque est peut-être plein.', 'backup-guard'));
 		}
 	}
 
@@ -110,22 +110,22 @@ abstract class Rempart_Storage {
 	public static function make(array $location) {
 		$protocol = $location['protocol'];
 		$map = array(
-			'ftp'      => 'Rempart_Storage_Ftp',
-			'ftps'     => 'Rempart_Storage_Ftp',
-			'sftp'     => 'Rempart_Storage_Sftp',
-			'webdav'   => 'Rempart_Storage_Webdav',
-			's3'       => 'Rempart_Storage_S3',
-			'gdrive'   => 'Rempart_Storage_Gdrive',
-			'onedrive' => 'Rempart_Storage_Onedrive',
-			'dropbox'  => 'Rempart_Storage_Dropbox',
-			'pcloud'   => 'Rempart_Storage_Pcloud',
+			'ftp'      => 'Backup_Guard_Storage_Ftp',
+			'ftps'     => 'Backup_Guard_Storage_Ftp',
+			'sftp'     => 'Backup_Guard_Storage_Sftp',
+			'webdav'   => 'Backup_Guard_Storage_Webdav',
+			's3'       => 'Backup_Guard_Storage_S3',
+			'gdrive'   => 'Backup_Guard_Storage_Gdrive',
+			'onedrive' => 'Backup_Guard_Storage_Onedrive',
+			'dropbox'  => 'Backup_Guard_Storage_Dropbox',
+			'pcloud'   => 'Backup_Guard_Storage_Pcloud',
 		);
 		if (empty($map[$protocol])) {
-			throw new RuntimeException(sprintf(__('Type de stockage inconnu : %s', 'rempart-backup'), $protocol));
+			throw new RuntimeException(sprintf(__('Type de stockage inconnu : %s', 'backup-guard'), $protocol));
 		}
 		$file = in_array($protocol, array('gdrive', 'onedrive', 'dropbox', 'pcloud'), true) ? 'oauth' : ($protocol === 'ftps' ? 'ftp' : $protocol);
 		require_once __DIR__ . '/class-' . $file . '.php';
 		$class = $map[$protocol];
-		return new $class(Rempart_Locations::config_of($location));
+		return new $class(Backup_Guard_Locations::config_of($location));
 	}
 }

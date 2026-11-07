@@ -3,7 +3,7 @@
 
 	// Texts come from the page in the site's language; the French text itself is the fallback.
 	function T(text) {
-		var map = (window.RempartData && RempartData.i18n) || {};
+		var map = (window.BackupGuardData && BackupGuardData.i18n) || {};
 		var out = Object.prototype.hasOwnProperty.call(map, text) ? map[text] : text;
 		var args = Array.prototype.slice.call(arguments, 1);
 		var next = 0;
@@ -11,13 +11,13 @@
 	}
 
 
-	var D = window.RempartData;
+	var D = window.BackupGuardData;
 	var $ = function (s, r) { return (r || document).querySelector(s); };
 	var $$ = function (s, r) { return Array.prototype.slice.call((r || document).querySelectorAll(s)); };
 
 	function call(action, params, file) {
 		var body = new FormData();
-		body.append('action', 'rempart_' + action);
+		body.append('action', 'backup_guard_' + action);
 		body.append('_ajax_nonce', D.nonce);
 		Object.keys(params || {}).forEach(function (k) {
 			var v = params[k];
@@ -43,8 +43,8 @@
 	function showTab() {
 		var name = (location.hash || '#dashboard').slice(1);
 		if (!$('#tab-' + name)) { name = 'dashboard'; }
-		$$('.rempart-tab').forEach(function (t) { t.hidden = t.id !== 'tab-' + name; });
-		$$('.rempart-tabs a').forEach(function (a) {
+		$$('.backup-guard-tab').forEach(function (t) { t.hidden = t.id !== 'tab-' + name; });
+		$$('.backup-guard-tabs a').forEach(function (a) {
 			a.classList.toggle('nav-tab-active', a.getAttribute('href') === '#' + name);
 		});
 	}
@@ -54,8 +54,8 @@
 	/* ----- Progress window ----- */
 
 	var P = {
-		box: $('#rempart-progress'), title: $('#rempart-progress-title'), bar: $('#rempart-progress-bar'), percent: $('#rempart-progress-percent'),
-		log: $('#rempart-progress-log'), stop: $('#rempart-progress-stop'), force: $('#rempart-progress-force'), close: $('#rempart-progress-close'), hint: $('#rempart-progress-hint')
+		box: $('#backup-guard-progress'), title: $('#backup-guard-progress-title'), bar: $('#backup-guard-progress-bar'), percent: $('#backup-guard-progress-percent'),
+		log: $('#backup-guard-progress-log'), stop: $('#backup-guard-progress-stop'), force: $('#backup-guard-progress-force'), close: $('#backup-guard-progress-close'), hint: $('#backup-guard-progress-hint')
 	};
 	var from = 0;
 	var timer = null;
@@ -181,7 +181,7 @@
 	});
 	P.close.addEventListener('click', function () { location.reload(); });
 
-	var form = $('#rempart-backup-form');
+	var form = $('#backup-guard-form');
 	if (form) {
 		form.addEventListener('submit', function (e) {
 			e.preventDefault();
@@ -192,7 +192,7 @@
 				location: form.elements.location.value,
 				note: form.elements.note.value
 			};
-			var btn = $('.rempart-go', form);
+			var btn = $('.backup-guard-go', form);
 			btn.disabled = true;
 			P.hint.hidden = false;
 			call('start_backup', data).then(function () {
@@ -206,19 +206,19 @@
 
 	/* ----- Rules, schedule ----- */
 
-	var schedule = $('#rempart-schedule');
+	var schedule = $('#backup-guard-schedule');
 	function syncSchedule() {
-		$('#rempart-cron-row').hidden = schedule.value !== 'custom';
+		$('#backup-guard-cron-row').hidden = schedule.value !== 'custom';
 		var kind = schedule.value === '' ? 'none' : (schedule.value === 'custom' ? 'custom' : 'auto');
-		$$('.rempart-cron-note p[data-for]').forEach(function (p) { p.hidden = p.dataset.for !== kind; });
+		$$('.backup-guard-cron-note p[data-for]').forEach(function (p) { p.hidden = p.dataset.for !== kind; });
 	}
 	if (schedule) {
 		schedule.addEventListener('change', syncSchedule);
 		syncSchedule();
 	}
-	var rotation = $('#rempart-rotation');
-	var rotationCustom = $('#rempart-rotation-custom');
-	var rotationWarn = $('#rempart-rotation-warning');
+	var rotation = $('#backup-guard-rotation');
+	var rotationCustom = $('#backup-guard-rotation-custom');
+	var rotationWarn = $('#backup-guard-rotation-warning');
 	function syncRotation() {
 		var custom = rotation.value === 'custom';
 		rotationCustom.hidden = !custom;
@@ -230,7 +230,7 @@
 		syncRotation();
 	}
 
-	$$('.rempart-copy').forEach(function (b) {
+	$$('.backup-guard-copy').forEach(function (b) {
 		b.addEventListener('click', function () {
 			var text = $(b.dataset.copy).textContent;
 			navigator.clipboard.writeText(text).then(function () {
@@ -249,7 +249,7 @@
 		span.textContent = text;
 		var del = document.createElement('button');
 		del.type = 'button';
-		del.className = 'button-link rempart-rule-del';
+		del.className = 'button-link backup-guard-rule-del';
 		del.setAttribute('aria-label', T('Retirer'));
 		del.innerHTML = '<span class="dashicons dashicons-no-alt"></span>';
 		li.appendChild(span);
@@ -259,20 +259,20 @@
 	}
 
 	var ruleLabels = { extension: T('Extension'), beginning: T('Commence par'), end: T('Finit par'), anywhere: T('Contient') };
-	var ruleAdd = $('#rempart-rule-add');
+	var ruleAdd = $('#backup-guard-rule-add');
 	if (ruleAdd) {
 		ruleAdd.addEventListener('click', function () {
-			var type = $('#rempart-rule-type').value;
-			var input = $('#rempart-rule-pattern');
+			var type = $('#backup-guard-rule-type').value;
+			var input = $('#backup-guard-rule-pattern');
 			if (!input.value.trim()) { return; }
 			call('exclude_add', { type: type, pattern: input.value.trim() }).then(function (d) {
-				$('#rempart-rules-pattern').appendChild(ruleRow(type, d.key, ruleLabels[type] + ' : ' + d.pattern));
+				$('#backup-guard-rules-pattern').appendChild(ruleRow(type, d.key, ruleLabels[type] + ' : ' + d.pattern));
 				input.value = '';
 			}).catch(function (e) { alert(e.message); });
 		});
 	}
 	document.addEventListener('click', function (e) {
-		var del = e.target.closest ? e.target.closest('.rempart-rule-del') : null;
+		var del = e.target.closest ? e.target.closest('.backup-guard-rule-del') : null;
 		if (!del) { return; }
 		var li = del.closest('li');
 		call('exclude_delete', { type: li.dataset.type, key: li.dataset.key }).then(function () { li.remove(); }).catch(function (x) { alert(x.message); });
@@ -287,7 +287,7 @@
 			items.forEach(function (item) {
 				var li = document.createElement('li');
 				var node = document.createElement('div');
-				node.className = 'rempart-node';
+				node.className = 'backup-guard-node';
 				var toggle = document.createElement('button');
 				toggle.type = 'button';
 				toggle.className = 'toggle';
@@ -301,7 +301,7 @@
 				add.textContent = T('Exclure');
 				add.addEventListener('click', function () {
 					call('exclude_add', { type: 'exact', pattern: item.path }).then(function (d) {
-						$('#rempart-rules-exact').appendChild(ruleRow('exact', d.key, d.pattern));
+						$('#backup-guard-rules-exact').appendChild(ruleRow('exact', d.key, d.pattern));
 						add.disabled = true;
 						add.textContent = T('Exclu');
 					}).catch(function (e) { alert(e.message); });
@@ -328,33 +328,33 @@
 		}).catch(function (e) { ul.textContent = e.message; });
 	}
 
-	var treeOpen = $('#rempart-tree-open');
+	var treeOpen = $('#backup-guard-tree-open');
 	if (treeOpen) {
 		treeOpen.addEventListener('click', function () {
-			$('#rempart-tree-box').hidden = false;
-			renderTree($('#rempart-tree-root'), '');
+			$('#backup-guard-tree-box').hidden = false;
+			renderTree($('#backup-guard-tree-root'), '');
 		});
-		$('#rempart-tree-close').addEventListener('click', function () { $('#rempart-tree-box').hidden = true; });
+		$('#backup-guard-tree-close').addEventListener('click', function () { $('#backup-guard-tree-box').hidden = true; });
 	}
 
 	/* ----- Locations ----- */
 
-	var locCard = $('#rempart-location-form-card');
-	var locForm = $('#rempart-location-form');
-	var locProtocol = $('#rempart-loc-protocol');
+	var locCard = $('#backup-guard-location-form-card');
+	var locForm = $('#backup-guard-location-form');
+	var locProtocol = $('#backup-guard-loc-protocol');
 
 	/** S3 services: show the example region, the address pattern and the hint of the chosen one. */
 	function applyS3Preset() {
-		var service = $('#rempart-s3-service');
+		var service = $('#backup-guard-s3-service');
 		if (!service) { return; }
 		var all = JSON.parse(service.dataset.presets || '{}');
 		var preset = all[service.value] || {};
-		$('#rempart-s3-region').placeholder = preset.region ? T('par exemple %s', preset.region) : '';
-		$('#rempart-s3-endpoint').placeholder = preset.example || '';
-		var hint = $('#rempart-s3-hint');
+		$('#backup-guard-s3-region').placeholder = preset.region ? T('par exemple %s', preset.region) : '';
+		$('#backup-guard-s3-endpoint').placeholder = preset.example || '';
+		var hint = $('#backup-guard-s3-hint');
 		if (!hint) {
 			hint = document.createElement('p');
-			hint.id = 'rempart-s3-hint';
+			hint.id = 'backup-guard-s3-hint';
 			hint.className = 'description';
 			service.parentNode.appendChild(hint);
 		}
@@ -364,7 +364,7 @@
 	function showLocationFields() {
 		var chosen = locProtocol.value;
 		var oauth = false;
-		$$('.rempart-loc-fields').forEach(function (g) {
+		$$('.backup-guard-loc-fields').forEach(function (g) {
 			var on = g.dataset.protocol === chosen;
 			g.hidden = !on;
 			// Fields of hidden types must not be sent, nor block the form.
@@ -375,17 +375,17 @@
 			if (on) { oauth = g.dataset.oauth === '1'; }
 		});
 		applyS3Preset();
-		$('.rempart-oauth-help', locForm).hidden = !oauth;
-		$('#rempart-loc-submit').textContent = oauth && !locForm.elements.id.value ? T('Enregistrer et connecter le compte') : T('Enregistrer');
+		$('.backup-guard-oauth-help', locForm).hidden = !oauth;
+		$('#backup-guard-loc-submit').textContent = oauth && !locForm.elements.id.value ? T('Enregistrer et connecter le compte') : T('Enregistrer');
 	}
 
 	function resetLocationForm(values) {
 		locForm.elements.id.value = values ? values.id : '';
-		$('#rempart-loc-name').value = values ? values.name : '';
+		$('#backup-guard-loc-name').value = values ? values.name : '';
 		locProtocol.value = values ? values.protocol : 'ftp';
 		locProtocol.disabled = false;
-		$$('.rempart-loc-fields input,.rempart-loc-fields select,.rempart-loc-fields textarea', locForm).forEach(function (el) {
-			var group = el.closest('.rempart-loc-fields');
+		$$('.backup-guard-loc-fields input,.backup-guard-loc-fields select,.backup-guard-loc-fields textarea', locForm).forEach(function (el) {
+			var group = el.closest('.backup-guard-loc-fields');
 			var mine = values && group.dataset.protocol === values.protocol;
 			var val = mine && values[el.name] !== undefined ? values[el.name] : (el.dataset.default || '');
 			if (el.type === 'checkbox') {
@@ -396,8 +396,8 @@
 				el.value = val;
 			}
 		});
-		$$('.rempart-secret-note', locForm).forEach(function (n) { n.hidden = !values; });
-		$('#rempart-location-form-title').textContent = values ? T('Modifier l\'emplacement') : T('Ajouter un emplacement');
+		$$('.backup-guard-secret-note', locForm).forEach(function (n) { n.hidden = !values; });
+		$('#backup-guard-location-form-title').textContent = values ? T('Modifier l\'emplacement') : T('Ajouter un emplacement');
 		showLocationFields();
 		locCard.hidden = false;
 		locCard.scrollIntoView({ behavior: 'smooth' });
@@ -405,14 +405,14 @@
 
 	if (locForm) {
 		locProtocol.addEventListener('change', showLocationFields);
-		var s3Service = $('#rempart-s3-service');
+		var s3Service = $('#backup-guard-s3-service');
 		if (s3Service) { s3Service.addEventListener('change', applyS3Preset); }
-		$('#rempart-add-location').addEventListener('click', function () { resetLocationForm(null); });
-		$('#rempart-loc-cancel').addEventListener('click', function () { locCard.hidden = true; });
-		$$('.rempart-edit').forEach(function (b) {
+		$('#backup-guard-add-location').addEventListener('click', function () { resetLocationForm(null); });
+		$('#backup-guard-loc-cancel').addEventListener('click', function () { locCard.hidden = true; });
+		$$('.backup-guard-edit').forEach(function (b) {
 			b.addEventListener('click', function () { resetLocationForm(JSON.parse(b.dataset.location)); });
 		});
-		$$('.rempart-test').forEach(function (b) {
+		$$('.backup-guard-test').forEach(function (b) {
 			b.addEventListener('click', function () {
 				var old = b.textContent;
 				b.disabled = true;
@@ -423,13 +423,13 @@
 				});
 			});
 		});
-		$$('.rempart-quota').forEach(function (b) {
+		$$('.backup-guard-quota').forEach(function (b) {
 			b.addEventListener('click', function () {
 				b.textContent = '…';
 				call('quota', { id: b.dataset.id }).then(function (d) { b.textContent = d.text; }).catch(function (e) { b.textContent = '-'; alert(e.message); });
 			});
 		});
-		$$('.rempart-confirm').forEach(function (f) {
+		$$('.backup-guard-confirm').forEach(function (f) {
 			f.addEventListener('submit', function (e) {
 				if (!confirm(f.dataset.confirm)) { e.preventDefault(); }
 			});
@@ -438,13 +438,13 @@
 
 	/* ----- Notification channels ----- */
 
-	var chForm = $('#rempart-ch-form');
+	var chForm = $('#backup-guard-ch-form');
 	if (chForm) {
-		var chCard = $('#rempart-ch-card');
-		var chType = $('#rempart-ch-type');
+		var chCard = $('#backup-guard-ch-card');
+		var chType = $('#backup-guard-ch-type');
 
 		var showChannelFields = function () {
-			$$('.rempart-ch-fields', chForm).forEach(function (g) {
+			$$('.backup-guard-ch-fields', chForm).forEach(function (g) {
 				var on = g.dataset.type === chType.value;
 				g.hidden = !on;
 				// Fields of other services must neither be sent nor block the form.
@@ -462,24 +462,24 @@
 			chForm.elements.on_success.checked = values ? !!values.on_success : true;
 			chForm.elements.on_failure.checked = values ? !!values.on_failure : true;
 			chForm.elements.enabled.checked = values ? !!values.enabled : true;
-			$$('.rempart-ch-fields input', chForm).forEach(function (el) {
-				var mine = values && el.closest('.rempart-ch-fields').dataset.type === values.type;
+			$$('.backup-guard-ch-fields input', chForm).forEach(function (el) {
+				var mine = values && el.closest('.backup-guard-ch-fields').dataset.type === values.type;
 				el.value = mine && values[el.name] !== undefined ? values[el.name] : (el.dataset.default || '');
 			});
-			$$('.rempart-secret-note', chForm).forEach(function (n) { n.hidden = !values; });
-			$('#rempart-ch-title').textContent = values ? T('Modifier le service') : T('Ajouter un service');
+			$$('.backup-guard-secret-note', chForm).forEach(function (n) { n.hidden = !values; });
+			$('#backup-guard-ch-title').textContent = values ? T('Modifier le service') : T('Ajouter un service');
 			showChannelFields();
 			chCard.hidden = false;
 			chCard.scrollIntoView({ behavior: 'smooth' });
 		};
 
 		chType.addEventListener('change', showChannelFields);
-		$('#rempart-ch-add').addEventListener('click', function () { openChannelForm(null); });
-		$('#rempart-ch-cancel').addEventListener('click', function () { chCard.hidden = true; });
-		$$('.rempart-ch-edit').forEach(function (b) {
+		$('#backup-guard-ch-add').addEventListener('click', function () { openChannelForm(null); });
+		$('#backup-guard-ch-cancel').addEventListener('click', function () { chCard.hidden = true; });
+		$$('.backup-guard-ch-edit').forEach(function (b) {
 			b.addEventListener('click', function () { openChannelForm(JSON.parse(b.dataset.channel)); });
 		});
-		$$('.rempart-ch-test').forEach(function (b) {
+		$$('.backup-guard-ch-test').forEach(function (b) {
 			b.addEventListener('click', function () {
 				var old = b.textContent;
 				b.disabled = true;
@@ -498,7 +498,7 @@
 
 	/* ----- History ----- */
 
-	$$('.rempart-delete').forEach(function (b) {
+	$$('.backup-guard-delete').forEach(function (b) {
 		b.addEventListener('click', function () {
 			if (!confirm(T('Supprimer définitivement cette sauvegarde ?'))) { return; }
 			b.disabled = true;
@@ -506,29 +506,29 @@
 		});
 	});
 
-	var selectAll = $('#rempart-select-all');
+	var selectAll = $('#backup-guard-select-all');
 	if (selectAll) {
 		selectAll.addEventListener('click', function () {
-			var picks = $$('.rempart-pick');
+			var picks = $$('.backup-guard-pick');
 			var on = picks.some(function (p) { return !p.checked; });
 			picks.forEach(function (p) { p.checked = on; });
 		});
-		$('#rempart-delete-selected').addEventListener('click', function () {
-			var names = $$('.rempart-pick').filter(function (p) { return p.checked; }).map(function (p) { return p.value; });
+		$('#backup-guard-delete-selected').addEventListener('click', function () {
+			var names = $$('.backup-guard-pick').filter(function (p) { return p.checked; }).map(function (p) { return p.value; });
 			if (!names.length) { alert(T('Sélectionnez au moins une sauvegarde.')); return; }
 			if (!confirm(T('Supprimer définitivement %s sauvegarde(s) ?', names.length))) { return; }
 			call('delete_backups', { names: names }).then(function () { location.reload(); }).catch(function (e) { alert(e.message); });
 		});
-		$('#rempart-sync').addEventListener('click', function () {
+		$('#backup-guard-sync').addEventListener('click', function () {
 			var b = this;
 			b.disabled = true;
-			call('sync', { location: $('#rempart-sync-location').value }).then(function (d) {
+			call('sync', { location: $('#backup-guard-sync-location').value }).then(function (d) {
 				alert(T('%1$s sauvegarde(s) ajoutée(s), %2$s retirée(s) de la liste.', d.added, d.removed));
 				location.reload();
 			}).catch(function (e) { alert(e.message); b.disabled = false; });
 		});
-		var fileInput = $('#rempart-upload-file');
-		$('#rempart-upload-open').addEventListener('click', function () { fileInput.click(); });
+		var fileInput = $('#backup-guard-upload-file');
+		$('#backup-guard-upload-open').addEventListener('click', function () { fileInput.click(); });
 		fileInput.addEventListener('change', function () {
 			var file = fileInput.files[0];
 			if (file) { uploadBackup(file); }
@@ -536,7 +536,7 @@
 	}
 
 	function uploadBackup(file) {
-		var box = $('#rempart-upload-progress');
+		var box = $('#backup-guard-upload-progress');
 		var bar = $('i', box);
 		var text = $('span:last-of-type', box);
 		box.hidden = false;
@@ -566,15 +566,15 @@
 	/* ----- Restore ----- */
 
 	var R = {
-		box: $('#rempart-restore-box'), files: $('#rempart-restore-files'), db: $('#rempart-restore-db'), confirm: $('#rempart-restore-confirm'),
-		go: $('#rempart-restore-go'), migrate: $('#rempart-restore-migrate'), name: ''
+		box: $('#backup-guard-restore-box'), files: $('#backup-guard-restore-files'), db: $('#backup-guard-restore-db'), confirm: $('#backup-guard-restore-confirm'),
+		go: $('#backup-guard-restore-go'), migrate: $('#backup-guard-restore-migrate'), name: ''
 	};
 	if (R.box) {
-		$$('.rempart-restore').forEach(function (b) {
+		$$('.backup-guard-restore').forEach(function (b) {
 			b.addEventListener('click', function () {
 				R.name = b.dataset.name;
-				$('#rempart-restore-files-wrap').hidden = b.dataset.files !== '1';
-				$('#rempart-restore-db-wrap').hidden = b.dataset.db !== '1';
+				$('#backup-guard-restore-files-wrap').hidden = b.dataset.files !== '1';
+				$('#backup-guard-restore-db-wrap').hidden = b.dataset.db !== '1';
 				R.files.checked = b.dataset.files === '1';
 				R.db.checked = b.dataset.db === '1';
 				R.confirm.checked = false;
@@ -590,7 +590,7 @@
 			});
 		});
 		R.confirm.addEventListener('change', function () { R.go.disabled = !R.confirm.checked; });
-		$('#rempart-restore-cancel').addEventListener('click', function () { R.box.hidden = true; });
+		$('#backup-guard-restore-cancel').addEventListener('click', function () { R.box.hidden = true; });
 		R.go.addEventListener('click', function () {
 			var wanted = { name: R.name, files: R.files.checked ? 1 : '', db: R.db.checked ? 1 : '' };
 			R.go.disabled = true;
@@ -608,10 +608,10 @@
 
 	/* ----- Logs and checks ----- */
 
-	var logBox = $('#rempart-log-box');
-	$$('.rempart-show-log').forEach(function (b) {
+	var logBox = $('#backup-guard-log-box');
+	$$('.backup-guard-show-log').forEach(function (b) {
 		b.addEventListener('click', function () {
-			var out = $('#rempart-log-content');
+			var out = $('#backup-guard-log-content');
 			out.textContent = T('Chargement…');
 			logBox.hidden = false;
 			call('read_log', { what: b.dataset.log }).then(function (lines) {
@@ -620,26 +620,26 @@
 			}).catch(function (e) { out.textContent = e.message; });
 		});
 	});
-	$('#rempart-log-close').addEventListener('click', function () { logBox.hidden = true; });
+	$('#backup-guard-log-close').addEventListener('click', function () { logBox.hidden = true; });
 
-	$$('.rempart-litespeed').forEach(function (b) {
+	$$('.backup-guard-litespeed').forEach(function (b) {
 		b.addEventListener('click', function () {
-			var buttons = $$('.rempart-litespeed');
+			var buttons = $$('.backup-guard-litespeed');
 			buttons.forEach(function (x) { x.disabled = true; });
 			call('litespeed', { what: b.dataset.what }).then(function (d) {
-				var box = $('#rempart-litespeed-status');
+				var box = $('#backup-guard-litespeed-status');
 				box.textContent = d.text;
-				box.className = 'rempart-cron-status rempart-cron-' + (d.level === 'error' ? 'warning' : (d.level === 'ok' ? 'ok' : 'info'));
+				box.className = 'backup-guard-cron-status backup-guard-cron-' + (d.level === 'error' ? 'warning' : (d.level === 'ok' ? 'ok' : 'info'));
 			}).catch(function (e) { alert(e.message); }).then(function () {
 				buttons.forEach(function (x) { x.disabled = false; });
 			});
 		});
 	});
 
-	var diagnose = $('#rempart-diagnose');
+	var diagnose = $('#backup-guard-diagnose');
 	if (diagnose) {
 		diagnose.addEventListener('click', function () {
-			var list = $('#rempart-diagnose-list');
+			var list = $('#backup-guard-diagnose-list');
 			list.textContent = '';
 			diagnose.disabled = true;
 			call('diagnose').then(function (checks) {
