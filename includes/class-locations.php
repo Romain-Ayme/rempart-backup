@@ -9,47 +9,47 @@ class Rempart_Locations {
 
 	/** Describes every storage type: its label and the fields of its form. */
 	public static function protocols() {
-		$folder = array('label' => 'Dossier de sauvegarde', 'help' => 'Facultatif, par exemple rempart-backups.', 'default' => 'rempart-backups');
+		$folder = array('label' => __('Dossier de sauvegarde', 'rempart-backup'), 'help' => __('Facultatif, par exemple rempart-backups.', 'rempart-backup'), 'default' => 'rempart-backups');
 		$server = array(
-			'host' => array('label' => 'Serveur', 'help' => 'Par exemple ftp.mondomaine.fr', 'required' => true),
+			'host' => array('label' => __('Serveur', 'rempart-backup'), 'help' => __('Par exemple ftp.mondomaine.fr', 'rempart-backup'), 'required' => true),
 			'port' => array('label' => 'Port', 'type' => 'number'),
-			'user' => array('label' => 'Identifiant', 'required' => true),
-			'pass' => array('label' => 'Mot de passe', 'type' => 'password', 'secret' => true),
+			'user' => array('label' => __('Identifiant', 'rempart-backup'), 'required' => true),
+			'pass' => array('label' => __('Mot de passe', 'rempart-backup'), 'type' => 'password', 'secret' => true),
 		);
 		$oauth = array(
-			'client_id'     => array('label' => 'Identifiant de l\'application', 'required' => true),
-			'client_secret' => array('label' => 'Secret de l\'application', 'type' => 'password', 'secret' => true, 'required' => true),
+			'client_id'     => array('label' => __('Identifiant de l\'application', 'rempart-backup'), 'required' => true),
+			'client_secret' => array('label' => __('Secret de l\'application', 'rempart-backup'), 'type' => 'password', 'secret' => true, 'required' => true),
 		);
 		return array(
 			'ftp'      => array('label' => 'FTP', 'fields' => $server + array('folder' => $folder), 'default_port' => 21),
 			'ftps'     => array('label' => 'FTPS', 'default_port' => 21, 'fields' => $server + array(
-				'insecure_tls' => array('label' => 'Accepter un certificat non vérifié', 'type' => 'checkbox', 'help' => 'Seulement pour un serveur que vous connaissez et dont le certificat est auto-signé : la connexion reste chiffrée, mais l\'identité du serveur n\'est plus contrôlée.'),
+				'insecure_tls' => array('label' => __('Accepter un certificat non vérifié', 'rempart-backup'), 'type' => 'checkbox', 'help' => __('Seulement pour un serveur que vous connaissez et dont le certificat est auto-signé : la connexion reste chiffrée, mais l\'identité du serveur n\'est plus contrôlée.', 'rempart-backup')),
 				'folder'       => $folder,
 			)),
 			'sftp'     => array('label' => 'SFTP', 'default_port' => 22, 'fields' => $server + array(
-				'private_key' => array('label' => 'Clé privée (facultatif)', 'type' => 'textarea', 'secret' => true, 'help' => 'Si vous en utilisez une, le mot de passe sert de phrase secrète.'),
+				'private_key' => array('label' => __('Clé privée (facultatif)', 'rempart-backup'), 'type' => 'textarea', 'secret' => true, 'help' => __('Si vous en utilisez une, le mot de passe sert de phrase secrète.', 'rempart-backup')),
 				'folder'      => $folder,
 			)),
 			'webdav'   => array('label' => 'WebDAV', 'fields' => array(
-				'url'    => array('label' => 'Adresse WebDAV', 'help' => 'Par exemple https://cloud.mondomaine.fr/remote.php/dav/files/moi', 'required' => true),
-				'user'   => array('label' => 'Identifiant', 'required' => true),
-				'pass'   => array('label' => 'Mot de passe', 'type' => 'password', 'secret' => true),
+				'url'    => array('label' => __('Adresse WebDAV', 'rempart-backup'), 'help' => __('Par exemple https://cloud.mondomaine.fr/remote.php/dav/files/moi', 'rempart-backup'), 'required' => true),
+				'user'   => array('label' => __('Identifiant', 'rempart-backup'), 'required' => true),
+				'pass'   => array('label' => __('Mot de passe', 'rempart-backup'), 'type' => 'password', 'secret' => true),
 				'folder' => $folder,
 			)),
-			's3'       => array('label' => 'Amazon S3 et compatibles', 'fields' => array(
-				'service'    => array('label' => 'Service', 'type' => 'select', 'options' => self::s3_services()),
-				'endpoint'   => array('label' => 'Adresse du service', 'help' => 'Laissez vide : elle est déduite de la région pour les services de la liste.'),
-				'region'     => array('label' => 'Région'),
-				'access_key' => array('label' => 'Clé d\'accès', 'required' => true),
-				'secret_key' => array('label' => 'Clé secrète', 'type' => 'password', 'secret' => true, 'required' => true),
+			's3'       => array('label' => __('Amazon S3 et compatibles', 'rempart-backup'), 'fields' => array(
+				'service'    => array('label' => __('Service', 'rempart-backup'), 'type' => 'select', 'options' => self::s3_services()),
+				'endpoint'   => array('label' => __('Adresse du service', 'rempart-backup'), 'help' => __('Laissez vide : elle est déduite de la région pour les services de la liste.', 'rempart-backup')),
+				'region'     => array('label' => __('Région', 'rempart-backup')),
+				'access_key' => array('label' => __('Clé d\'accès', 'rempart-backup'), 'required' => true),
+				'secret_key' => array('label' => __('Clé secrète', 'rempart-backup'), 'type' => 'password', 'secret' => true, 'required' => true),
 				'bucket'     => array('label' => 'Bucket', 'required' => true),
-				'sse'        => array('label' => 'Chiffrer côté serveur', 'type' => 'checkbox', 'help' => 'Le service chiffre les fichiers reçus (AES-256).'),
+				'sse'        => array('label' => __('Chiffrer côté serveur', 'rempart-backup'), 'type' => 'checkbox', 'help' => __('Le service chiffre les fichiers reçus (AES-256).', 'rempart-backup')),
 				'folder'     => $folder,
 			)),
-			'gdrive'   => array('label' => 'Google Drive', 'oauth' => true, 'fields' => $oauth + array('folder' => array('label' => 'Dossier', 'default' => 'Rempart Backup'))),
-			'onedrive' => array('label' => 'Microsoft OneDrive', 'oauth' => true, 'fields' => $oauth + array('folder' => array('label' => 'Dossier', 'default' => 'Rempart Backup'))),
-			'dropbox'  => array('label' => 'Dropbox', 'oauth' => true, 'fields' => $oauth + array('folder' => array('label' => 'Dossier', 'default' => 'Rempart Backup'))),
-			'pcloud'   => array('label' => 'pCloud', 'oauth' => true, 'fields' => $oauth + array('folder' => array('label' => 'Dossier', 'default' => 'Rempart Backup'))),
+			'gdrive'   => array('label' => 'Google Drive', 'oauth' => true, 'fields' => $oauth + array('folder' => array('label' => __('Dossier', 'rempart-backup'), 'default' => 'Rempart Backup'))),
+			'onedrive' => array('label' => 'Microsoft OneDrive', 'oauth' => true, 'fields' => $oauth + array('folder' => array('label' => __('Dossier', 'rempart-backup'), 'default' => 'Rempart Backup'))),
+			'dropbox'  => array('label' => 'Dropbox', 'oauth' => true, 'fields' => $oauth + array('folder' => array('label' => __('Dossier', 'rempart-backup'), 'default' => 'Rempart Backup'))),
+			'pcloud'   => array('label' => 'pCloud', 'oauth' => true, 'fields' => $oauth + array('folder' => array('label' => __('Dossier', 'rempart-backup'), 'default' => 'Rempart Backup'))),
 		);
 	}
 
@@ -60,15 +60,15 @@ class Rempart_Locations {
 	 */
 	public static function s3_presets() {
 		return array(
-			'aws'          => array('endpoint' => '', 'region' => 'eu-west-3', 'example' => 'Laissez vide', 'hint' => 'Laissez l\'adresse vide : elle est déduite de la région.'),
-			'hetzner'      => array('endpoint' => 'https://{region}.your-objectstorage.com', 'region' => 'fsn1', 'example' => 'Laissez vide', 'hint' => 'Régions : fsn1 (Falkenstein), nbg1 (Nuremberg), hel1 (Helsinki). Clés créées dans la console Hetzner, section Object Storage.'),
-			'backblaze'    => array('endpoint' => 'https://s3.{region}.backblazeb2.com', 'region' => 'us-west-004', 'example' => 'Laissez vide', 'hint' => 'La région est dans l\'adresse S3 de votre bucket (s3.us-west-004.backblazeb2.com, région us-west-004). Clé d\'accès = keyID, clé secrète = applicationKey. Le bucket doit déjà exister si votre clé est limitée à un bucket.'),
-			'digitalocean' => array('endpoint' => 'https://{region}.digitaloceanspaces.com', 'region' => 'nyc3', 'example' => 'Laissez vide', 'hint' => 'Région : nyc3, ams3, sgp1, fra1...'),
-			'linode'       => array('endpoint' => 'https://{region}.linodeobjects.com', 'region' => 'fr-par-1', 'example' => 'Laissez vide', 'hint' => 'Région : l\'identifiant du cluster, par exemple fr-par-1 ou us-east-1.'),
-			'vultr'        => array('endpoint' => 'https://{region}.vultrobjects.com', 'region' => 'ams1', 'example' => 'Laissez vide', 'hint' => 'Région : ams1, ewr1, sjc1...'),
-			'wasabi'       => array('endpoint' => 'https://s3.{region}.wasabisys.com', 'region' => 'eu-central-1', 'example' => 'Laissez vide', 'hint' => 'Région : eu-central-1, us-east-1...'),
-			'cloudflare'   => array('endpoint' => '', 'region' => 'auto', 'example' => 'https://IDENTIFIANT.r2.cloudflarestorage.com', 'hint' => 'Adresse : https://IDENTIFIANT-DU-COMPTE.r2.cloudflarestorage.com. Région : auto.'),
-			'custom'       => array('endpoint' => '', 'region' => 'us-east-1', 'example' => 'https://s3.mondomaine.fr', 'hint' => 'Indiquez l\'adresse fournie par votre service.'),
+			'aws'          => array('endpoint' => '', 'region' => 'eu-west-3', 'example' => __('Laissez vide', 'rempart-backup'), 'hint' => __('Laissez l\'adresse vide : elle est déduite de la région.', 'rempart-backup')),
+			'hetzner'      => array('endpoint' => 'https://{region}.your-objectstorage.com', 'region' => 'fsn1', 'example' => __('Laissez vide', 'rempart-backup'), 'hint' => __('Régions : fsn1 (Falkenstein), nbg1 (Nuremberg), hel1 (Helsinki). Clés créées dans la console Hetzner, section Object Storage.', 'rempart-backup')),
+			'backblaze'    => array('endpoint' => 'https://s3.{region}.backblazeb2.com', 'region' => 'us-west-004', 'example' => __('Laissez vide', 'rempart-backup'), 'hint' => __('La région est dans l\'adresse S3 de votre bucket (s3.us-west-004.backblazeb2.com, région us-west-004). Clé d\'accès = keyID, clé secrète = applicationKey. Le bucket doit déjà exister si votre clé est limitée à un bucket.', 'rempart-backup')),
+			'digitalocean' => array('endpoint' => 'https://{region}.digitaloceanspaces.com', 'region' => 'nyc3', 'example' => __('Laissez vide', 'rempart-backup'), 'hint' => __('Région : nyc3, ams3, sgp1, fra1...', 'rempart-backup')),
+			'linode'       => array('endpoint' => 'https://{region}.linodeobjects.com', 'region' => 'fr-par-1', 'example' => __('Laissez vide', 'rempart-backup'), 'hint' => __('Région : l\'identifiant du cluster, par exemple fr-par-1 ou us-east-1.', 'rempart-backup')),
+			'vultr'        => array('endpoint' => 'https://{region}.vultrobjects.com', 'region' => 'ams1', 'example' => __('Laissez vide', 'rempart-backup'), 'hint' => __('Région : ams1, ewr1, sjc1...', 'rempart-backup')),
+			'wasabi'       => array('endpoint' => 'https://s3.{region}.wasabisys.com', 'region' => 'eu-central-1', 'example' => __('Laissez vide', 'rempart-backup'), 'hint' => __('Région : eu-central-1, us-east-1...', 'rempart-backup')),
+			'cloudflare'   => array('endpoint' => '', 'region' => 'auto', 'example' => __('https://IDENTIFIANT.r2.cloudflarestorage.com', 'rempart-backup'), 'hint' => __('Adresse : https://IDENTIFIANT-DU-COMPTE.r2.cloudflarestorage.com. Région : auto.', 'rempart-backup')),
+			'custom'       => array('endpoint' => '', 'region' => 'us-east-1', 'example' => 'https://s3.mondomaine.fr', 'hint' => __('Indiquez l\'adresse fournie par votre service.', 'rempart-backup')),
 		);
 	}
 
@@ -82,7 +82,7 @@ class Rempart_Locations {
 			'vultr'        => 'Vultr Object Storage',
 			'cloudflare'   => 'Cloudflare R2',
 			'wasabi'       => 'Wasabi',
-			'custom'       => 'Autre service compatible S3',
+			'custom'       => __('Autre service compatible S3', 'rempart-backup'),
 		);
 	}
 
@@ -102,7 +102,7 @@ class Rempart_Locations {
 		if (!empty($location['secrets'])) {
 			$json = rempart_decrypt($location['secrets']);
 			if ($json === false) {
-				throw new RuntimeException('Les identifiants de « ' . $location['name'] . ' » ne sont plus lisibles (site déplacé ?). Modifiez cet emplacement et saisissez-les de nouveau.');
+				throw new RuntimeException(sprintf(__('Les identifiants de « %s » ne sont plus lisibles (site déplacé ?). Modifiez cet emplacement et saisissez-les de nouveau.', 'rempart-backup'), $location['name']));
 			}
 			$secrets = (array) json_decode($json, true);
 		}
@@ -114,7 +114,7 @@ class Rempart_Locations {
 		$protocols = self::protocols();
 		$protocol = $values['protocol'] ?? '';
 		if (empty($protocols[$protocol])) {
-			throw new RuntimeException('Type de stockage inconnu.');
+			throw new RuntimeException(__('Type de stockage inconnu.', 'rempart-backup'));
 		}
 		$all = self::all();
 		$existing = ($id !== null && isset($all[$id])) ? $all[$id] : null;
@@ -132,12 +132,12 @@ class Rempart_Locations {
 					$secrets[$key] = $value;
 				}
 				if (!empty($field['required']) && empty($secrets[$key])) {
-					throw new RuntimeException('Champ obligatoire manquant : ' . $field['label']);
+					throw new RuntimeException(sprintf(__('Champ obligatoire manquant : %s', 'rempart-backup'), $field['label']));
 				}
 				continue;
 			}
 			if (!empty($field['required']) && $value === '') {
-				throw new RuntimeException('Champ obligatoire manquant : ' . $field['label']);
+				throw new RuntimeException(sprintf(__('Champ obligatoire manquant : %s', 'rempart-backup'), $field['label']));
 			}
 			$config[$key] = sanitize_text_field((string) $value);
 		}
@@ -147,20 +147,20 @@ class Rempart_Locations {
 			$preset = self::s3_presets()[$service] ?? self::s3_presets()['custom'];
 			if (($config['endpoint'] ?? '') === '') {
 				if (strpos($preset['endpoint'], '{region}') !== false && ($config['region'] ?? '') === '') {
-					throw new RuntimeException('Indiquez la région : elle sert à calculer l\'adresse du service (par exemple ' . $preset['region'] . ').');
+					throw new RuntimeException(sprintf(__('Indiquez la région : elle sert à calculer l\'adresse du service (par exemple %s).', 'rempart-backup'), $preset['region']));
 				}
 				if ($preset['endpoint'] === '' && !in_array($service, array('aws'), true)) {
-					throw new RuntimeException('Indiquez l\'adresse du service, par exemple ' . $preset['example'] . '.');
+					throw new RuntimeException(sprintf(__('Indiquez l\'adresse du service, par exemple %s.', 'rempart-backup'), $preset['example']));
 				}
 			}
 		}
 		if (!empty($config['url']) && !wp_http_validate_url($config['url']) && !preg_match('#^https?://#i', $config['url'])) {
-			throw new RuntimeException('L\'adresse WebDAV doit commencer par http:// ou https://');
+			throw new RuntimeException(__('L\'adresse WebDAV doit commencer par http:// ou https://', 'rempart-backup'));
 		}
 
 		$name = sanitize_text_field((string) ($values['name'] ?? ''));
 		if ($name === '') {
-			throw new RuntimeException('Donnez un nom à cet emplacement.');
+			throw new RuntimeException(__('Donnez un nom à cet emplacement.', 'rempart-backup'));
 		}
 
 		// Values only the code writes (tokens, remembered host key) survive an edit.
@@ -258,12 +258,12 @@ class Rempart_Locations {
 	public static function oauth_finish($state, $code, array $query) {
 		$pending = get_transient('rempart_oauth_' . $state);
 		if (!$pending || (int) $pending['user'] !== get_current_user_id()) {
-			throw new RuntimeException('Cette autorisation a expiré. Recommencez depuis la liste des emplacements.');
+			throw new RuntimeException(__('Cette autorisation a expiré. Recommencez depuis la liste des emplacements.', 'rempart-backup'));
 		}
 		delete_transient('rempart_oauth_' . $state);
 		$location = self::get($pending['id']);
 		if (!$location) {
-			throw new RuntimeException('Cet emplacement n\'existe plus.');
+			throw new RuntimeException(__('Cet emplacement n\'existe plus.', 'rempart-backup'));
 		}
 		$driver = Rempart_Storage::make($location);
 		unset($driver);

@@ -1,0 +1,2712 @@
+# English translation of Rempart Backup (the plugin is written in French).
+# Copyright (C) 2026 Rempart Backup
+# This file is distributed under the LGPL v2.1.
+msgid ""
+msgstr ""
+"Project-Id-Version: Rempart Backup 1.0.0\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/rempart-backup\n"
+"Last-Translator: Rempart Backup\n"
+"Language-Team: English\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"POT-Creation-Date: 2026-11-07T15:41:38+00:00\n"
+"PO-Revision-Date: 2026-11-07 12:00+0000\n"
+"X-Generator: WP-CLI 2.12.0\n"
+"X-Domain: rempart-backup\nLanguage: en_US\nPlural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#. Plugin Name of the plugin
+#. Author of the plugin
+#: rempart-backup.php
+#: includes/class-admin.php:259
+msgid "Rempart Backup"
+msgstr "Rempart Backup"
+
+#. Description of the plugin
+#: rempart-backup.php
+msgid "Sauvegarde, restauration, migration et clonage de WordPress. Toutes les fonctions sont incluses, sans licence : planification, rotation, FTP, FTPS, SFTP, WebDAV, Amazon S3 et compatibles, Google Drive, OneDrive, Dropbox, pCloud et WP-CLI."
+msgstr "Backup, restore, migration and cloning for WordPress. Every feature is included, no licence: scheduling, rotation, FTP, FTPS, SFTP, WebDAV, Amazon S3 and compatible, Google Drive, OneDrive, Dropbox, pCloud and WP-CLI."
+
+#: includes/class-admin.php:41
+#, php-format
+msgid "%1$s sauvegarde(s) ajoutée(s), %2$s retirée(s) de la liste."
+msgstr "%1$s backup(s) added, %2$s removed from the list."
+
+#: includes/class-admin.php:42
+#: includes/class-admin.php:681
+#: includes/class-admin.php:685
+msgid "Ajouter un emplacement"
+msgstr "Add a location"
+
+#: includes/class-admin.php:43
+#: includes/class-admin.php:926
+msgid "Ajouter un service"
+msgstr "Add a service"
+
+#: includes/class-admin.php:44
+msgid "Ce journal est vide."
+msgstr "This log is empty."
+
+#: includes/class-admin.php:45
+#, php-format
+msgid "Cette sauvegarde vient de %s. Son adresse sera remplacée par celle de ce site."
+msgstr "This backup comes from %s. Its address will be replaced by this site's."
+
+#: includes/class-admin.php:46
+msgid "Chargement…"
+msgstr "Loading…"
+
+#: includes/class-admin.php:47
+msgid "Commence par"
+msgstr "Starts with"
+
+#: includes/class-admin.php:48
+msgid "Contient"
+msgstr "Contains"
+
+#: includes/class-admin.php:49
+msgid "Copié"
+msgstr "Copied"
+
+#: includes/class-admin.php:50
+#: includes/class-admin.php:708
+#: includes/class-admin.php:974
+msgid "Enregistrer"
+msgstr "Save"
+
+#: includes/class-admin.php:51
+msgid "Enregistrer et connecter le compte"
+msgstr "Save and connect the account"
+
+#: includes/class-admin.php:52
+#, php-format
+msgid "Envoi : %s"
+msgstr "Uploading: %s"
+
+#: includes/class-admin.php:53
+msgid "Envoi…"
+msgstr "Sending…"
+
+#: includes/class-admin.php:54
+msgid "Erreur inconnue."
+msgstr "Unknown error."
+
+#: includes/class-admin.php:55
+msgid "Exclu"
+msgstr "Excluded"
+
+#: includes/class-admin.php:56
+msgid "Exclure"
+msgstr "Exclude"
+
+#: includes/class-admin.php:57
+msgid "Extension"
+msgstr "Extension"
+
+#: includes/class-admin.php:58
+msgid "Finit par"
+msgstr "Ends with"
+
+#: includes/class-admin.php:59
+msgid "Gardez cette page ouverte jusqu'à la fin."
+msgstr "Keep this page open until the end."
+
+#: includes/class-admin.php:60
+msgid "La restauration n'a pas abouti"
+msgstr "The restore did not complete"
+
+#: includes/class-admin.php:61
+msgid "La tâche n'a pas abouti"
+msgstr "The task did not complete"
+
+#: includes/class-admin.php:62
+msgid "Le programme de restauration ne répond plus. Un pare-feu bloque peut-être les fichiers PHP dans wp-content. Attendez encore, ou forcez l'arrêt."
+msgstr "The restore program is no longer responding. A firewall may be blocking PHP files in wp-content. Wait a little longer, or force the stop."
+
+#: includes/class-admin.php:63
+msgid "Modifier l'emplacement"
+msgstr "Edit the location"
+
+#: includes/class-admin.php:64
+msgid "Modifier le service"
+msgstr "Edit the service"
+
+#: includes/class-admin.php:65
+msgid "Restauration arrêtée"
+msgstr "Restore stopped"
+
+#: includes/class-admin.php:66
+msgid "Restauration en cours"
+msgstr "Restore in progress"
+
+#: includes/class-admin.php:67
+msgid "Restauration terminée"
+msgstr "Restore complete"
+
+#: includes/class-admin.php:68
+msgid "Retirer"
+msgstr "Remove"
+
+#: includes/class-admin.php:69
+msgid "Récupération de la sauvegarde"
+msgstr "Retrieving the backup"
+
+#: includes/class-admin.php:70
+msgid "Réponse illisible du serveur."
+msgstr "Unreadable reply from the server."
+
+#: includes/class-admin.php:71
+#: includes/class-admin.php:1068
+msgid "Sauvegarde en cours"
+msgstr "Backup in progress"
+
+#: includes/class-admin.php:72
+msgid "Sauvegarde terminée"
+msgstr "Backup finished"
+
+#: includes/class-admin.php:73
+msgid "Si la page vous demande de vous connecter, c'est normal : vos comptes sont ceux de la sauvegarde."
+msgstr "If the page asks you to log in, this is normal: your accounts are those of the backup."
+
+#: includes/class-admin.php:74
+#, php-format
+msgid "Supprimer définitivement %s sauvegarde(s) ?"
+msgstr "Permanently delete %s backup(s)?"
+
+#: includes/class-admin.php:75
+msgid "Supprimer définitivement cette sauvegarde ?"
+msgstr "Delete this backup permanently?"
+
+#: includes/class-admin.php:76
+msgid "Sélectionnez au moins une sauvegarde."
+msgstr "Select at least one backup."
+
+#: includes/class-admin.php:77
+msgid "Test…"
+msgstr "Test…"
+
+#: includes/class-admin.php:78
+msgid "Tâche arrêtée"
+msgstr "Task stopped"
+
+#: includes/class-admin.php:79
+msgid "Tâche en cours"
+msgstr "Task in progress"
+
+#: includes/class-admin.php:80
+#, php-format
+msgid "par exemple %s"
+msgstr "for example %s"
+
+#: includes/class-admin.php:109
+#, php-format
+msgid "Votre dernière sauvegarde date de %d jours."
+msgstr "Your last backup is %d days old."
+
+#: includes/class-admin.php:110
+msgid "Vous n'avez encore aucune sauvegarde de ce site."
+msgstr "You don't have any backup of this site yet."
+
+#: includes/class-admin.php:112
+msgid "Faire une sauvegarde"
+msgstr "Make a backup"
+
+#: includes/class-admin.php:130
+msgid "L'autorisation a été annulée."
+msgstr "The authorization was cancelled."
+
+#: includes/class-admin.php:145
+msgid "Réglages enregistrés."
+msgstr "Settings saved."
+
+#: includes/class-admin.php:152
+msgid "Emplacement supprimé."
+msgstr "Location deleted."
+
+#: includes/class-admin.php:157
+#, php-format
+msgid "Canal « %s » enregistré. Utilisez « Envoyer un test » pour vérifier qu'il fonctionne."
+msgstr "Channel \"%s\" saved. Use \"Send a test\" to check that it works."
+
+#: includes/class-admin.php:161
+msgid "Canal supprimé."
+msgstr "Channel deleted."
+
+#: includes/class-admin.php:186
+#, php-format
+msgid "« %s » est connecté."
+msgstr "\"%s\" is connected."
+
+#: includes/class-admin.php:210
+msgid "Pour les sauvegardes automatiques, choisissez les fichiers, la base de données ou les deux."
+msgstr "For automatic backups, choose the files, the database or both."
+
+#: includes/class-admin.php:237
+msgid "Emplacement enregistré."
+msgstr "Location saved."
+
+#: includes/class-admin.php:242
+#, php-format
+msgid "Emplacement enregistré, mais la connexion a échoué : %s"
+msgstr "Location saved, but the connection failed: %s"
+
+#: includes/class-admin.php:244
+msgid "Emplacement enregistré. La connexion fonctionne."
+msgstr "Location saved. The connection works."
+
+#: includes/class-admin.php:260
+msgid "Sauvegarde, restauration, migration et clonage. Tout est inclus, sans licence."
+msgstr "Backup, restore, migration and cloning. Everything is included, no licence."
+
+#: includes/class-admin.php:269
+msgid "Tableau de bord"
+msgstr "Dashboard"
+
+#: includes/class-admin.php:270
+msgid "Réglages"
+msgstr "Settings"
+
+#: includes/class-admin.php:271
+msgid "Emplacements"
+msgstr "Locations"
+
+#: includes/class-admin.php:272
+msgid "Historique"
+msgstr "History"
+
+#: includes/class-admin.php:273
+msgid "Notifications"
+msgstr "Notifications"
+
+#: includes/class-admin.php:274
+msgid "Aide"
+msgstr "Help"
+
+#: includes/class-admin.php:297
+msgid "Dossier local (par défaut)"
+msgstr "Local folder (default)"
+
+#: includes/class-admin.php:313
+#: includes/class-admin.php:591
+msgctxt "date and time format"
+msgid "j F Y à H:i"
+msgstr "F j, Y \\a\\t g:i a"
+
+#: includes/class-admin.php:318
+msgid "Dernière sauvegarde"
+msgstr "Last backup"
+
+#: includes/class-admin.php:319
+#: includes/class-admin.php:324
+msgid "Aucune"
+msgstr "None"
+
+#: includes/class-admin.php:320
+#: includes/class-admin.php:325
+msgid "Voir le journal"
+msgstr "View the log"
+
+#: includes/class-admin.php:323
+msgid "Dernière restauration"
+msgstr "Last restore"
+
+#: includes/class-admin.php:328
+msgid "Prochaine sauvegarde automatique"
+msgstr "Next automatic backup"
+
+#: includes/class-admin.php:336
+msgid "Tâche cron personnalisée"
+msgstr "Custom cron job"
+
+#: includes/class-admin.php:338
+msgid "Rien de prévu"
+msgstr "Nothing scheduled"
+
+#: includes/class-admin.php:346
+msgid "Serveur LiteSpeed détecté."
+msgstr "LiteSpeed server detected."
+
+#: includes/class-admin.php:346
+msgid "Si une sauvegarde se bloque sans erreur,"
+msgstr "If a backup gets stuck without an error,"
+
+#: includes/class-admin.php:346
+msgid "ajoutez la règle LiteSpeed dans l'onglet Aide"
+msgstr "add the LiteSpeed rule in the Help tab"
+
+#: includes/class-admin.php:349
+msgid "Créer une sauvegarde"
+msgstr "Create a backup"
+
+#: includes/class-admin.php:352
+#: includes/class-admin.php:393
+#: includes/class-admin.php:463
+#: includes/class-admin.php:1085
+msgid "Fichiers du site"
+msgstr "Site files"
+
+#: includes/class-admin.php:353
+#: includes/class-admin.php:394
+#: includes/class-admin.php:464
+#: includes/class-admin.php:827
+#: includes/class-admin.php:1086
+#: includes/class-job.php:709
+msgid "Base de données"
+msgstr "Database"
+
+#: includes/class-admin.php:356
+#: includes/class-admin.php:468
+msgid "Fichiers à garder"
+msgstr "Files to keep"
+
+#: includes/class-admin.php:358
+msgid "Sans le cœur de WordPress, la sauvegarde se restaure sur un WordPress déjà installé, de la même version."
+msgstr "Without WordPress core, the backup is restored onto a WordPress that is already installed, of the same version."
+
+#: includes/class-admin.php:361
+msgid "Où la garder"
+msgstr "Where to keep it"
+
+#: includes/class-admin.php:365
+msgid "Options supplémentaires"
+msgstr "More options"
+
+#: includes/class-admin.php:366
+msgid "Note (facultatif)"
+msgstr "Note (optional)"
+
+#: includes/class-admin.php:367
+msgid "80 caractères au maximum"
+msgstr "80 characters at most"
+
+#: includes/class-admin.php:370
+msgid "Créer la sauvegarde"
+msgstr "Create the backup"
+
+#: includes/class-admin.php:389
+msgid "Sauvegardes"
+msgstr "Backups"
+
+#: includes/class-admin.php:391
+msgid "Par défaut, sauvegarder"
+msgstr "By default, back up"
+
+#: includes/class-admin.php:398
+msgid "Fichiers à garder par défaut"
+msgstr "Files to keep by default"
+
+#: includes/class-admin.php:402
+msgid "Emplacement par défaut"
+msgstr "Default location"
+
+#: includes/class-admin.php:406
+msgid "Avant les mises à jour de WordPress"
+msgstr "Before WordPress updates"
+
+#: includes/class-admin.php:408
+msgid "Sauvegarder avant une mise à jour manuelle"
+msgstr "Back up before a manual update"
+
+#: includes/class-admin.php:409
+msgid "Retenir les mises à jour automatiques jusqu'à la fin d'une sauvegarde"
+msgstr "Hold automatic updates until a backup has finished"
+
+#: includes/class-admin.php:415
+msgid "Sauvegardes automatiques"
+msgstr "Automatic backups"
+
+#: includes/class-admin.php:417
+msgid "Fréquence"
+msgstr "Frequency"
+
+#: includes/class-admin.php:419
+msgid "Pas de sauvegarde automatique"
+msgstr "No automatic backup"
+
+#: includes/class-admin.php:423
+msgid "Personnalisée (tâche cron du serveur)"
+msgstr "Custom (server cron job)"
+
+#: includes/class-admin.php:427
+msgid "Comment ça marche"
+msgstr "How it works"
+
+#: includes/class-admin.php:429
+msgid "Aucune sauvegarde automatique."
+msgstr "No automatic backup."
+
+#: includes/class-admin.php:430
+msgid "Automatique :"
+msgstr "Automatic:"
+
+#: includes/class-admin.php:430
+msgid "rien d'autre à configurer. Elle part à la première visite du site après l'heure prévue. Pour une heure précise, choisissez « Personnalisée »."
+msgstr "nothing else to set up. It starts on the first visit to the site after the scheduled time. For an exact time, choose \"Custom\"."
+
+#: includes/class-admin.php:431
+msgid "Ajoutez la commande ci-dessous aux tâches cron de votre hébergement."
+msgstr "Add the command below to your host's cron jobs."
+
+#: includes/class-admin.php:441
+msgid "Commande à planifier"
+msgstr "Command to schedule"
+
+#: includes/class-admin.php:444
+#: includes/class-admin.php:704
+msgid "Copier"
+msgstr "Copy"
+
+#: includes/class-admin.php:447
+msgid "Sauvegardes automatiques à conserver"
+msgstr "Automatic backups to keep"
+
+#: includes/class-admin.php:450
+msgid "Toutes"
+msgstr "All"
+
+#: includes/class-admin.php:454
+msgid "Autre nombre"
+msgstr "Other number"
+
+#: includes/class-admin.php:457
+msgid "Plus de 30 sauvegardes peuvent occuper beaucoup de place."
+msgstr "More than 30 backups can take up a lot of space."
+
+#: includes/class-admin.php:461
+#: includes/class-admin.php:812
+#: includes/class-job.php:714
+msgid "Contenu"
+msgstr "Content"
+
+#: includes/class-admin.php:472
+#: includes/class-admin.php:812
+#: includes/class-job.php:714
+msgid "Emplacement"
+msgstr "Location"
+
+#: includes/class-admin.php:478
+msgid "Exclusions"
+msgstr "Exclusions"
+
+#: includes/class-admin.php:480
+msgid "Tables de la base à exclure"
+msgstr "Database tables to exclude"
+
+#: includes/class-admin.php:482
+msgid "Choisir dans la liste"
+msgstr "Choose from the list"
+
+#: includes/class-admin.php:491
+msgid "Fichiers et dossiers à exclure"
+msgstr "Files and folders to exclude"
+
+#: includes/class-admin.php:494
+msgid "Par nom"
+msgstr "By name"
+
+#: includes/class-admin.php:497
+msgid "Avec l'extension"
+msgstr "With the extension"
+
+#: includes/class-admin.php:498
+msgid "Dont le nom commence par"
+msgstr "Whose name starts with"
+
+#: includes/class-admin.php:499
+msgid "Dont le nom finit par"
+msgstr "Whose name ends with"
+
+#: includes/class-admin.php:500
+msgid "Dont le chemin contient"
+msgstr "Whose path contains"
+
+#: includes/class-admin.php:502
+msgid "par exemple zip"
+msgstr "for example zip"
+
+#: includes/class-admin.php:503
+msgid "Ajouter"
+msgstr "Add"
+
+#: includes/class-admin.php:517
+msgid "Dossiers ou fichiers précis"
+msgstr "Specific folders or files"
+
+#: includes/class-admin.php:518
+msgid "Parcourir le site…"
+msgstr "Browse the site…"
+
+#: includes/class-admin.php:532
+msgid "Autres réglages"
+msgstr "Other settings"
+
+#: includes/class-admin.php:538
+msgid "Autres éléments à la racine du site"
+msgstr "Other items at the site root"
+
+#: includes/class-admin.php:540
+msgid "Choisir ceux à inclure"
+msgstr "Choose which to include"
+
+#: includes/class-admin.php:550
+msgid "Compression"
+msgstr "Compression"
+
+#: includes/class-admin.php:551
+msgid "Niveau"
+msgstr "Level"
+
+#: includes/class-admin.php:553
+msgid "(archive la plus petite, la plus lente)"
+msgstr "(smallest archive, slowest)"
+
+#: includes/class-admin.php:553
+msgid "(la plus rapide, archive plus grosse)"
+msgstr "(fastest, bigger archive)"
+
+#: includes/class-admin.php:558
+msgid "Mode débogage"
+msgstr "Debug mode"
+
+#: includes/class-admin.php:559
+msgid "Écrire plus de détails dans le journal (ne le laissez pas activé)"
+msgstr "Write more details in the log (do not leave it on)"
+
+#: includes/class-admin.php:563
+msgid "Enregistrer les réglages"
+msgstr "Save the settings"
+
+#: includes/class-admin.php:582
+msgid "WP-Cron est désactivé sur ce site : rien ne partira seul. Choisissez « Personnalisée »."
+msgstr "WP-Cron is disabled on this site: nothing will start on its own. Choose \"Custom\"."
+
+#: includes/class-admin.php:586
+msgid "Cliquez sur « Enregistrer les réglages » pour activer la planification."
+msgstr "Click \"Save the settings\" to enable the schedule."
+
+#: includes/class-admin.php:589
+#, php-format
+msgid "En retard de %s : en attente d'une visite du site."
+msgstr "Late by %s: waiting for a visit to the site."
+
+#: includes/class-admin.php:591
+#, php-format
+msgid "Prochaine sauvegarde automatique : %s."
+msgstr "Next automatic backup: %s."
+
+#: includes/class-admin.php:626
+msgid "Emplacements de sauvegarde"
+msgstr "Backup locations"
+
+#: includes/class-admin.php:628
+#: includes/class-admin.php:691
+#: includes/class-admin.php:880
+#: includes/class-job.php:714
+#: includes/class-job.php:787
+msgid "Nom"
+msgstr "Name"
+
+#: includes/class-admin.php:628
+#: includes/class-admin.php:695
+msgid "Type"
+msgstr "Type"
+
+#: includes/class-admin.php:628
+#: includes/class-locations.php:14
+#: includes/class-notifications.php:31
+msgid "Serveur"
+msgstr "Server"
+
+#: includes/class-admin.php:628
+#: includes/class-locations.php:49
+#: includes/class-locations.php:50
+#: includes/class-locations.php:51
+#: includes/class-locations.php:52
+msgid "Dossier"
+msgstr "Folder"
+
+#: includes/class-admin.php:628
+msgid "Espace utilisé"
+msgstr "Space used"
+
+#: includes/class-admin.php:628
+#: includes/class-admin.php:812
+#: includes/class-admin.php:880
+msgid "Actions"
+msgstr "Actions"
+
+#: includes/class-admin.php:631
+#: includes/class-admin.php:783
+#: includes/class-admin.php:794
+#: includes/class-job.php:708
+msgid "Dossier local"
+msgstr "Local folder"
+
+#: includes/class-admin.php:663
+msgid "Actualiser"
+msgstr "Refresh"
+
+#: includes/class-admin.php:670
+msgid "Connecter le compte"
+msgstr "Connect the account"
+
+#: includes/class-admin.php:672
+msgid "Tester"
+msgstr "Test"
+
+#: includes/class-admin.php:674
+#: includes/class-admin.php:915
+msgid "Modifier"
+msgstr "Edit"
+
+#: includes/class-admin.php:675
+msgid "Supprimer cet emplacement ? Les sauvegardes déjà envoyées y restent."
+msgstr "Delete this location? Backups already sent there stay there."
+
+#: includes/class-admin.php:675
+#: includes/class-admin.php:806
+#: includes/class-admin.php:851
+#: includes/class-admin.php:916
+msgid "Supprimer"
+msgstr "Delete"
+
+#: includes/class-admin.php:704
+msgid "Adresse de retour à déclarer dans votre application :"
+msgstr "Return address to declare in your application:"
+
+#: includes/class-admin.php:705
+msgid "Ce service demande votre propre application : l'onglet Aide explique comment la créer. Après l'enregistrement, vous serez envoyé sur sa page pour accepter l'accès."
+msgstr "This service needs your own application: the Help tab explains how to create it. After saving, you will be sent to its page to grant access."
+
+#: includes/class-admin.php:709
+#: includes/class-admin.php:975
+#: includes/class-admin.php:1092
+msgid "Annuler"
+msgstr "Cancel"
+
+#: includes/class-admin.php:750
+#: includes/class-admin.php:955
+msgid "Laissez vide pour garder la valeur enregistrée."
+msgstr "Leave empty to keep the saved value."
+
+#: includes/class-admin.php:780
+msgid "Afficher :"
+msgstr "Show:"
+
+#: includes/class-admin.php:782
+msgid "Tous les emplacements"
+msgstr "All locations"
+
+#: includes/class-admin.php:789
+msgid "Filtrer"
+msgstr "Filter"
+
+#: includes/class-admin.php:792
+msgid "Synchroniser depuis :"
+msgstr "Sync from:"
+
+#: includes/class-admin.php:800
+msgid "Synchroniser"
+msgstr "Sync"
+
+#: includes/class-admin.php:801
+msgid "Importer une sauvegarde"
+msgstr "Import a backup"
+
+#: includes/class-admin.php:805
+msgid "Tout sélectionner"
+msgstr "Select all"
+
+#: includes/class-admin.php:812
+msgid "Date"
+msgstr "Date"
+
+#: includes/class-admin.php:812
+#: includes/class-job.php:714
+msgid "Taille"
+msgstr "Size"
+
+#: includes/class-admin.php:812
+msgid "Note"
+msgstr "Note"
+
+#: includes/class-admin.php:815
+msgid "Aucune sauvegarde pour le moment."
+msgstr "No backup yet."
+
+#: includes/class-admin.php:815
+msgid "Aucune sauvegarde à cet emplacement."
+msgstr "No backup at this location."
+
+#: includes/class-admin.php:820
+msgid "Local"
+msgstr "Local"
+
+#: includes/class-admin.php:820
+msgid "Emplacement supprimé"
+msgstr "Location deleted"
+
+#: includes/class-admin.php:824
+#: includes/class-job.php:709
+msgid "Fichiers"
+msgstr "Files"
+
+#: includes/class-admin.php:837
+msgid "Auto"
+msgstr "Auto"
+
+#: includes/class-admin.php:848
+#: includes/class-admin.php:1093
+msgid "Restaurer"
+msgstr "Restore"
+
+#: includes/class-admin.php:849
+msgid "Télécharger"
+msgstr "Download"
+
+#: includes/class-admin.php:850
+#: includes/class-admin.php:1100
+msgid "Journal"
+msgstr "Log"
+
+#: includes/class-admin.php:860
+msgid "sauvegardes"
+msgstr "backups"
+
+#: includes/class-admin.php:877
+msgid "Être prévenu"
+msgstr "Get notified"
+
+#: includes/class-admin.php:878
+msgid "Chaque sauvegarde réussie ou ratée peut envoyer un message. L'e-mail est un service comme les autres : ajoutez-en autant que vous voulez, de toutes sortes, et choisissez pour chacun s'il veut les réussites, les échecs ou les deux."
+msgstr "Every successful or failed backup can send a message. E-mail is a service like any other: add as many as you want, of any kind, and choose for each whether it wants successes, failures or both."
+
+#: includes/class-admin.php:880
+#: includes/class-admin.php:932
+#: includes/class-locations.php:40
+msgid "Service"
+msgstr "Service"
+
+#: includes/class-admin.php:880
+#: includes/class-admin.php:963
+msgid "Prévenir en cas de"
+msgstr "Notify on"
+
+#: includes/class-admin.php:880
+msgid "Dernier envoi"
+msgstr "Last sent"
+
+#: includes/class-admin.php:883
+msgid "Aucune notification pour le moment. Ajoutez un e-mail ou un service."
+msgstr "No notification yet. Add an e-mail or a service."
+
+#: includes/class-admin.php:890
+msgid "réussite"
+msgstr "success"
+
+#: includes/class-admin.php:893
+msgid "échec"
+msgstr "failure"
+
+#: includes/class-admin.php:899
+msgid "En pause"
+msgstr "Paused"
+
+#: includes/class-admin.php:906
+msgctxt "result of the last send"
+msgid "Réussi"
+msgstr "Succeeded"
+
+#: includes/class-admin.php:906
+msgctxt "result of the last send"
+msgid "Échec"
+msgstr "Failed"
+
+#: includes/class-admin.php:914
+msgid "Envoyer un test"
+msgstr "Send a test"
+
+#: includes/class-admin.php:916
+msgid "Supprimer ce canal de notification ?"
+msgstr "Delete this notification channel?"
+
+#: includes/class-admin.php:922
+msgid "Ajouter une notification"
+msgstr "Add a notification"
+
+#: includes/class-admin.php:940
+msgid "Nom (facultatif)"
+msgstr "Name (optional)"
+
+#: includes/class-admin.php:941
+msgid "Par exemple : Salon alertes"
+msgstr "For example: Alerts room"
+
+#: includes/class-admin.php:965
+msgid "Réussite"
+msgstr "Success"
+
+#: includes/class-admin.php:966
+msgid "Échec"
+msgstr "Failure"
+
+#: includes/class-admin.php:970
+msgid "État"
+msgstr "Status"
+
+#: includes/class-admin.php:971
+#: includes/class-ajax.php:324
+msgid "Actif"
+msgstr "Active"
+
+#: includes/class-admin.php:987
+msgid "Vérifier mon site"
+msgstr "Check my site"
+
+#: includes/class-admin.php:988
+msgid "Contrôle ce dont les sauvegardes ont besoin sur votre hébergement."
+msgstr "Checks what backups need on your hosting."
+
+#: includes/class-admin.php:989
+msgid "Lancer la vérification"
+msgstr "Run the check"
+
+#: includes/class-admin.php:994
+msgid "Sauvegarde qui se bloque sans erreur (LiteSpeed)"
+msgstr "Backup that gets stuck without an error (LiteSpeed)"
+
+#: includes/class-admin.php:995
+msgid "Sur certains serveurs LiteSpeed, une sauvegarde est tuée en route, sans message : elle reste coincée à un pourcentage fixe. La parade est une règle « noabort » dans le fichier .htaccess du site."
+msgstr "On some LiteSpeed servers, a backup is killed along the way, without a message: it stays stuck at a fixed percentage. The fix is a \"noabort\" rule in the site's .htaccess file."
+
+#: includes/class-admin.php:998
+msgid "Ajouter la règle"
+msgstr "Add the rule"
+
+#: includes/class-admin.php:999
+msgid "Essayer l'autre forme"
+msgstr "Try the other form"
+
+#: includes/class-admin.php:1000
+msgid "Retirer la règle"
+msgstr "Remove the rule"
+
+#: includes/class-admin.php:1002
+msgid "La règle est ajoutée au début du .htaccess, après en avoir gardé une copie. Si le site se met à planter à cause d'elle, elle est retirée toute seule. L'autre forme sert quand la première reste sans effet."
+msgstr "The rule is added at the top of the .htaccess, after keeping a copy. If the site starts crashing because of it, it is removed by itself. The other form is for when the first one has no effect."
+
+#: includes/class-admin.php:1005
+msgid "Déplacer ou cloner un site"
+msgstr "Move or clone a site"
+
+#: includes/class-admin.php:1007
+msgid "Sur le site d'origine, créez une sauvegarde complète et téléchargez-la, ou gardez-la sur un emplacement distant."
+msgstr "On the original site, create a full backup and download it, or keep it on a remote location."
+
+#: includes/class-admin.php:1008
+msgid "Sur le nouveau site, installez WordPress puis ce plugin."
+msgstr "On the new site, install WordPress, then this plugin."
+
+#: includes/class-admin.php:1009
+msgid "Dans Historique, importez le fichier, ou ajoutez le même emplacement et cliquez sur Synchroniser."
+msgstr "In History, import the file, or add the same location and click Sync."
+
+#: includes/class-admin.php:1010
+msgid "Cliquez sur Restaurer. L'adresse du site est remplacée partout dans la base de données ; la connexion à la base et les règles du serveur du nouveau site sont conservées."
+msgstr "Click Restore. The site address is replaced everywhere in the database; the new site's database connection and server rules are kept."
+
+#: includes/class-admin.php:1012
+msgid "Les sauvegardes faites avec le plugin Backuply peuvent aussi être importées et restaurées ici."
+msgstr "Backups made with the Backuply plugin can also be imported and restored here."
+
+#: includes/class-admin.php:1015
+msgid "Connecter un compte cloud"
+msgstr "Connect a cloud account"
+
+#: includes/class-admin.php:1016
+msgid "Google Drive, OneDrive, Dropbox et pCloud demandent une application à votre nom : c'est gratuit, et vos autorisations ne passent par aucun service tiers. L'adresse de retour à déclarer est :"
+msgstr "Google Drive, OneDrive, Dropbox and pCloud need an application in your name: it is free, and your authorizations go through no third-party service. The return address to declare is:"
+
+#: includes/class-admin.php:1019
+msgid "Sur console.cloud.google.com, créez un projet et activez l'API Google Drive."
+msgstr "On console.cloud.google.com, create a project and enable the Google Drive API."
+
+#: includes/class-admin.php:1020
+msgid "Configurez l'écran de consentement OAuth, avec votre adresse comme utilisateur de test."
+msgstr "Set up the OAuth consent screen, with your address as a test user."
+
+#: includes/class-admin.php:1021
+msgid "Créez des identifiants « ID client OAuth », de type Application Web, avec l'adresse de retour ci-dessus."
+msgstr "Create \"OAuth client ID\" credentials, of type Web application, with the return address above."
+
+#: includes/class-admin.php:1022
+msgid "Copiez l'identifiant et le secret dans le formulaire de l'emplacement."
+msgstr "Copy the ID and the secret into the location form."
+
+#: includes/class-admin.php:1023
+msgid "Tant que l'application reste en mode Test, Google retire son autorisation au bout de 7 jours. Publiez-la pour une connexion durable."
+msgstr "As long as the application stays in Test mode, Google removes its authorization after 7 days. Publish it for a lasting connection."
+
+#: includes/class-admin.php:1024
+msgid "Microsoft OneDrive"
+msgstr "Microsoft OneDrive"
+
+#: includes/class-admin.php:1025
+msgid "Sur entra.microsoft.com, ouvrez « Inscriptions d'applications » et créez-en une pour tous les comptes Microsoft."
+msgstr "On entra.microsoft.com, open \"App registrations\" and create one for all Microsoft accounts."
+
+#: includes/class-admin.php:1026
+msgid "Ajoutez l'adresse de retour ci-dessus, de type Web."
+msgstr "Add the return address above, of type Web."
+
+#: includes/class-admin.php:1027
+msgid "Dans « Certificats et secrets », créez un secret. Copiez sa valeur et l'ID d'application dans le formulaire."
+msgstr "In \"Certificates & secrets\", create a secret. Copy its value and the application ID into the form."
+
+#: includes/class-admin.php:1030
+msgid "Sur dropbox.com/developers/apps, créez une application avec l'accès « Scoped », type « Full Dropbox »."
+msgstr "On dropbox.com/developers/apps, create an application with \"Scoped\" access, type \"Full Dropbox\"."
+
+#: includes/class-admin.php:1031
+msgid "Dans Permissions, cochez files.content.read, files.content.write et files.metadata.read."
+msgstr "In Permissions, tick files.content.read, files.content.write and files.metadata.read."
+
+#: includes/class-admin.php:1032
+msgid "Dans Settings, ajoutez l'adresse de retour puis copiez App key et App secret dans le formulaire."
+msgstr "In Settings, add the return address, then copy App key and App secret into the form."
+
+#: includes/class-admin.php:1035
+msgid "Sur docs.pcloud.com/my_apps, créez une application avec l'accès aux fichiers."
+msgstr "On docs.pcloud.com/my_apps, create an application with access to files."
+
+#: includes/class-admin.php:1036
+msgid "Ajoutez l'adresse de retour puis copiez Client ID et Client secret dans le formulaire."
+msgstr "Add the return address, then copy Client ID and Client secret into the form."
+
+#: includes/class-admin.php:1040
+msgid "Recevoir les notifications sur son téléphone ou un salon"
+msgstr "Receive notifications on your phone or in a chat room"
+
+#: includes/class-admin.php:1041
+msgid "Dans l'onglet Notifications, ajoutez un e-mail ou un service, collez l'adresse ou le jeton qu'il vous donne, puis cliquez sur « Envoyer un test »."
+msgstr "In the Notifications tab, add an e-mail or a service, paste the address or token it gives you, then click \"Send a test\"."
+
+#: includes/class-admin.php:1043
+msgid ": le jeton d'application se crée sur pushover.net/apps, la clé utilisateur est sur votre tableau de bord."
+msgstr ": the application token is created at pushover.net/apps, the user key is on your dashboard."
+
+#: includes/class-admin.php:1044
+msgid ": adresse de votre serveur, puis un jeton d'application créé dans son interface."
+msgstr ": your server's address, then an application token created in its interface."
+
+#: includes/class-admin.php:1045
+msgid ": choisissez un sujet long et secret, abonnez-vous-y dans l'application ntfy."
+msgstr ": choose a long, secret topic, and subscribe to it in the ntfy app."
+
+#: includes/class-admin.php:1046
+msgid ": créez un bot avec @BotFather, écrivez-lui, puis relevez l'identifiant de la discussion."
+msgstr ": create a bot with @BotFather, write to it, then note the chat ID."
+
+#: includes/class-admin.php:1047
+msgid ": réglages du salon, Intégrations, Webhooks, Copier l'URL."
+msgstr ": channel settings, Integrations, Webhooks, Copy URL."
+
+#: includes/class-admin.php:1048
+msgid ": créez un « Incoming Webhook » dans votre espace de travail."
+msgstr ": create an \"Incoming Webhook\" in your workspace."
+
+#: includes/class-admin.php:1049
+msgid ": n'importe quelle adresse qui accepte un POST en JSON (Zapier, n8n, Home Assistant...)."
+msgstr ": any address that accepts a JSON POST (Zapier, n8n, Home Assistant...)."
+
+#: includes/class-admin.php:1053
+msgid "En ligne de commande"
+msgstr "On the command line"
+
+#: includes/class-admin.php:1071
+msgid "Vous pouvez fermer cette page, sauf si l'onglet Aide indique que le site ne peut pas s'appeler lui-même."
+msgstr "You can close this page, unless the Help tab says the site cannot call itself."
+
+#: includes/class-admin.php:1074
+msgid "Arrêter"
+msgstr "Stop"
+
+#: includes/class-admin.php:1075
+msgid "Forcer l'arrêt"
+msgstr "Force stop"
+
+#: includes/class-admin.php:1076
+#: includes/class-admin.php:1102
+#: includes/class-admin.php:1111
+msgid "Fermer"
+msgstr "Close"
+
+#: includes/class-admin.php:1083
+msgid "Restaurer cette sauvegarde"
+msgstr "Restore this backup"
+
+#: includes/class-admin.php:1089
+msgid "Le contenu actuel sera remplacé"
+msgstr "The current content will be replaced"
+
+#: includes/class-admin.php:1089
+msgid "par celui de cette sauvegarde. Le site sera en maintenance pendant l'opération."
+msgstr "by that of this backup. The site will be in maintenance mode during the operation."
+
+#: includes/class-admin.php:1090
+msgid "J'ai compris"
+msgstr "I understand"
+
+#: includes/class-admin.php:1108
+msgid "Choisir ce qu'il faut exclure"
+msgstr "Choose what to exclude"
+
+#: includes/class-ajax.php:24
+#: includes/class-ajax.php:344
+msgid "Vous n'avez pas les droits nécessaires."
+msgstr "You don't have the required permissions."
+
+#: includes/class-ajax.php:127
+#: includes/class-ajax.php:137
+#: includes/class-backups.php:188
+#: includes/class-locations.php:266
+msgid "Cet emplacement n'existe plus."
+msgstr "This location no longer exists."
+
+#: includes/class-ajax.php:130
+msgid "Connexion réussie, le dossier est accessible en écriture."
+msgstr "Connection successful, the folder is writable."
+
+#: includes/class-ajax.php:151
+msgid "Règle incomplète."
+msgstr "Incomplete rule."
+
+#: includes/class-ajax.php:161
+msgid "Cette règle existe déjà."
+msgstr "This rule already exists."
+
+#: includes/class-ajax.php:174
+msgid "Règle introuvable."
+msgstr "Rule not found."
+
+#: includes/class-ajax.php:207
+msgid "Ce fichier n'est pas une sauvegarde : il doit se terminer par .tar.gz"
+msgstr "This file is not a backup: it must end with .tar.gz"
+
+#: includes/class-ajax.php:211
+msgid "Nom de fichier invalide."
+msgstr "Invalid file name."
+
+#: includes/class-ajax.php:222
+msgid "Un fichier du même nom existe déjà."
+msgstr "A file with the same name already exists."
+
+#: includes/class-ajax.php:227
+msgid "Le morceau de fichier n'est pas arrivé. Le serveur limite peut-être la taille des envois."
+msgstr "The file chunk did not arrive. The server may limit the upload size."
+
+#: includes/class-ajax.php:231
+msgid "Morceau de fichier de taille inattendue."
+msgstr "File chunk of unexpected size."
+
+#: includes/class-ajax.php:246
+msgid "Ce fichier n'est pas une archive .tar.gz valide."
+msgstr "This file is not a valid .tar.gz archive."
+
+#: includes/class-ajax.php:252
+msgid "Cette archive est illisible."
+msgstr "This archive is unreadable."
+
+#: includes/class-ajax.php:276
+msgid "Message de test envoyé : vérifiez qu'il est bien arrivé."
+msgstr "Test message sent: check that it arrived."
+
+#: includes/class-ajax.php:287
+msgid "Action inconnue."
+msgstr "Unknown action."
+
+#: includes/class-ajax.php:304
+msgid "Version de PHP"
+msgstr "PHP version"
+
+#: includes/class-ajax.php:305
+msgid "Module zlib (compression)"
+msgstr "zlib module (compression)"
+
+#: includes/class-ajax.php:305
+#: includes/class-ajax.php:306
+msgid "Présent"
+msgstr "Present"
+
+#: includes/class-ajax.php:305
+msgid "Absent : les sauvegardes sont impossibles"
+msgstr "Missing: backups are impossible"
+
+#: includes/class-ajax.php:306
+msgid "Module cURL (WebDAV)"
+msgstr "cURL module (WebDAV)"
+
+#: includes/class-ajax.php:306
+msgid "Absent : l'envoi WebDAV est impossible"
+msgstr "Missing: WebDAV upload is impossible"
+
+#: includes/class-ajax.php:307
+msgid "Dossier de travail"
+msgstr "Working folder"
+
+#: includes/class-ajax.php:307
+msgid "Accessible en écriture"
+msgstr "Writable"
+
+#: includes/class-ajax.php:307
+#, php-format
+msgid "Impossible d'écrire dans %s"
+msgstr "Could not write to %s"
+
+#: includes/class-ajax.php:310
+msgid "Espace disque libre"
+msgstr "Free disk space"
+
+#: includes/class-ajax.php:310
+msgid "Inconnu"
+msgstr "Unknown"
+
+#: includes/class-ajax.php:313
+msgid "Temps maximum d'un script"
+msgstr "Maximum script time"
+
+#: includes/class-ajax.php:313
+msgid "Illimité"
+msgstr "Unlimited"
+
+#: includes/class-ajax.php:314
+msgid "Mémoire PHP"
+msgstr "PHP memory"
+
+#: includes/class-ajax.php:322
+msgid "Le site peut s'appeler lui-même"
+msgstr "The site can call itself"
+
+#: includes/class-ajax.php:322
+msgid "Oui"
+msgstr "Yes"
+
+#: includes/class-ajax.php:322
+#, php-format
+msgid "Non : gardez la page ouverte pendant les sauvegardes, elle prendra le relais (%s)"
+msgstr "No: keep the page open during backups, it will take over (%s)"
+
+#: includes/class-ajax.php:322
+#: includes/storage/class-oauth.php:88
+#, php-format
+msgid "code %s"
+msgstr "code %s"
+
+#: includes/class-ajax.php:324
+msgid "Désactivé : utilisez la planification personnalisée"
+msgstr "Disabled: use the custom schedule"
+
+#: includes/class-ajax.php:327
+msgid "LiteSpeed : règle « noabort »"
+msgstr "LiteSpeed: \"noabort\" rule"
+
+#: includes/class-ajax.php:336
+msgid "Dossier des sauvegardes protégé"
+msgstr "Backup folder protected"
+
+#: includes/class-ajax.php:336
+msgid "Inaccessible depuis le web"
+msgstr "Not reachable from the web"
+
+#: includes/class-ajax.php:336
+msgid "Le serveur ignore .htaccess (nginx ?). Le nom du dossier reste aléatoire ; ajoutez une règle pour le bloquer."
+msgstr "The server ignores .htaccess (nginx?). The folder name stays random; add a rule to block it."
+
+#: includes/class-ajax.php:349
+#: includes/class-job.php:149
+#: includes/class-restore.php:34
+msgid "Sauvegarde introuvable."
+msgstr "Backup not found."
+
+#: includes/class-ajax.php:356
+#: includes/class-restore.php:57
+msgid "Le fichier de cette sauvegarde est introuvable."
+msgstr "This backup's file could not be found."
+
+#: includes/class-backups.php:84
+#, php-format
+msgid "Rotation : suppression de l'ancienne sauvegarde %s"
+msgstr "Rotation: deleting the old backup %s"
+
+#: includes/class-backups.php:88
+#, php-format
+msgid "Rotation : %s"
+msgstr "Rotation: %s"
+
+#: includes/class-backups.php:166
+#, php-format
+msgid "Archive illisible : %s"
+msgstr "Unreadable archive: %s"
+
+#: includes/class-cli.php:69
+#, php-format
+msgid "La tâche n'a pas abouti : %s"
+msgstr "The task did not complete: %s"
+
+#: includes/class-cli.php:71
+msgid "Terminé."
+msgstr "Done."
+
+#: includes/class-cli.php:137
+msgid "Sauvegarde supprimée."
+msgstr "Backup deleted."
+
+#: includes/class-cli.php:158
+msgid "Le contenu actuel du site sera remplacé. Continuer ?"
+msgstr "The site's current content will be replaced. Continue?"
+
+#: includes/class-cli.php:176
+msgid "La sauvegarde n'a pas pu être récupérée."
+msgstr "The backup could not be retrieved."
+
+#: includes/class-cli.php:180
+msgid "Restauration en cours…"
+msgstr "Restore in progress…"
+
+#: includes/class-cli.php:197
+msgid "Le programme de restauration a disparu."
+msgstr "The restore program has disappeared."
+
+#: includes/class-cli.php:200
+#, php-format
+msgid "Le programme de restauration s'est interrompu : %s"
+msgstr "The restore program stopped: %s"
+
+#: includes/class-cli.php:209
+#: runner/restore-runner.php:777
+msgid "Restauration terminée."
+msgstr "Restore complete."
+
+#: includes/class-cli.php:211
+msgid "La restauration n'a pas abouti."
+msgstr "The restore did not complete."
+
+#: includes/class-database.php:35
+msgid "Impossible de créer le fichier de la base de données."
+msgstr "Could not create the database file."
+
+#: includes/class-database.php:58
+msgid "Impossible d'ouvrir le fichier de la base de données."
+msgstr "Could not open the database file."
+
+#: includes/class-database.php:75
+#: includes/class-database.php:150
+#, php-format
+msgid "Lecture impossible de la table %1$s : %2$s"
+msgstr "Could not read the table %1$s: %2$s"
+
+#: includes/class-job.php:42
+#: includes/class-job.php:64
+#: includes/class-job.php:145
+msgid "Une tâche est déjà en cours. Attendez sa fin ou arrêtez-la."
+msgstr "A task is already running. Wait for it to finish or stop it."
+
+#: includes/class-job.php:67
+msgid "Une restauration est en cours."
+msgstr "A restore is in progress."
+
+#: includes/class-job.php:72
+msgid "Choisissez au moins les fichiers ou la base de données."
+msgstr "Choose at least the files or the database."
+
+#: includes/class-job.php:76
+#: includes/class-job.php:617
+msgid "L'emplacement choisi n'existe plus."
+msgstr "The chosen location no longer exists."
+
+#: includes/class-job.php:125
+#, php-format
+msgid "Sauvegarde démarrée : %s"
+msgstr "Backup started: %s"
+
+#: includes/class-job.php:170
+msgid "Récupération de la sauvegarde depuis son emplacement…"
+msgstr "Retrieving the backup from its location…"
+
+#: includes/class-job.php:200
+msgid "Jeton refusé."
+msgstr "Token refused."
+
+#: includes/class-job.php:300
+msgid "Export de la base de données"
+msgstr "Exporting the database"
+
+#: includes/class-job.php:305
+#, php-format
+msgid "Table terminée : %s"
+msgstr "Table finished: %s"
+
+#: includes/class-job.php:310
+#, php-format
+msgid "Base de données exportée : %1$d tables, %2$d lignes, %3$s"
+msgstr "Database exported: %1$d tables, %2$d rows, %3$s"
+
+#: includes/class-job.php:321
+msgid "Inventaire des fichiers"
+msgstr "Listing the files"
+
+#: includes/class-job.php:351
+#, php-format
+msgid "Dossier illisible, ignoré : %s"
+msgstr "Unreadable folder, skipped: %s"
+
+#: includes/class-job.php:389
+#, php-format
+msgid "%d fichiers d'origine de WordPress, non sauvegardés"
+msgstr "%d original WordPress files, not backed up"
+
+#: includes/class-job.php:389
+#, php-format
+msgid "%d fichiers de WordPress inchangés, non sauvegardés"
+msgstr "%d unchanged WordPress files, not backed up"
+
+#: includes/class-job.php:391
+#, php-format
+msgid "%1$d éléments à sauvegarder, %2$s"
+msgstr "%1$d items to back up, %2$s"
+
+#: includes/class-job.php:442
+msgid "Création de l'archive"
+msgstr "Creating the archive"
+
+#: includes/class-job.php:510
+#, php-format
+msgid "Fichier illisible, ignoré : %s"
+msgstr "Unreadable file, skipped: %s"
+
+#: includes/class-job.php:543
+#, php-format
+msgid "Archive : %1$d éléments ajoutés, %2$s traités"
+msgstr "Archive: %1$d items added, %2$s processed"
+
+#: includes/class-job.php:551
+msgid "Impossible de finaliser l'archive."
+msgstr "Could not finalize the archive."
+
+#: includes/class-job.php:553
+#, php-format
+msgid "Archive terminée : %s"
+msgstr "Archive finished: %s"
+
+#: includes/class-job.php:623
+#, php-format
+msgid "Envoi vers %s"
+msgstr "Uploading to %s"
+
+#: includes/class-job.php:645
+#, php-format
+msgid "Le fichier d'informations n'a pas pu être envoyé : %s La sauvegarde est bien stockée, mais un autre site ne la retrouvera pas en synchronisant."
+msgstr "The information file could not be uploaded: %s The backup is stored, but another site will not find it when syncing."
+
+#: includes/class-job.php:650
+msgid "Envoi terminé"
+msgstr "Upload finished"
+
+#: includes/class-job.php:660
+msgid "L'emplacement de cette sauvegarde n'existe plus."
+msgstr "This backup's location no longer exists."
+
+#: includes/class-job.php:678
+#, php-format
+msgid "Sauvegarde récupérée : %s"
+msgstr "Backup retrieved: %s"
+
+#: includes/class-job.php:701
+#, php-format
+msgid "Sauvegarde terminée : %1$d éléments, %2$s"
+msgstr "Backup finished: %1$d items, %2$s"
+
+#: includes/class-job.php:709
+msgid "Fichiers et base de données"
+msgstr "Files and database"
+
+#: includes/class-job.php:711
+#, php-format
+msgid "Sauvegarde réussie - %s"
+msgstr "Backup successful - %s"
+
+#: includes/class-job.php:713
+#, php-format
+msgid ""
+"La sauvegarde de votre site s'est bien terminée.\n"
+"\n"
+"Site : %1$s\n"
+"Nom : %2$s\n"
+"Contenu : %3$s\n"
+"Taille : %4$s\n"
+"Emplacement : %5$s\n"
+"Durée : %6$s"
+msgstr ""
+"Your site backup completed successfully.\n"
+"\n"
+"Site: %1$s\n"
+"Name: %2$s\n"
+"Content: %3$s\n"
+"Size: %4$s\n"
+"Location: %5$s\n"
+"Duration: %6$s"
+
+#: includes/class-job.php:714
+#: includes/class-job.php:787
+#: includes/class-notifications.php:214
+#: includes/class-schedule.php:55
+msgid "Site"
+msgstr "Site"
+
+#: includes/class-job.php:714
+msgid "Durée"
+msgstr "Duration"
+
+#: includes/class-job.php:719
+#, php-format
+msgid "%d min"
+msgstr "%d min"
+
+#: includes/class-job.php:719
+#, php-format
+msgid "%d s"
+msgstr "%d s"
+
+#: includes/class-job.php:732
+#, php-format
+msgid "Envoi du journal : %s"
+msgstr "Log upload: %s"
+
+#: includes/class-job.php:744
+#: includes/class-schedule.php:58
+#, php-format
+msgid "Notifications : %s"
+msgstr "Notifications: %s"
+
+#: includes/class-job.php:771
+msgid "Tâche arrêtée à votre demande."
+msgstr "Task stopped at your request."
+
+#: includes/class-job.php:785
+#, php-format
+msgid "Échec de la sauvegarde - %s"
+msgstr "Backup failed - %s"
+
+#: includes/class-job.php:786
+#, php-format
+msgid ""
+"La sauvegarde n'a pas abouti.\n"
+"\n"
+"Site : %1$s\n"
+"Raison : %2$s"
+msgstr ""
+"The backup did not complete.\n"
+"\n"
+"Site: %1$s\n"
+"Reason: %2$s"
+
+#: includes/class-job.php:787
+#: includes/class-schedule.php:55
+msgid "Raison"
+msgstr "Reason"
+
+#: includes/class-job.php:797
+msgid "Tâche arrêtée de force."
+msgstr "Task force-stopped."
+
+#: includes/class-job.php:824
+#, php-format
+msgid "La tâche ne répond plus depuis %d minutes : le serveur l'a probablement arrêtée."
+msgstr "The task has not responded for %d minutes: the server probably stopped it."
+
+#: includes/class-litespeed.php:46
+msgid "La règle LiteSpeed est en place (ajoutée par ce plugin)."
+msgstr "The LiteSpeed rule is in place (added by this plugin)."
+
+#: includes/class-litespeed.php:46
+msgid "Une règle « noabort » est déjà dans votre .htaccess."
+msgstr "A \"noabort\" rule is already in your .htaccess."
+
+#: includes/class-litespeed.php:49
+msgid "LiteSpeed n'est pas détecté sur ce serveur : cette règle n'est probablement pas nécessaire. Vous pouvez quand même l'ajouter si une sauvegarde se bloque sans erreur."
+msgstr "LiteSpeed is not detected on this server: this rule is probably not needed. You can still add it if a backup gets stuck without an error."
+
+#: includes/class-litespeed.php:52
+msgid "Ce serveur utilise LiteSpeed, mais le fichier .htaccess du site est introuvable ou illisible."
+msgstr "This server uses LiteSpeed, but the site's .htaccess file is missing or unreadable."
+
+#: includes/class-litespeed.php:54
+msgid "Ce serveur utilise LiteSpeed, qui interrompt parfois les tâches longues sans message d'erreur. Ajoutez la règle ci-dessous si une sauvegarde se bloque."
+msgstr "This server uses LiteSpeed, which sometimes interrupts long tasks without an error message. Add the rule below if a backup gets stuck."
+
+#: includes/class-litespeed.php:61
+msgid " Ce serveur utilise LiteSpeed, qui interrompt parfois les tâches longues : ouvrez l'onglet Aide, puis ajoutez la règle LiteSpeed."
+msgstr " This server uses LiteSpeed, which sometimes interrupts long tasks: open the Help tab, then add the LiteSpeed rule."
+
+#: includes/class-litespeed.php:80
+msgid "Le fichier .htaccess n'existe pas à la racine du site. Créez-le, puis réessayez."
+msgstr "The .htaccess file does not exist at the site root. Create it, then try again."
+
+#: includes/class-litespeed.php:83
+msgid "Le fichier .htaccess n'est pas modifiable : vérifiez ses droits, puis réessayez."
+msgstr "The .htaccess file is not writable: check its permissions, then try again."
+
+#: includes/class-litespeed.php:88
+msgid "Une règle « noabort » est déjà dans votre .htaccess : rien n'a été changé."
+msgstr "A \"noabort\" rule is already in your .htaccess: nothing was changed."
+
+#: includes/class-litespeed.php:96
+msgid "Impossible d'écrire dans le fichier .htaccess : vérifiez ses droits."
+msgstr "Could not write to the .htaccess file: check its permissions."
+
+#: includes/class-litespeed.php:101
+#, php-format
+msgid "Le site a répondu par une erreur (code %s) avec cette règle : elle a été retirée et votre .htaccess est revenu comme avant."
+msgstr "The site answered with an error (code %s) with this rule: it was removed and your .htaccess is back as before."
+
+#: includes/class-litespeed.php:101
+msgid "Essayez l'autre forme de la règle."
+msgstr "Try the other form of the rule."
+
+#: includes/class-litespeed.php:103
+#, php-format
+msgid "Règle ajoutée au début du fichier .htaccess (forme %d). Relancez la sauvegarde qui se bloquait."
+msgstr "Rule added at the top of the .htaccess file (form %d). Run the backup that was stuck again."
+
+#: includes/class-litespeed.php:103
+msgid "Si elle se bloque encore, essayez l'autre forme."
+msgstr "If it still gets stuck, try the other form."
+
+#: includes/class-litespeed.php:109
+msgid "Le fichier .htaccess n'est pas modifiable."
+msgstr "The .htaccess file is not writable."
+
+#: includes/class-litespeed.php:113
+msgid "Ce plugin n'a pas ajouté de règle : rien à retirer."
+msgstr "This plugin has not added a rule: nothing to remove."
+
+#: includes/class-litespeed.php:116
+msgid "La règle a été retirée du fichier .htaccess."
+msgstr "The rule was removed from the .htaccess file."
+
+#: includes/class-locations.php:12
+msgid "Dossier de sauvegarde"
+msgstr "Backup folder"
+
+#: includes/class-locations.php:12
+msgid "Facultatif, par exemple rempart-backups."
+msgstr "Optional, for example rempart-backups."
+
+#: includes/class-locations.php:14
+msgid "Par exemple ftp.mondomaine.fr"
+msgstr "For example ftp.mydomain.com"
+
+#: includes/class-locations.php:16
+#: includes/class-locations.php:35
+msgid "Identifiant"
+msgstr "Username"
+
+#: includes/class-locations.php:17
+#: includes/class-locations.php:36
+msgid "Mot de passe"
+msgstr "Password"
+
+#: includes/class-locations.php:20
+msgid "Identifiant de l'application"
+msgstr "Application ID"
+
+#: includes/class-locations.php:21
+msgid "Secret de l'application"
+msgstr "Application secret"
+
+#: includes/class-locations.php:26
+msgid "Accepter un certificat non vérifié"
+msgstr "Accept an unverified certificate"
+
+#: includes/class-locations.php:26
+msgid "Seulement pour un serveur que vous connaissez et dont le certificat est auto-signé : la connexion reste chiffrée, mais l'identité du serveur n'est plus contrôlée."
+msgstr "Only for a server you know and whose certificate is self-signed: the connection stays encrypted, but the server's identity is no longer checked."
+
+#: includes/class-locations.php:30
+msgid "Clé privée (facultatif)"
+msgstr "Private key (optional)"
+
+#: includes/class-locations.php:30
+msgid "Si vous en utilisez une, le mot de passe sert de phrase secrète."
+msgstr "If you use one, the password is used as its passphrase."
+
+#: includes/class-locations.php:34
+msgid "Adresse WebDAV"
+msgstr "WebDAV address"
+
+#: includes/class-locations.php:34
+msgid "Par exemple https://cloud.mondomaine.fr/remote.php/dav/files/moi"
+msgstr "For example https://cloud.mydomain.com/remote.php/dav/files/me"
+
+#: includes/class-locations.php:39
+msgid "Amazon S3 et compatibles"
+msgstr "Amazon S3 and compatible"
+
+#: includes/class-locations.php:41
+msgid "Adresse du service"
+msgstr "Service address"
+
+#: includes/class-locations.php:41
+msgid "Laissez vide : elle est déduite de la région pour les services de la liste."
+msgstr "Leave empty: it is derived from the region for the services in the list."
+
+#: includes/class-locations.php:42
+msgid "Région"
+msgstr "Region"
+
+#: includes/class-locations.php:43
+msgid "Clé d'accès"
+msgstr "Access key"
+
+#: includes/class-locations.php:44
+msgid "Clé secrète"
+msgstr "Secret key"
+
+#: includes/class-locations.php:46
+msgid "Chiffrer côté serveur"
+msgstr "Encrypt on the server side"
+
+#: includes/class-locations.php:46
+msgid "Le service chiffre les fichiers reçus (AES-256)."
+msgstr "The service encrypts the files it receives (AES-256)."
+
+#: includes/class-locations.php:63
+#: includes/class-locations.php:64
+#: includes/class-locations.php:65
+#: includes/class-locations.php:66
+#: includes/class-locations.php:67
+#: includes/class-locations.php:68
+#: includes/class-locations.php:69
+msgid "Laissez vide"
+msgstr "Leave empty"
+
+#: includes/class-locations.php:63
+msgid "Laissez l'adresse vide : elle est déduite de la région."
+msgstr "Leave the address empty: it is derived from the region."
+
+#: includes/class-locations.php:64
+msgid "Régions : fsn1 (Falkenstein), nbg1 (Nuremberg), hel1 (Helsinki). Clés créées dans la console Hetzner, section Object Storage."
+msgstr "Regions: fsn1 (Falkenstein), nbg1 (Nuremberg), hel1 (Helsinki). Keys are created in the Hetzner console, Object Storage section."
+
+#: includes/class-locations.php:65
+msgid "La région est dans l'adresse S3 de votre bucket (s3.us-west-004.backblazeb2.com, région us-west-004). Clé d'accès = keyID, clé secrète = applicationKey. Le bucket doit déjà exister si votre clé est limitée à un bucket."
+msgstr "The region is in your bucket's S3 address (s3.us-west-004.backblazeb2.com, region us-west-004). Access key = keyID, secret key = applicationKey. The bucket must already exist if your key is limited to one bucket."
+
+#: includes/class-locations.php:66
+msgid "Région : nyc3, ams3, sgp1, fra1..."
+msgstr "Region: nyc3, ams3, sgp1, fra1..."
+
+#: includes/class-locations.php:67
+msgid "Région : l'identifiant du cluster, par exemple fr-par-1 ou us-east-1."
+msgstr "Region: the cluster identifier, for example fr-par-1 or us-east-1."
+
+#: includes/class-locations.php:68
+msgid "Région : ams1, ewr1, sjc1..."
+msgstr "Region: ams1, ewr1, sjc1..."
+
+#: includes/class-locations.php:69
+msgid "Région : eu-central-1, us-east-1..."
+msgstr "Region: eu-central-1, us-east-1..."
+
+#: includes/class-locations.php:70
+msgid "https://IDENTIFIANT.r2.cloudflarestorage.com"
+msgstr "https://ID.r2.cloudflarestorage.com"
+
+#: includes/class-locations.php:70
+msgid "Adresse : https://IDENTIFIANT-DU-COMPTE.r2.cloudflarestorage.com. Région : auto."
+msgstr "Address: https://ACCOUNT-ID.r2.cloudflarestorage.com. Region: auto."
+
+#: includes/class-locations.php:71
+msgid "Indiquez l'adresse fournie par votre service."
+msgstr "Enter the address given by your service."
+
+#: includes/class-locations.php:85
+msgid "Autre service compatible S3"
+msgstr "Other S3-compatible service"
+
+#: includes/class-locations.php:105
+#, php-format
+msgid "Les identifiants de « %s » ne sont plus lisibles (site déplacé ?). Modifiez cet emplacement et saisissez-les de nouveau."
+msgstr "The credentials of \"%s\" can no longer be read (site moved?). Edit this location and enter them again."
+
+#: includes/class-locations.php:117
+msgid "Type de stockage inconnu."
+msgstr "Unknown storage type."
+
+#: includes/class-locations.php:135
+#: includes/class-locations.php:140
+#: includes/class-notifications.php:121
+#: includes/class-notifications.php:126
+#, php-format
+msgid "Champ obligatoire manquant : %s"
+msgstr "Required field missing: %s"
+
+#: includes/class-locations.php:150
+#, php-format
+msgid "Indiquez la région : elle sert à calculer l'adresse du service (par exemple %s)."
+msgstr "Enter the region: it is used to work out the service address (for example %s)."
+
+#: includes/class-locations.php:153
+#, php-format
+msgid "Indiquez l'adresse du service, par exemple %s."
+msgstr "Enter the service address, for example %s."
+
+#: includes/class-locations.php:158
+msgid "L'adresse WebDAV doit commencer par http:// ou https://"
+msgstr "The WebDAV address must start with http:// or https://"
+
+#: includes/class-locations.php:163
+msgid "Donnez un nom à cet emplacement."
+msgstr "Give this location a name."
+
+#: includes/class-locations.php:261
+msgid "Cette autorisation a expiré. Recommencez depuis la liste des emplacements."
+msgstr "This authorization has expired. Start again from the list of locations."
+
+#: includes/class-notifications.php:16
+msgid "Nom affiché (facultatif)"
+msgstr "Display name (optional)"
+
+#: includes/class-notifications.php:18
+msgid "E-mail"
+msgstr "E-mail"
+
+#: includes/class-notifications.php:19
+msgid "Adresse e-mail"
+msgstr "E-mail address"
+
+#: includes/class-notifications.php:19
+msgid "Utilise la messagerie de WordPress. Pour plusieurs adresses, séparez-les par une virgule."
+msgstr "Uses WordPress's mail system. For several addresses, separate them with a comma."
+
+#: includes/class-notifications.php:22
+msgid "Jeton de l'application (API token)"
+msgstr "Application token (API token)"
+
+#: includes/class-notifications.php:23
+msgid "Clé utilisateur ou groupe"
+msgstr "User or group key"
+
+#: includes/class-notifications.php:24
+msgid "Appareil (facultatif)"
+msgstr "Device (optional)"
+
+#: includes/class-notifications.php:24
+msgid "Laissez vide pour tous vos appareils."
+msgstr "Leave empty for all your devices."
+
+#: includes/class-notifications.php:27
+msgid "Adresse du serveur"
+msgstr "Server address"
+
+#: includes/class-notifications.php:27
+msgid "Par exemple https://gotify.mondomaine.fr"
+msgstr "For example https://gotify.mydomain.com"
+
+#: includes/class-notifications.php:28
+msgid "Jeton de l'application"
+msgstr "Application token"
+
+#: includes/class-notifications.php:32
+msgid "Sujet (topic)"
+msgstr "Topic"
+
+#: includes/class-notifications.php:32
+msgid "Sur ntfy.sh, le nom du sujet sert de mot de passe : choisissez-en un long."
+msgstr "On ntfy.sh, the topic name acts as a password: choose a long one."
+
+#: includes/class-notifications.php:33
+msgid "Jeton d'accès (facultatif)"
+msgstr "Access token (optional)"
+
+#: includes/class-notifications.php:36
+msgid "Jeton du bot"
+msgstr "Bot token"
+
+#: includes/class-notifications.php:36
+msgid "Obtenu auprès de @BotFather."
+msgstr "Obtained from @BotFather."
+
+#: includes/class-notifications.php:37
+msgid "Identifiant de la discussion"
+msgstr "Chat ID"
+
+#: includes/class-notifications.php:37
+msgid "Écrivez d'abord au bot, puis relevez le « chat id »."
+msgstr "Write to the bot first, then note the \"chat id\"."
+
+#: includes/class-notifications.php:40
+msgid "Adresse du webhook"
+msgstr "Webhook address"
+
+#: includes/class-notifications.php:40
+msgid "Réglages du salon, Intégrations, Webhooks."
+msgstr "Channel settings, Integrations, Webhooks."
+
+#: includes/class-notifications.php:44
+msgid "Adresse du webhook entrant"
+msgstr "Incoming webhook address"
+
+#: includes/class-notifications.php:44
+msgid "Elle commence par https://hooks.slack.com/"
+msgstr "It starts with https://hooks.slack.com/"
+
+#: includes/class-notifications.php:46
+msgid "Webhook (JSON)"
+msgstr "Webhook (JSON)"
+
+#: includes/class-notifications.php:47
+msgid "Adresse à appeler"
+msgstr "Address to call"
+
+#: includes/class-notifications.php:47
+msgid "Reçoit un POST en JSON : événement, titre, message et détails."
+msgstr "Receives a JSON POST: event, title, message and details."
+
+#: includes/class-notifications.php:48
+msgid "En-tête Authorization (facultatif)"
+msgstr "Authorization header (optional)"
+
+#: includes/class-notifications.php:48
+msgid "Par exemple Bearer abc123. Envoyé tel quel."
+msgstr "For example Bearer abc123. Sent as is."
+
+#: includes/class-notifications.php:85
+#, php-format
+msgid "Les identifiants de « %s » ne sont plus lisibles (site déplacé ?). Modifiez ce canal et saisissez-les de nouveau."
+msgstr "The credentials of \"%s\" can no longer be read (site moved?). Edit this channel and enter them again."
+
+#: includes/class-notifications.php:100
+#: includes/class-notifications.php:239
+msgid "Type de notification inconnu."
+msgstr "Unknown notification type."
+
+#: includes/class-notifications.php:132
+#: includes/class-notifications.php:137
+msgid "L'adresse doit commencer par http:// ou https://"
+msgstr "The address must start with http:// or https://"
+
+#: includes/class-notifications.php:144
+#, php-format
+msgid "Cette adresse e-mail n'est pas valide : %s"
+msgstr "This e-mail address is not valid: %s"
+
+#: includes/class-notifications.php:200
+msgid "Envoyé"
+msgstr "Sent"
+
+#: includes/class-notifications.php:203
+#, php-format
+msgid "Notification « %1$s » non envoyée : %2$s"
+msgstr "Notification \"%1$s\" not sent: %2$s"
+
+#: includes/class-notifications.php:212
+msgid "Ce canal n'existe plus."
+msgstr "This channel no longer exists."
+
+#: includes/class-notifications.php:214
+msgid "Exemple"
+msgstr "Example"
+
+#: includes/class-notifications.php:214
+msgid "Message de test"
+msgstr "Test message"
+
+#: includes/class-notifications.php:216
+#, php-format
+msgid "Test de notification - %s"
+msgstr "Notification test - %s"
+
+#: includes/class-notifications.php:216
+#, php-format
+msgid ""
+"Si vous lisez ce message, ce canal fonctionne.\n"
+"\n"
+"Site : %s"
+msgstr ""
+"If you are reading this message, this channel works.\n"
+"\n"
+"Site: %s"
+
+#: includes/class-notifications.php:221
+msgid "Test envoyé"
+msgstr "Test sent"
+
+#: includes/class-notifications.php:260
+#: includes/storage/class-oauth.php:52
+#: includes/storage/class-oauth.php:663
+#: includes/storage/class-storage.php:75
+#, php-format
+msgid "Connexion impossible : %s"
+msgstr "Connection failed: %s"
+
+#: includes/class-notifications.php:265
+#, php-format
+msgid "Le service a répondu HTTP %1$s%2$s."
+msgstr "The service replied HTTP %1$s%2$s."
+
+#: includes/class-notifications.php:285
+msgid "Aucune adresse e-mail renseignée."
+msgstr "No e-mail address entered."
+
+#: includes/class-notifications.php:288
+msgid "WordPress n'a pas pu envoyer l'e-mail : vérifiez la messagerie de ce site."
+msgstr "WordPress could not send the e-mail: check this site's mail setup."
+
+#: includes/class-restore.php:39
+msgid "Choisissez ce qu'il faut restaurer."
+msgstr "Choose what to restore."
+
+#: includes/class-restore.php:60
+msgid "Une tâche est en cours. Attendez sa fin ou arrêtez-la."
+msgstr "A task is running. Wait for it to finish or stop it."
+
+#: includes/class-restore.php:83
+msgid "Fichiers du plugin incomplets : réinstallez-le."
+msgstr "The plugin files are incomplete: reinstall it."
+
+#: includes/class-restore.php:89
+msgid "Impossible d'écrire dans le dossier wp-content."
+msgstr "Could not write to the wp-content folder."
+
+#: includes/class-restore.php:145
+#, php-format
+msgid "Restauration démarrée : %s"
+msgstr "Restore started: %s"
+
+#: includes/class-restore.php:145
+msgid "(migration vers cette adresse)"
+msgstr "(migration to this address)"
+
+#: includes/class-restore.php:148
+msgid "Impossible d'écrire l'état de la restauration."
+msgstr "Could not write the restore state."
+
+#: includes/class-restore.php:188
+msgid "Restauration arrêtée de force."
+msgstr "Restore force-stopped."
+
+#: includes/class-schedule.php:10
+msgid "Toutes les 30 minutes"
+msgstr "Every 30 minutes"
+
+#: includes/class-schedule.php:11
+msgid "Toutes les heures"
+msgstr "Every hour"
+
+#: includes/class-schedule.php:12
+msgid "Toutes les 2 heures"
+msgstr "Every 2 hours"
+
+#: includes/class-schedule.php:13
+msgid "Une fois par jour"
+msgstr "Once a day"
+
+#: includes/class-schedule.php:14
+msgid "Une fois par semaine"
+msgstr "Once a week"
+
+#: includes/class-schedule.php:15
+msgid "Une fois par mois"
+msgstr "Once a month"
+
+#: includes/class-schedule.php:21
+msgid "Toutes les 5 minutes"
+msgstr "Every 5 minutes"
+
+#: includes/class-schedule.php:49
+msgid "Sauvegarde automatique"
+msgstr "Automatic backup"
+
+#: includes/class-schedule.php:53
+#, php-format
+msgid "Échec de la sauvegarde automatique - %s"
+msgstr "Automatic backup failed - %s"
+
+#: includes/class-schedule.php:54
+#, php-format
+msgid ""
+"Site : %1$s\n"
+"Raison : %2$s"
+msgstr ""
+"Site: %1$s\n"
+"Reason: %2$s"
+
+#: includes/class-schedule.php:76
+msgid "Clé refusée."
+msgstr "Key refused."
+
+#: includes/class-tar.php:23
+#, php-format
+msgid "Impossible d'ouvrir l'archive en écriture : %s"
+msgstr "Could not open the archive for writing: %s"
+
+#: includes/class-tar.php:43
+msgid "Écriture de l'archive impossible : le disque est peut-être plein."
+msgstr "Could not write the archive: the disk may be full."
+
+#: includes/class-tar.php:148
+#, php-format
+msgid "Impossible d'ouvrir l'archive : %s"
+msgstr "Could not open the archive: %s"
+
+#: includes/class-tar.php:204
+#, php-format
+msgid "Archive endommagée (décompression impossible près de l'octet %s)."
+msgstr "Damaged archive (cannot decompress near byte %s)."
+
+#: includes/class-tar.php:245
+msgid "Archive endommagée : en-tête de fichier invalide."
+msgstr "Damaged archive: invalid file header."
+
+#: includes/class-updates.php:24
+msgid "Avant mise à jour de WordPress"
+msgstr "Before the WordPress update"
+
+#: includes/class-updates.php:42
+#, php-format
+msgid "Sauvegarde avant mise à jour : %s"
+msgstr "Backup before update: %s"
+
+#: includes/class-updates.php:65
+#, php-format
+msgid "La sauvegarde avant mise à jour a échoué : %s"
+msgstr "The backup before the update failed: %s"
+
+#: includes/class-updates.php:83
+msgid "Sauvegarde avant mise à jour"
+msgstr "Backup before update"
+
+#: includes/class-updates.php:87
+msgid "Sauvegarde avant la mise à jour"
+msgstr "Backup before the update"
+
+#: includes/class-updates.php:87
+msgid "Votre site est sauvegardé. La mise à jour de WordPress commencera toute seule ensuite."
+msgstr "Your site is being backed up. The WordPress update will then start by itself."
+
+#: includes/class-updates.php:88
+msgid "Mettre à jour quand même"
+msgstr "Update anyway"
+
+#: includes/class-updates.php:91
+msgid "Sauvegarde terminée. Mise à jour en cours…"
+msgstr "Backup finished. Update in progress…"
+
+#: includes/class-updates.php:92
+msgid "La sauvegarde n’a pas abouti. Vous pouvez mettre à jour quand même ou revenir en arrière."
+msgstr "The backup did not complete. You can update anyway or go back."
+
+#: includes/helpers.php:19
+msgid "Tout WordPress"
+msgstr "All of WordPress"
+
+#: includes/helpers.php:19
+msgid "Le cœur de WordPress, vos thèmes, extensions et médias."
+msgstr "WordPress core, your themes, plugins and media."
+
+#: includes/helpers.php:20
+msgid "Mes fichiers seulement"
+msgstr "My files only"
+
+#: includes/helpers.php:20
+msgid "Sans les fichiers d'origine de WordPress (wp-admin, wp-includes, index.php, etc.)."
+msgstr "Without the original WordPress files (wp-admin, wp-includes, index.php, etc.)."
+
+#: includes/helpers.php:21
+msgid "Mes fichiers et les fichiers WordPress modifiés"
+msgstr "My files and the modified WordPress files"
+
+#: includes/helpers.php:21
+msgid "Comme le précédent, plus les fichiers d'origine de WordPress que vous avez modifiés."
+msgstr "Like the previous one, plus the original WordPress files you have modified."
+
+#: includes/helpers.php:65
+#, php-format
+msgid "Impossible de récupérer la liste des fichiers d'origine de WordPress %s (wordpress.org). Choisissez « Tout WordPress » ou réessayez."
+msgstr "Could not get the list of original files for WordPress %s (wordpress.org). Choose \"All of WordPress\" or try again."
+
+#: includes/helpers.php:260
+msgctxt "byte unit"
+msgid "o"
+msgstr "B"
+
+#: includes/helpers.php:260
+msgctxt "kilobyte unit"
+msgid "Ko"
+msgstr "KB"
+
+#: includes/helpers.php:260
+msgctxt "megabyte unit"
+msgid "Mo"
+msgstr "MB"
+
+#: includes/helpers.php:260
+msgctxt "gigabyte unit"
+msgid "Go"
+msgstr "GB"
+
+#: includes/helpers.php:260
+msgctxt "terabyte unit"
+msgid "To"
+msgstr "TB"
+
+#: includes/storage/class-ftp.php:33
+#, php-format
+msgid "Connexion à %1$s:%2$s impossible : %3$s"
+msgstr "Connection to %1$s:%2$s failed: %3$s"
+
+#: includes/storage/class-ftp.php:49
+msgid "Si le serveur utilise un certificat auto-signé, cochez « Accepter un certificat non vérifié » dans cet emplacement."
+msgstr "If the server uses a self-signed certificate, tick \"Accept an unverified certificate\" in this location."
+
+#: includes/storage/class-ftp.php:50
+#, php-format
+msgid "La connexion chiffrée (FTPS) a échoué : %s."
+msgstr "The encrypted connection (FTPS) failed: %s."
+
+#: includes/storage/class-ftp.php:50
+msgid "raison inconnue"
+msgstr "unknown reason"
+
+#: includes/storage/class-ftp.php:58
+msgid "Identifiant ou mot de passe FTP refusé."
+msgstr "FTP username or password refused."
+
+#: includes/storage/class-ftp.php:87
+msgid "Le serveur FTP a coupé la connexion."
+msgstr "The FTP server closed the connection."
+
+#: includes/storage/class-ftp.php:105
+#, php-format
+msgid "Réponse inattendue du serveur FTP : %s"
+msgstr "Unexpected reply from the FTP server: %s"
+
+#: includes/storage/class-ftp.php:112
+msgid "Nom de fichier ou identifiant invalide."
+msgstr "Invalid file name or identifier."
+
+#: includes/storage/class-ftp.php:121
+#, php-format
+msgid "Le serveur FTP a refusé « %1$s » : %2$s"
+msgstr "The FTP server refused \"%1$s\": %2$s"
+
+#: includes/storage/class-ftp.php:135
+#, php-format
+msgid "Réponse PASV illisible : %s"
+msgstr "Unreadable PASV reply: %s"
+
+#: includes/storage/class-ftp.php:148
+#, php-format
+msgid "Connexion de données FTP impossible : %s"
+msgstr "FTP data connection failed: %s"
+
+#: includes/storage/class-ftp.php:164
+msgid "La connexion de données FTPS n'a pas pu être chiffrée."
+msgstr "The FTPS data connection could not be encrypted."
+
+#: includes/storage/class-ftp.php:217
+#, php-format
+msgid "Liste des fichiers refusée : %s"
+msgstr "File list refused: %s"
+
+#: includes/storage/class-ftp.php:266
+#: includes/storage/class-ftp.php:356
+#, php-format
+msgid "Envoi refusé par le serveur FTP : %s"
+msgstr "Upload refused by the FTP server: %s"
+
+#: includes/storage/class-ftp.php:286
+msgid "La connexion FTP a été coupée pendant l'envoi."
+msgstr "The FTP connection was cut during the upload."
+
+#: includes/storage/class-ftp.php:307
+#, php-format
+msgid "Fichier introuvable sur le serveur FTP : %s"
+msgstr "File not found on the FTP server: %s"
+
+#: includes/storage/class-ftp.php:322
+#, php-format
+msgid "Téléchargement refusé : %s"
+msgstr "Download refused: %s"
+
+#: includes/storage/class-ftp.php:370
+#, php-format
+msgid "Fichier illisible sur le serveur FTP : %s"
+msgstr "Unreadable file on the FTP server: %s"
+
+#: includes/storage/class-oauth.php:58
+#, php-format
+msgid "Le service refuse l'autorisation : %s"
+msgstr "The service refuses the authorization: %s"
+
+#: includes/storage/class-oauth.php:126
+msgid "Google n'a pas donné d'autorisation durable. Retirez l'accès dans votre compte Google puis recommencez."
+msgstr "Google did not grant a lasting authorization. Remove the access in your Google account, then start again."
+
+#: includes/storage/class-oauth.php:153
+#: includes/storage/class-oauth.php:185
+#, php-format
+msgid "Google Drive : %s"
+msgstr "Google Drive: %s"
+
+#: includes/storage/class-oauth.php:161
+#, php-format
+msgid "Google Drive : création du dossier impossible (%s)."
+msgstr "Google Drive: could not create the folder (%s)."
+
+#: includes/storage/class-oauth.php:200
+#, php-format
+msgid "Google Drive : envoi refusé (%s)."
+msgstr "Google Drive: upload refused (%s)."
+
+#: includes/storage/class-oauth.php:219
+#, php-format
+msgid "Google Drive : envoi interrompu (%s)."
+msgstr "Google Drive: upload interrupted (%s)."
+
+#: includes/storage/class-oauth.php:240
+#: includes/storage/class-oauth.php:282
+#, php-format
+msgid "Fichier introuvable sur Google Drive : %s"
+msgstr "File not found on Google Drive: %s"
+
+#: includes/storage/class-oauth.php:252
+#, php-format
+msgid "Google Drive : téléchargement refusé (%s)."
+msgstr "Google Drive: download refused (%s)."
+
+#: includes/storage/class-oauth.php:275
+#, php-format
+msgid "Google Drive : écriture refusée (%s)."
+msgstr "Google Drive: write refused (%s)."
+
+#: includes/storage/class-oauth.php:286
+#, php-format
+msgid "Google Drive : lecture refusée (%s)."
+msgstr "Google Drive: read refused (%s)."
+
+#: includes/storage/class-oauth.php:364
+#, php-format
+msgid "OneDrive : %s"
+msgstr "OneDrive: %s"
+
+#: includes/storage/class-oauth.php:381
+#, php-format
+msgid "OneDrive : envoi refusé (%s)."
+msgstr "OneDrive: upload refused (%s)."
+
+#: includes/storage/class-oauth.php:395
+#, php-format
+msgid "OneDrive : envoi interrompu (%s)."
+msgstr "OneDrive: upload interrupted (%s)."
+
+#: includes/storage/class-oauth.php:423
+#, php-format
+msgid "OneDrive : téléchargement refusé (%s)."
+msgstr "OneDrive: download refused (%s)."
+
+#: includes/storage/class-oauth.php:440
+#, php-format
+msgid "OneDrive : écriture refusée (%s)."
+msgstr "OneDrive: write refused (%s)."
+
+#: includes/storage/class-oauth.php:447
+#, php-format
+msgid "OneDrive : lecture refusée (%s)."
+msgstr "OneDrive: read refused (%s)."
+
+#: includes/storage/class-oauth.php:532
+#, php-format
+msgid "Dropbox : %s"
+msgstr "Dropbox: %s"
+
+#: includes/storage/class-oauth.php:553
+#, php-format
+msgid "Dropbox : envoi refusé (%s)."
+msgstr "Dropbox: upload refused (%s)."
+
+#: includes/storage/class-oauth.php:566
+#, php-format
+msgid "Dropbox : envoi interrompu (%s)."
+msgstr "Dropbox: upload interrupted (%s)."
+
+#: includes/storage/class-oauth.php:576
+#, php-format
+msgid "Dropbox : fin de l'envoi refusée (%s)."
+msgstr "Dropbox: end of upload refused (%s)."
+
+#: includes/storage/class-oauth.php:599
+#, php-format
+msgid "Dropbox : téléchargement refusé (%s)."
+msgstr "Dropbox: download refused (%s)."
+
+#: includes/storage/class-oauth.php:616
+#, php-format
+msgid "Dropbox : écriture refusée (%s)."
+msgstr "Dropbox: write refused (%s)."
+
+#: includes/storage/class-oauth.php:626
+#, php-format
+msgid "Dropbox : lecture refusée (%s)."
+msgstr "Dropbox: read refused (%s)."
+
+#: includes/storage/class-oauth.php:667
+#, php-format
+msgid "pCloud refuse l'autorisation : %s"
+msgstr "pCloud refuses the authorization: %s"
+
+#: includes/storage/class-oauth.php:667
+msgid "réponse inconnue"
+msgstr "unknown reply"
+
+#: includes/storage/class-oauth.php:682
+#, php-format
+msgid "pCloud : %s"
+msgstr "pCloud: %s"
+
+#: includes/storage/class-oauth.php:682
+#, php-format
+msgid "erreur %s"
+msgstr "error %s"
+
+#: includes/storage/class-oauth.php:682
+msgid "réponse illisible"
+msgstr "unreadable reply"
+
+#: includes/storage/class-oauth.php:758
+#, php-format
+msgid "pCloud : téléchargement refusé (code %s)."
+msgstr "pCloud: download refused (code %s)."
+
+#: includes/storage/class-oauth.php:782
+#, php-format
+msgid "pCloud : lecture refusée (code %s)."
+msgstr "pCloud: read refused (code %s)."
+
+#: includes/storage/class-s3.php:110
+#, php-format
+msgid ", ressource %s"
+msgstr ", resource %s"
+
+#: includes/storage/class-s3.php:125
+#, php-format
+msgid "Impossible de créer le bucket : %s"
+msgstr "Could not create the bucket: %s"
+
+#: includes/storage/class-s3.php:130
+msgid "S3 : HEAD du bucket refusé, essai des opérations."
+msgstr "S3: bucket HEAD refused, trying the operations."
+
+#: includes/storage/class-s3.php:132
+#, php-format
+msgid "Le service S3 répond : code %s. Vérifiez l'adresse et la région."
+msgstr "The S3 service replies: code %s. Check the address and the region."
+
+#: includes/storage/class-s3.php:148
+#, php-format
+msgid "écriture de « %s »"
+msgstr "writing \"%s\""
+
+#: includes/storage/class-s3.php:152
+#, php-format
+msgid "lecture de « %s »"
+msgstr "reading \"%s\""
+
+#: includes/storage/class-s3.php:154
+msgid "le contenu relu est différent"
+msgstr "the content read back is different"
+
+#: includes/storage/class-s3.php:158
+msgid "liste des fichiers du dossier"
+msgstr "listing the files in the folder"
+
+#: includes/storage/class-s3.php:161
+msgid "le fichier envoyé n'apparaît pas dans la liste"
+msgstr "the uploaded file does not appear in the list"
+
+#: includes/storage/class-s3.php:164
+msgid "envoi en plusieurs parties"
+msgstr "multipart upload"
+
+#: includes/storage/class-s3.php:180
+#, php-format
+msgid "Nettoyage du test S3 : %s"
+msgstr "S3 test cleanup: %s"
+
+#: includes/storage/class-s3.php:190
+#, php-format
+msgid "Le test a échoué à l'étape « %1$s » : %2$s"
+msgstr "The test failed at the step \"%1$s\": %2$s"
+
+#: includes/storage/class-s3.php:190
+msgid "Vérifiez que la clé d'accès a les droits de lecture et d'écriture sur ce bucket."
+msgstr "Check that the access key has read and write rights on this bucket."
+
+#: includes/storage/class-s3.php:205
+#, php-format
+msgid "Liste S3 refusée : %s"
+msgstr "S3 listing refused: %s"
+
+#: includes/storage/class-s3.php:234
+#: includes/storage/class-s3.php:242
+#, php-format
+msgid "Envoi S3 refusé : %s"
+msgstr "S3 upload refused: %s"
+
+#: includes/storage/class-s3.php:259
+#, php-format
+msgid "Envoi S3 interrompu : %s"
+msgstr "S3 upload interrupted: %s"
+
+#: includes/storage/class-s3.php:273
+#, php-format
+msgid "Fin de l'envoi S3 refusée : %s"
+msgstr "End of the S3 upload refused: %s"
+
+#: includes/storage/class-s3.php:283
+#, php-format
+msgid "Annulation S3 : %s"
+msgstr "S3 abort: %s"
+
+#: includes/storage/class-s3.php:299
+#, php-format
+msgid "Téléchargement S3 refusé : %s"
+msgstr "S3 download refused: %s"
+
+#: includes/storage/class-s3.php:321
+#, php-format
+msgid "Écriture S3 refusée : %s"
+msgstr "S3 write refused: %s"
+
+#: includes/storage/class-s3.php:328
+#, php-format
+msgid "Lecture S3 refusée : %s"
+msgstr "S3 read refused: %s"
+
+#: includes/storage/class-s3.php:337
+#, php-format
+msgid "Suppression S3 refusée : %s"
+msgstr "S3 deletion refused: %s"
+
+#: includes/storage/class-sftp.php:26
+#, php-format
+msgid "Connexion SFTP à %1$s impossible : %2$s"
+msgstr "SFTP connection to %1$s failed: %2$s"
+
+#: includes/storage/class-sftp.php:29
+#, php-format
+msgid "Connexion SFTP à %s impossible."
+msgstr "SFTP connection to %s failed."
+
+#: includes/storage/class-sftp.php:33
+msgid "L'identité du serveur SFTP a changé. Si c'est normal, modifiez l'emplacement et enregistrez-le de nouveau."
+msgstr "The SFTP server's identity has changed. If this is expected, edit the location and save it again."
+
+#: includes/storage/class-sftp.php:45
+#, php-format
+msgid "Clé SFTP illisible : %s"
+msgstr "Unreadable SFTP key: %s"
+
+#: includes/storage/class-sftp.php:53
+#, php-format
+msgid "Connexion SFTP refusée : %s"
+msgstr "SFTP connection refused: %s"
+
+#: includes/storage/class-sftp.php:56
+msgid "Identifiant, mot de passe ou clé SFTP refusé."
+msgstr "SFTP username, password or key refused."
+
+#: includes/storage/class-sftp.php:78
+#, php-format
+msgid "Impossible de créer le dossier %1$s sur le serveur SFTP : %2$s"
+msgstr "Could not create the folder %1$s on the SFTP server: %2$s"
+
+#: includes/storage/class-sftp.php:124
+msgid "Envoi SFTP interrompu : "
+msgstr "SFTP upload interrupted: "
+
+#: includes/storage/class-sftp.php:143
+#, php-format
+msgid "Fichier introuvable sur le serveur SFTP : %s"
+msgstr "File not found on the SFTP server: %s"
+
+#: includes/storage/class-sftp.php:154
+msgid "Lecture SFTP interrompue."
+msgstr "SFTP read interrupted."
+
+#: includes/storage/class-sftp.php:169
+#, php-format
+msgid "Écriture refusée par le serveur SFTP : %s"
+msgstr "Write refused by the SFTP server: %s"
+
+#: includes/storage/class-sftp.php:181
+#, php-format
+msgid "Fichier illisible sur le serveur SFTP : %s"
+msgstr "Unreadable file on the SFTP server: %s"
+
+#: includes/storage/class-storage.php:41
+msgid "Nettoyage distant : "
+msgstr "Remote cleanup: "
+
+#: includes/storage/class-storage.php:87
+msgid "Lecture impossible du fichier local."
+msgstr "Could not read the local file."
+
+#: includes/storage/class-storage.php:98
+msgid "Écriture impossible du fichier local."
+msgstr "Could not write the local file."
+
+#: includes/storage/class-storage.php:105
+msgid "Écriture impossible : le disque est peut-être plein."
+msgstr "Could not write: the disk may be full."
+
+#: includes/storage/class-storage.php:124
+#, php-format
+msgid "Type de stockage inconnu : %s"
+msgstr "Unknown storage type: %s"
+
+#: includes/storage/class-webdav.php:40
+#, php-format
+msgid "Le serveur WebDAV refuse l'accès (code %s)."
+msgstr "The WebDAV server refuses access (code %s)."
+
+#: includes/storage/class-webdav.php:59
+#, php-format
+msgid "Liste WebDAV refusée (code %s)."
+msgstr "WebDAV listing refused (code %s)."
+
+#: includes/storage/class-webdav.php:77
+msgid "L'envoi WebDAV demande le module PHP cURL."
+msgstr "WebDAV upload needs the PHP cURL extension."
+
+#: includes/storage/class-webdav.php:107
+msgid "Envoi WebDAV interrompu : "
+msgstr "WebDAV upload interrupted: "
+
+#: includes/storage/class-webdav.php:110
+#, php-format
+msgid "Envoi WebDAV refusé (code %s)."
+msgstr "WebDAV upload refused (code %s)."
+
+#: includes/storage/class-webdav.php:132
+#, php-format
+msgid "Téléchargement WebDAV refusé (code %s)."
+msgstr "WebDAV download refused (code %s)."
+
+#: includes/storage/class-webdav.php:150
+#, php-format
+msgid "Écriture WebDAV refusée (code %s)."
+msgstr "WebDAV write refused (code %s)."
+
+#: includes/storage/class-webdav.php:157
+#, php-format
+msgid "Lecture WebDAV refusée (code %s)."
+msgstr "WebDAV read refused (code %s)."
+
+#: runner/restore-runner.php:103
+#, php-format
+msgid "Erreur PHP : %s"
+msgstr "PHP error: %s"
+
+#: runner/restore-runner.php:184
+#, php-format
+msgid "%d éléments restaurés"
+msgstr "%d items restored"
+
+#: runner/restore-runner.php:241
+#, php-format
+msgid "Écriture impossible, ignoré : %s"
+msgstr "Could not write, skipped: %s"
+
+#: runner/restore-runner.php:254
+#, php-format
+msgid "Archive incomplète : elle se termine au milieu de %s"
+msgstr "Incomplete archive: it ends in the middle of %s"
+
+#: runner/restore-runner.php:301
+#, php-format
+msgid "Fichiers : %d éléments restaurés"
+msgstr "Files: %d items restored"
+
+#: runner/restore-runner.php:320
+msgid "Cette sauvegarde ne contient pas de base de données."
+msgstr "This backup does not contain a database."
+
+#: runner/restore-runner.php:324
+msgid "Fichiers terminés. Import de la base de données."
+msgstr "Files finished. Importing the database."
+
+#: runner/restore-runner.php:351
+#, php-format
+msgid "Connexion à la base de données impossible : %s"
+msgstr "Could not connect to the database: %s"
+
+#: runner/restore-runner.php:381
+msgid "Le fichier de la base de données est vide."
+msgstr "The database file is empty."
+
+#: runner/restore-runner.php:448
+msgid "Le serveur de base de données a coupé la connexion. Une requête dépasse peut-être max_allowed_packet."
+msgstr "The database server closed the connection. A query may exceed max_allowed_packet."
+
+#: runner/restore-runner.php:452
+#, php-format
+msgid "Requête refusée : %1$s — %2$s"
+msgstr "Query refused: %1$s — %2$s"
+
+#: runner/restore-runner.php:454
+msgid "Trop d'erreurs pendant l'import de la base de données."
+msgstr "Too many errors while importing the database."
+
+#: runner/restore-runner.php:469
+msgid "Base de données importée."
+msgstr "Database imported."
+
+#: runner/restore-runner.php:588
+#, php-format
+msgid "Préfixe des tables adapté : %1$s → %2$s"
+msgstr "Table prefix adapted: %1$s → %2$s"
+
+#: runner/restore-runner.php:615
+#, php-format
+msgid "Migration détectée : %1$s → %2$s"
+msgstr "Migration detected: %1$s → %2$s"
+
+#: runner/restore-runner.php:670
+msgid "Mise à jour de l'adresse du site dans la base de données."
+msgstr "Updating the site address in the database."
+
+#: runner/restore-runner.php:685
+#, php-format
+msgid "Table sans clé primaire, adresses non mises à jour : %s"
+msgstr "Table without a primary key, addresses not updated: %s"
+
+#: runner/restore-runner.php:695
+#, php-format
+msgid "Lecture impossible de %1$s : %2$s"
+msgstr "Could not read %1$s: %2$s"
+
+#: runner/restore-runner.php:741
+#, php-format
+msgid "%d lignes mises à jour avec la nouvelle adresse."
+msgstr "%d rows updated with the new address."
+
+#: runner/restore-runner.php:777
+#, php-format
+msgid "Restauration terminée, avec %d avertissements. Consultez le journal."
+msgstr "Restore complete, with %d warnings. See the log."
+
+#: runner/restore-runner.php:976
+msgid "Accès refusé."
+msgstr "Access denied."

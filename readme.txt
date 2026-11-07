@@ -1,5 +1,5 @@
 === Rempart Backup ===
-Requires at least: 5.2
+Requires at least: 7.1
 Requires PHP: 8.3
 Stable tag: 1.0.0
 License: LGPL v2.1
@@ -18,6 +18,7 @@ Sauvegarde, restauration, migration et clonage de WordPress, sans licence et san
 * Exclusions de tables, de dossiers, de fichiers et de motifs.
 * Notifications, toutes au même endroit : e-mail, Pushover, Gotify, ntfy, Telegram, Discord, Slack et webhook JSON, au choix pour une réussite, un échec ou les deux.
 * Commandes WP-CLI.
+* Disponible en français et en anglais (le français sur les sites en français, l'anglais partout ailleurs).
 * Importe aussi les sauvegardes .tar.gz faites avec Backuply.
 
 == Installation ==

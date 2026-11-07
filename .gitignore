@@ -2,3 +2,4 @@
 tests/vendor/
 tests/.phpunit.cache/
 tests/.phpstan.cache/
+dist/

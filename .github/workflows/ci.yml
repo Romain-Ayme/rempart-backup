@@ -1,0 +1,152 @@
+name: CI
+
+# Les branches sont testées par leur pull request : pas de double exécution à chaque push.
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  checks:
+    name: Contrôles PHP ${{ matrix.php }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        php: ['8.3', '8.4', '8.5']
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          tools: composer:v2
+
+      - name: Validation des manifestes Composer
+        run: |
+          composer validate --no-check-publish
+          composer validate --no-check-publish --working-dir=tests
+
+      - name: Dossier du cache Composer
+        id: composer-cache
+        run: echo "dir=$(composer config cache-files-dir)" >> "$GITHUB_OUTPUT"
+
+      - name: Cache Composer
+        uses: actions/cache@v6
+        with:
+          path: ${{ steps.composer-cache.outputs.dir }}
+          key: composer-${{ matrix.php }}-${{ hashFiles('tests/composer.lock') }}
+          restore-keys: composer-${{ matrix.php }}-
+
+      - name: Cache PHPStan
+        uses: actions/cache@v6
+        with:
+          path: tests/.phpstan.cache
+          key: phpstan-${{ matrix.php }}-${{ github.sha }}
+          restore-keys: phpstan-${{ matrix.php }}-
+
+      - name: Dépendances de développement
+        run: composer install --working-dir=tests --no-interaction --prefer-dist --no-progress
+
+      - name: Lint, compatibilité PHP 8.3-8.5, analyse statique et tests unitaires
+        run: composer --working-dir=tests run check
+
+  package:
+    name: Paquet du plugin
+    runs-on: ubuntu-latest
+    needs: checks
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '26'
+
+      - name: Construire le zip
+        run: node tools/build-zip.js
+
+      - uses: actions/upload-artifact@v7
+        with:
+          name: rempart-backup
+          path: dist/rempart-backup.zip
+
+  versions:
+    name: Versions de WordPress à tester
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.list.outputs.matrix }}
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '26'
+
+      # Dernière version de chaque branche entre le minimum et la branche courante (tests/wordpress.json).
+      - id: list
+        run: echo "matrix=$(node tools/wp-versions.js)" >> "$GITHUB_OUTPUT"
+
+  destinations:
+    name: Services sur WordPress ${{ matrix.wp }} / PHP ${{ matrix.php }}
+    runs-on: ubuntu-latest
+    needs: [checks, versions]
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJSON(needs.versions.outputs.matrix) }}
+    env:
+      WP_ENV_CORE: ${{ matrix.zip }}
+      WP_ENV_PHP_VERSION: ${{ matrix.php }}
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '26'
+
+      - name: Services de test
+        run: npm run services:up
+
+      - name: Attendre les services
+        run: |
+          # Deux passes : vsftpd peut s'arrêter au premier démarrage et être relancé.
+          for pass in 1 2; do
+          for url in rempart-sftp:22 rempart-ftp:21 rempart-ftps:21 rempart-dav:80 rempart-gotify:80 rempart-ntfy:80 rempart-mail:8025 rempart-mock:80; do
+            for i in $(seq 1 30); do
+              docker run --rm --network rempart-tests busybox nc -z -w 2 ${url%%:*} ${url##*:} && break
+              sleep 2
+            done
+          done
+          sleep 5
+          done
+
+      - name: Démarrer WordPress de test
+        run: npm run env:start
+
+      - name: Aller-retour sur chaque destination
+        run: npm run test:destinations
+
+      - name: Notifications
+        run: npm run test:notifications
+
+      - name: Sauvegardes complètes (réussite, échec, arrêt)
+        run: npm run test:backups
+
+      - name: Traductions (anglais, français, fichiers à jour)
+        run: npm run test:i18n
+
+      - name: Erreurs (identifiants, réseau coupé, tâche bloquée, restauration)
+        run: npm run test:errors
+
+      - name: Journaux des services
+        if: failure()
+        run: docker compose -f tests/docker-compose.yml ps -a && docker compose -f tests/docker-compose.yml logs --tail 40 ftps
+
+      - name: Arrêter l'environnement
+        if: always()
+        run: |
+          npm run env:destroy || true
+          npm run services:down || true

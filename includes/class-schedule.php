@@ -7,18 +7,18 @@ if (!defined('ABSPATH')) {
 class Rempart_Schedule {
 	public static function intervals() {
 		return array(
-			'rempart_thirty_minutes' => array('interval' => 1800, 'display' => 'Toutes les 30 minutes'),
-			'rempart_one_hour'       => array('interval' => 3600, 'display' => 'Toutes les heures'),
-			'rempart_two_hours'      => array('interval' => 7200, 'display' => 'Toutes les 2 heures'),
-			'rempart_daily'          => array('interval' => 86400, 'display' => 'Une fois par jour'),
-			'rempart_weekly'         => array('interval' => 604800, 'display' => 'Une fois par semaine'),
-			'rempart_monthly'        => array('interval' => 2635200, 'display' => 'Une fois par mois'),
+			'rempart_thirty_minutes' => array('interval' => 1800, 'display' => __('Toutes les 30 minutes', 'rempart-backup')),
+			'rempart_one_hour'       => array('interval' => 3600, 'display' => __('Toutes les heures', 'rempart-backup')),
+			'rempart_two_hours'      => array('interval' => 7200, 'display' => __('Toutes les 2 heures', 'rempart-backup')),
+			'rempart_daily'          => array('interval' => 86400, 'display' => __('Une fois par jour', 'rempart-backup')),
+			'rempart_weekly'         => array('interval' => 604800, 'display' => __('Une fois par semaine', 'rempart-backup')),
+			'rempart_monthly'        => array('interval' => 2635200, 'display' => __('Une fois par mois', 'rempart-backup')),
 		);
 	}
 
 	public static function register_intervals($schedules) {
 		$schedules += self::intervals();
-		$schedules['rempart_five_minutes'] = array('interval' => 300, 'display' => 'Toutes les 5 minutes');
+		$schedules['rempart_five_minutes'] = array('interval' => 300, 'display' => __('Toutes les 5 minutes', 'rempart-backup'));
 		return $schedules;
 	}
 
@@ -42,19 +42,20 @@ class Rempart_Schedule {
 			Rempart_Job::start_backup(array(
 				'files'    => !empty($settings['auto_files']),
 				'db'       => !empty($settings['auto_db']),
+				'scope'    => $settings['auto_scope'] ?? 'all',
 				'location' => $settings['auto_location'],
 				'auto'     => true,
 				'rotation' => (int) $settings['rotation'],
-				'note'     => 'Sauvegarde automatique',
+				'note'     => __('Sauvegarde automatique', 'rempart-backup'),
 			));
 		} catch (Exception $e) {
 			try {
-				Rempart_Notifications::event('failure', 'Échec de la sauvegarde automatique - ' . Rempart_Notifications::site_name(),
-					'Site : ' . home_url() . "\nRaison : " . $e->getMessage(),
-					array('Site' => home_url(), 'Raison' => $e->getMessage())
+				Rempart_Notifications::event('failure', sprintf(__('Échec de la sauvegarde automatique - %s', 'rempart-backup'), Rempart_Notifications::site_name()),
+					sprintf(__("Site : %1\$s\nRaison : %2\$s", 'rempart-backup'), home_url(), $e->getMessage()),
+					array(__('Site', 'rempart-backup') => home_url(), __('Raison', 'rempart-backup') => $e->getMessage())
 				);
 			} catch (Throwable $ignored) {
-				rempart_debug('Notifications : ' . $ignored->getMessage());
+				rempart_debug(sprintf(__('Notifications : %s', 'rempart-backup'), $ignored->getMessage()));
 			}
 		}
 	}
@@ -72,7 +73,7 @@ class Rempart_Schedule {
 		$given = sanitize_text_field(wp_unslash($_GET['rempart_cron']));
 		if ($key === '' || !hash_equals($key, $given)) {
 			status_header(403);
-			exit('Clé refusée.');
+			exit(__('Clé refusée.', 'rempart-backup'));
 		}
 		nocache_headers();
 		self::run_auto_backup();

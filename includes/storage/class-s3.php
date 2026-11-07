@@ -107,7 +107,7 @@ class Rempart_Storage_S3 extends Rempart_Storage {
 		$http = 'HTTP ' . $response['code'];
 		if (preg_match('#<Code>([^<]+)</Code>#', $response['body'], $code)) {
 			$message = preg_match('#<Message>([^<]+)</Message>#', $response['body'], $m) ? ' : ' . $m[1] : '';
-			$resource = preg_match('#<Resource>([^<]+)</Resource>#', $response['body'], $r) ? ', ressource ' . $r[1] : '';
+			$resource = preg_match('#<Resource>([^<]+)</Resource>#', $response['body'], $r) ? sprintf(__(', ressource %s', 'rempart-backup'), $r[1]) : '';
 			return $code[1] . $message . ' (' . $http . $resource . ')';
 		}
 		return $http;
@@ -122,14 +122,14 @@ class Rempart_Storage_S3 extends Rempart_Storage {
 			}
 			$made = $this->request('PUT', '', array(), $body);
 			if ($made['code'] < 200 || $made['code'] >= 300) {
-				throw new RuntimeException('Impossible de créer le bucket : ' . self::error_text($made));
+				throw new RuntimeException(sprintf(__('Impossible de créer le bucket : %s', 'rempart-backup'), self::error_text($made)));
 			}
 		} elseif ($head['code'] === 403) {
 			// A key limited to one bucket may be refused this look yet allowed to write in it,
 			// so the real operations below decide, and they name what is refused.
-			rempart_debug('S3 : HEAD du bucket refusé, essai des opérations.');
+			rempart_debug(__('S3 : HEAD du bucket refusé, essai des opérations.', 'rempart-backup'));
 		} elseif ($head['code'] >= 300) {
-			throw new RuntimeException('Le service S3 répond : code ' . $head['code'] . '. Vérifiez l\'adresse et la région.');
+			throw new RuntimeException(sprintf(__('Le service S3 répond : code %s. Vérifiez l\'adresse et la région.', 'rempart-backup'), $head['code']));
 		}
 		$this->test_operations();
 	}
@@ -145,23 +145,23 @@ class Rempart_Storage_S3 extends Rempart_Storage {
 		$made = array();
 		try {
 			foreach ($names as $name) {
-				$this->step('écriture de « ' . $name . ' »', function () use ($name, $content) {
+				$this->step(sprintf(__('écriture de « %s »', 'rempart-backup'), $name), function () use ($name, $content) {
 					$this->put_string($name, $content);
 				});
 				$made[] = $name;
-				$this->step('lecture de « ' . $name . ' »', function () use ($name, $content) {
+				$this->step(sprintf(__('lecture de « %s »', 'rempart-backup'), $name), function () use ($name, $content) {
 					if ($this->get_string($name) !== $content) {
-						throw new RuntimeException('le contenu relu est différent');
+						throw new RuntimeException(__('le contenu relu est différent', 'rempart-backup'));
 					}
 				});
 			}
-			$this->step('liste des fichiers du dossier', function () use ($names) {
+			$this->step(__('liste des fichiers du dossier', 'rempart-backup'), function () use ($names) {
 				$found = array_column($this->list_files(), 'name');
 				if (!in_array($names[0], $found, true)) {
-					throw new RuntimeException('le fichier envoyé n\'apparaît pas dans la liste');
+					throw new RuntimeException(__('le fichier envoyé n\'apparaît pas dans la liste', 'rempart-backup'));
 				}
 			});
-			$this->step('envoi en plusieurs parties', function () use ($id) {
+			$this->step(__('envoi en plusieurs parties', 'rempart-backup'), function () use ($id) {
 				$key = $this->key_for('.rempart-multipart-' . $id);
 				$started = $this->request('POST', $key, array('uploads' => ''), '', $this->encryption_headers());
 				if ($started['code'] !== 200 || !preg_match('#<UploadId>([^<]+)</UploadId>#', $started['body'], $m)) {
@@ -177,7 +177,7 @@ class Rempart_Storage_S3 extends Rempart_Storage {
 				try {
 					$this->delete($name);
 				} catch (RuntimeException $e) {
-					rempart_debug('Nettoyage du test S3 : ' . $e->getMessage());
+					rempart_debug(sprintf(__('Nettoyage du test S3 : %s', 'rempart-backup'), $e->getMessage()));
 				}
 			}
 		}
@@ -187,8 +187,7 @@ class Rempart_Storage_S3 extends Rempart_Storage {
 		try {
 			call_user_func($action);
 		} catch (RuntimeException $e) {
-			throw new RuntimeException('Le test a échoué à l\'étape « ' . $label . ' » : ' . $e->getMessage()
-				. ' Vérifiez que la clé d\'accès a les droits de lecture et d\'écriture sur ce bucket.');
+			throw new RuntimeException(sprintf(__('Le test a échoué à l\'étape « %1$s » : %2$s', 'rempart-backup'), $label, $e->getMessage()) . ' ' . __("Vérifiez que la clé d'accès a les droits de lecture et d'écriture sur ce bucket.", 'rempart-backup'));
 		}
 	}
 
@@ -203,7 +202,7 @@ class Rempart_Storage_S3 extends Rempart_Storage {
 			}
 			$response = $this->request('GET', '', $query);
 			if ($response['code'] !== 200) {
-				throw new RuntimeException('Liste S3 refusée : ' . self::error_text($response));
+				throw new RuntimeException(sprintf(__('Liste S3 refusée : %s', 'rempart-backup'), self::error_text($response)));
 			}
 			if (preg_match_all('#<Contents>(.*?)</Contents>#s', $response['body'], $blocks)) {
 				foreach ($blocks[1] as $block) {
@@ -232,7 +231,7 @@ class Rempart_Storage_S3 extends Rempart_Storage {
 		if ($total < self::MIN_PART) {
 			$response = $this->request('PUT', $key, array(), (string) file_get_contents($local), $this->encryption_headers());
 			if ($response['code'] < 200 || $response['code'] >= 300) {
-				throw new RuntimeException('Envoi S3 refusé : ' . self::error_text($response));
+				throw new RuntimeException(sprintf(__('Envoi S3 refusé : %s', 'rempart-backup'), self::error_text($response)));
 			}
 			return true;
 		}
@@ -240,7 +239,7 @@ class Rempart_Storage_S3 extends Rempart_Storage {
 		if (empty($state['upload_id'])) {
 			$response = $this->request('POST', $key, array('uploads' => ''), '', $this->encryption_headers());
 			if ($response['code'] !== 200 || !preg_match('#<UploadId>([^<]+)</UploadId>#', $response['body'], $m)) {
-				throw new RuntimeException('Envoi S3 refusé : ' . self::error_text($response));
+				throw new RuntimeException(sprintf(__('Envoi S3 refusé : %s', 'rempart-backup'), self::error_text($response)));
 			}
 			$state['upload_id'] = html_entity_decode($m[1]);
 			$state['offset'] = 0;
@@ -257,7 +256,7 @@ class Rempart_Storage_S3 extends Rempart_Storage {
 			$number = count($state['parts']) + 1;
 			$response = $this->request('PUT', $key, array('partNumber' => $number, 'uploadId' => $state['upload_id']), $chunk);
 			if ($response['code'] !== 200) {
-				throw new RuntimeException('Envoi S3 interrompu : ' . self::error_text($response));
+				throw new RuntimeException(sprintf(__('Envoi S3 interrompu : %s', 'rempart-backup'), self::error_text($response)));
 			}
 			$state['parts'][] = trim((string) $response['headers']['etag'], '"');
 			$state['offset'] += strlen($chunk);
@@ -271,7 +270,7 @@ class Rempart_Storage_S3 extends Rempart_Storage {
 		$xml .= '</CompleteMultipartUpload>';
 		$response = $this->request('POST', $key, array('uploadId' => $state['upload_id']), $xml);
 		if ($response['code'] !== 200 || strpos($response['body'], '<Error>') !== false) {
-			throw new RuntimeException('Fin de l\'envoi S3 refusée : ' . self::error_text($response));
+			throw new RuntimeException(sprintf(__('Fin de l\'envoi S3 refusée : %s', 'rempart-backup'), self::error_text($response)));
 		}
 		return true;
 	}
@@ -281,7 +280,7 @@ class Rempart_Storage_S3 extends Rempart_Storage {
 			try {
 				$this->request('DELETE', $this->key_for($remote), array('uploadId' => $state['upload_id']));
 			} catch (Exception $e) {
-				rempart_debug('Annulation S3 : ' . $e->getMessage());
+				rempart_debug(sprintf(__('Annulation S3 : %s', 'rempart-backup'), $e->getMessage()));
 			}
 		}
 	}
@@ -297,7 +296,7 @@ class Rempart_Storage_S3 extends Rempart_Storage {
 				return true;
 			}
 			if ($response['code'] !== 206 && $response['code'] !== 200) {
-				throw new RuntimeException('Téléchargement S3 refusé : ' . self::error_text($response));
+				throw new RuntimeException(sprintf(__('Téléchargement S3 refusé : %s', 'rempart-backup'), self::error_text($response)));
 			}
 			self::append_local($local, $offset, $response['body']);
 			$offset += strlen($response['body']);
@@ -319,14 +318,14 @@ class Rempart_Storage_S3 extends Rempart_Storage {
 	public function put_string($remote, $content) {
 		$response = $this->request('PUT', $this->key_for($remote), array(), $content, $this->encryption_headers());
 		if ($response['code'] < 200 || $response['code'] >= 300) {
-			throw new RuntimeException('Écriture S3 refusée : ' . self::error_text($response));
+			throw new RuntimeException(sprintf(__('Écriture S3 refusée : %s', 'rempart-backup'), self::error_text($response)));
 		}
 	}
 
 	public function get_string($remote) {
 		$response = $this->request('GET', $this->key_for($remote));
 		if ($response['code'] !== 200) {
-			throw new RuntimeException('Lecture S3 refusée : ' . self::error_text($response));
+			throw new RuntimeException(sprintf(__('Lecture S3 refusée : %s', 'rempart-backup'), self::error_text($response)));
 		}
 		return $response['body'];
 	}
@@ -335,7 +334,7 @@ class Rempart_Storage_S3 extends Rempart_Storage {
 		$response = $this->request('DELETE', $this->key_for($remote));
 		// A file that is already gone is what was wanted.
 		if ($response['code'] >= 300 && $response['code'] !== 404) {
-			throw new RuntimeException('Suppression S3 refusée : ' . self::error_text($response));
+			throw new RuntimeException(sprintf(__('Suppression S3 refusée : %s', 'rempart-backup'), self::error_text($response)));
 		}
 	}
 }
