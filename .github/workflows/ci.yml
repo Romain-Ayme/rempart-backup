@@ -112,7 +112,7 @@ jobs:
 
       - name: Attendre les services
         run: |
-          for url in rempart-sftp:22 rempart-ftp:21 rempart-dav:80 rempart-gotify:80 rempart-ntfy:80 rempart-mail:8025 rempart-mock:80; do
+          for url in rempart-sftp:22 rempart-ftp:21 rempart-ftps:21 rempart-dav:80 rempart-gotify:80 rempart-ntfy:80 rempart-mail:8025 rempart-mock:80; do
             for i in $(seq 1 30); do
               docker run --rm --network rempart-tests busybox nc -z -w 2 ${url%%:*} ${url##*:} && break
               sleep 2
@@ -127,6 +127,10 @@ jobs:
 
       - name: Notifications
         run: npm run test:notifications
+
+      - name: Journaux des services
+        if: failure()
+        run: docker compose -f tests/docker-compose.yml ps -a && docker compose -f tests/docker-compose.yml logs --tail 40 ftps
 
       - name: Arrêter l'environnement
         if: always()
