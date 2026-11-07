@@ -32,7 +32,7 @@ class Rempart_Database {
 			. "SET FOREIGN_KEY_CHECKS=0;\n"
 			. "SET SQL_MODE='NO_AUTO_VALUE_ON_ZERO';\n\n";
 		if (file_put_contents($file, $header) === false) {
-			throw new RuntimeException('Impossible de créer le fichier de la base de données.');
+			throw new RuntimeException(__('Impossible de créer le fichier de la base de données.', 'rempart-backup'));
 		}
 		return array(
 			'tables'    => $tables,
@@ -55,7 +55,7 @@ class Rempart_Database {
 		$wpdb->query('SET NAMES utf8mb4');
 		$handle = @fopen($file, 'c+b');
 		if (!$handle) {
-			throw new RuntimeException('Impossible d\'ouvrir le fichier de la base de données.');
+			throw new RuntimeException(__('Impossible d\'ouvrir le fichier de la base de données.', 'rempart-backup'));
 		}
 		ftruncate($handle, $cursor['committed']);
 		fseek($handle, 0, SEEK_END);
@@ -72,7 +72,7 @@ class Rempart_Database {
 			if ($cursor['stage'] === 'structure') {
 				$create = $wpdb->get_row('SHOW CREATE TABLE `' . self::ident($table) . '`', ARRAY_N);
 				if (empty($create[1])) {
-					throw new RuntimeException('Lecture impossible de la table ' . $table . ' : ' . $wpdb->last_error);
+					throw new RuntimeException(sprintf(__('Lecture impossible de la table %1$s : %2$s', 'rempart-backup'), $table, $wpdb->last_error));
 				}
 				fwrite($handle, 'DROP TABLE IF EXISTS `' . self::ident($table) . "`;\n" . $create[1] . ";\n\n");
 				$cursor['stage'] = 'rows';
@@ -147,7 +147,7 @@ class Rempart_Database {
 		}
 		$rows = $wpdb->get_results($sql, ARRAY_N);
 		if ($wpdb->last_error) {
-			throw new RuntimeException('Lecture impossible de la table ' . $table . ' : ' . $wpdb->last_error);
+			throw new RuntimeException(sprintf(__('Lecture impossible de la table %1$s : %2$s', 'rempart-backup'), $table, $wpdb->last_error));
 		}
 		if (!$rows) {
 			return true;

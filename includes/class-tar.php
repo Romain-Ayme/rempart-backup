@@ -20,7 +20,7 @@ class Rempart_Tar_Writer {
 		$this->level = $level;
 		$this->handle = @fopen($path, 'c+b');
 		if (!$this->handle) {
-			throw new RuntimeException('Impossible d\'ouvrir l\'archive en écriture : ' . $path);
+			throw new RuntimeException(sprintf(__('Impossible d\'ouvrir l\'archive en écriture : %s', 'rempart-backup'), $path));
 		}
 		ftruncate($this->handle, $committed_size);
 		fseek($this->handle, 0, SEEK_END);
@@ -40,7 +40,7 @@ class Rempart_Tar_Writer {
 			$compressed = gzencode($this->buffer, $this->level);
 			$written = fwrite($this->handle, $compressed);
 			if ($written !== strlen($compressed)) {
-				throw new RuntimeException('Écriture de l\'archive impossible : le disque est peut-être plein.');
+				throw new RuntimeException(__('Écriture de l\'archive impossible : le disque est peut-être plein.', 'rempart-backup'));
 			}
 			fflush($this->handle);
 			$this->buffer = '';
@@ -145,7 +145,7 @@ class Rempart_Tar_Reader {
 	public function __construct($path, $member_start = 0, $skip = 0) {
 		$this->handle = @fopen($path, 'rb');
 		if (!$this->handle) {
-			throw new RuntimeException('Impossible d\'ouvrir l\'archive : ' . $path);
+			throw new RuntimeException(sprintf(__('Impossible d\'ouvrir l\'archive : %s', 'rempart-backup'), $path));
 		}
 		$this->file_size = filesize($path);
 		$this->member_start = $member_start;
@@ -201,7 +201,7 @@ class Rempart_Tar_Reader {
 		}
 		$out = @inflate_add($this->inflate, $chunk, ZLIB_SYNC_FLUSH);
 		if ($out === false) {
-			throw new RuntimeException('Archive endommagée (décompression impossible près de l\'octet ' . $chunk_start . ').');
+			throw new RuntimeException(sprintf(__('Archive endommagée (décompression impossible près de l\'octet %s).', 'rempart-backup'), $chunk_start));
 		}
 		$this->buffer = $out;
 		$this->member_produced += strlen($out);
@@ -242,7 +242,7 @@ class Rempart_Tar_Reader {
 			}
 			$entry = self::parse_header($block);
 			if ($entry === null) {
-				throw new RuntimeException('Archive endommagée : en-tête de fichier invalide.');
+				throw new RuntimeException(__('Archive endommagée : en-tête de fichier invalide.', 'rempart-backup'));
 			}
 			if ($entry['type'] === 'L' || $entry['type'] === 'K') {
 				$value = rtrim($this->read((int) (ceil($entry['size'] / 512) * 512)), "\0");

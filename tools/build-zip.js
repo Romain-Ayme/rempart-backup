@@ -11,7 +11,7 @@ const folder = 'rempart-backup';
 const required = [
 	'rempart-backup.php', 'uninstall.php', 'readme.txt', 'runner/restore-runner.php',
 	'includes/class-job.php', 'includes/class-restore.php', 'includes/class-admin.php',
-	'includes/storage/class-oauth.php', 'assets/admin.js', 'assets/admin.css', 'vendor/autoload.php',
+	'includes/storage/class-oauth.php', 'assets/admin.js', 'assets/admin.css', 'vendor/autoload.php', 'languages/rempart-backup-en_US.mo',
 ];
 for (const file of required) {
 	if (!fs.existsSync(path.join(pluginDir, file))) {

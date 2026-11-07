@@ -81,11 +81,11 @@ class Rempart_Backups {
 		});
 		$extra = array_slice(array_values($same), $keep);
 		foreach ($extra as $info) {
-			rempart_log('Rotation : suppression de l\'ancienne sauvegarde ' . $info['name']);
+			rempart_log(sprintf(__('Rotation : suppression de l\'ancienne sauvegarde %s', 'rempart-backup'), $info['name']));
 			try {
 				self::delete($info['name']);
 			} catch (Exception $e) {
-				rempart_log('Rotation : ' . $e->getMessage(), 'warning');
+				rempart_log(sprintf(__('Rotation : %s', 'rempart-backup'), $e->getMessage()), 'warning');
 			}
 		}
 		return count($extra);
@@ -163,7 +163,7 @@ class Rempart_Backups {
 			}
 			$reader->close();
 		} catch (Exception $e) {
-			rempart_debug('Archive illisible : ' . $e->getMessage());
+			rempart_debug(sprintf(__('Archive illisible : %s', 'rempart-backup'), $e->getMessage()));
 			return null;
 		}
 		if (!is_array($info)) {
@@ -185,7 +185,7 @@ class Rempart_Backups {
 	public static function sync_location($location_id) {
 		$location = Rempart_Locations::get($location_id);
 		if (!$location) {
-			throw new RuntimeException('Cet emplacement n\'existe plus.');
+			throw new RuntimeException(__('Cet emplacement n\'existe plus.', 'rempart-backup'));
 		}
 		$storage = Rempart_Storage::make($location);
 		$files = $storage->list_files();

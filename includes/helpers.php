@@ -16,9 +16,9 @@ function rempart_core_entries() {
 /** Which files a backup keeps: everything, only the site's own files, or those plus the edited WordPress files. */
 function rempart_scopes() {
 	return array(
-		'all'      => array('label' => 'Tout WordPress', 'help' => 'Le cœur de WordPress, vos thèmes, extensions et médias.'),
-		'content'  => array('label' => 'Mes fichiers seulement', 'help' => 'Sans les fichiers d\'origine de WordPress (wp-admin, wp-includes, index.php, etc.).'),
-		'modified' => array('label' => 'Mes fichiers et les fichiers WordPress modifiés', 'help' => 'Comme le précédent, plus les fichiers d\'origine de WordPress que vous avez modifiés.'),
+		'all'      => array('label' => __('Tout WordPress', 'rempart-backup'), 'help' => __('Le cœur de WordPress, vos thèmes, extensions et médias.', 'rempart-backup')),
+		'content'  => array('label' => __('Mes fichiers seulement', 'rempart-backup'), 'help' => __('Sans les fichiers d\'origine de WordPress (wp-admin, wp-includes, index.php, etc.).', 'rempart-backup')),
+		'modified' => array('label' => __('Mes fichiers et les fichiers WordPress modifiés', 'rempart-backup'), 'help' => __('Comme le précédent, plus les fichiers d\'origine de WordPress que vous avez modifiés.', 'rempart-backup')),
 	);
 }
 
@@ -62,7 +62,7 @@ function rempart_core_checksums() {
 			return $sums;
 		}
 	}
-	throw new RuntimeException('Impossible de récupérer la liste des fichiers d\'origine de WordPress ' . $version . ' (wordpress.org). Choisissez « Tout WordPress » ou réessayez.');
+	throw new RuntimeException(sprintf(__('Impossible de récupérer la liste des fichiers d\'origine de WordPress %s (wordpress.org). Choisissez « Tout WordPress » ou réessayez.', 'rempart-backup'), $version));
 }
 
 /** Is this file left out of the backup because it is an untouched WordPress file? */
@@ -257,7 +257,7 @@ function rempart_rmdir($dir) {
 
 function rempart_format_size($bytes) {
 	$bytes = (float) $bytes;
-	$units = array('o', 'Ko', 'Mo', 'Go', 'To');
+	$units = array(_x('o', 'byte unit', 'rempart-backup'), _x('Ko', 'kilobyte unit', 'rempart-backup'), _x('Mo', 'megabyte unit', 'rempart-backup'), _x('Go', 'gigabyte unit', 'rempart-backup'), _x('To', 'terabyte unit', 'rempart-backup'));
 	$i = 0;
 	while ($bytes >= 1024 && $i < count($units) - 1) {
 		$bytes /= 1024;

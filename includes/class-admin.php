@@ -31,7 +31,54 @@ class Rempart_Admin {
 			'chunk'     => REMPART_UPLOAD_CHUNK,
 			'active'    => Rempart_Job::is_active(),
 			'restore'   => self::restore_info(),
+			'i18n'      => self::js_strings(),
 		));
+	}
+
+	/** Texts the admin script shows, in this site's language (the script falls back to the French text). */
+	private static function js_strings() {
+		return array(
+			'%1$s sauvegarde(s) ajoutée(s), %2$s retirée(s) de la liste.' => __('%1$s sauvegarde(s) ajoutée(s), %2$s retirée(s) de la liste.', 'rempart-backup'),
+			'Ajouter un emplacement' => __('Ajouter un emplacement', 'rempart-backup'),
+			'Ajouter un service' => __('Ajouter un service', 'rempart-backup'),
+			'Ce journal est vide.' => __('Ce journal est vide.', 'rempart-backup'),
+			'Cette sauvegarde vient de %s. Son adresse sera remplacée par celle de ce site.' => __('Cette sauvegarde vient de %s. Son adresse sera remplacée par celle de ce site.', 'rempart-backup'),
+			'Chargement…' => __('Chargement…', 'rempart-backup'),
+			'Commence par' => __('Commence par', 'rempart-backup'),
+			'Contient' => __('Contient', 'rempart-backup'),
+			'Copié' => __('Copié', 'rempart-backup'),
+			'Enregistrer' => __('Enregistrer', 'rempart-backup'),
+			'Enregistrer et connecter le compte' => __('Enregistrer et connecter le compte', 'rempart-backup'),
+			'Envoi : %s' => __('Envoi : %s', 'rempart-backup'),
+			'Envoi…' => __('Envoi…', 'rempart-backup'),
+			'Erreur inconnue.' => __('Erreur inconnue.', 'rempart-backup'),
+			'Exclu' => __('Exclu', 'rempart-backup'),
+			'Exclure' => __('Exclure', 'rempart-backup'),
+			'Extension' => __('Extension', 'rempart-backup'),
+			'Finit par' => __('Finit par', 'rempart-backup'),
+			'Gardez cette page ouverte jusqu\'à la fin.' => __('Gardez cette page ouverte jusqu\'à la fin.', 'rempart-backup'),
+			'La restauration n\'a pas abouti' => __('La restauration n\'a pas abouti', 'rempart-backup'),
+			'La tâche n\'a pas abouti' => __('La tâche n\'a pas abouti', 'rempart-backup'),
+			'Le programme de restauration ne répond plus. Un pare-feu bloque peut-être les fichiers PHP dans wp-content. Attendez encore, ou forcez l\'arrêt.' => __('Le programme de restauration ne répond plus. Un pare-feu bloque peut-être les fichiers PHP dans wp-content. Attendez encore, ou forcez l\'arrêt.', 'rempart-backup'),
+			'Modifier l\'emplacement' => __('Modifier l\'emplacement', 'rempart-backup'),
+			'Modifier le service' => __('Modifier le service', 'rempart-backup'),
+			'Restauration arrêtée' => __('Restauration arrêtée', 'rempart-backup'),
+			'Restauration en cours' => __('Restauration en cours', 'rempart-backup'),
+			'Restauration terminée' => __('Restauration terminée', 'rempart-backup'),
+			'Retirer' => __('Retirer', 'rempart-backup'),
+			'Récupération de la sauvegarde' => __('Récupération de la sauvegarde', 'rempart-backup'),
+			'Réponse illisible du serveur.' => __('Réponse illisible du serveur.', 'rempart-backup'),
+			'Sauvegarde en cours' => __('Sauvegarde en cours', 'rempart-backup'),
+			'Sauvegarde terminée' => __('Sauvegarde terminée', 'rempart-backup'),
+			'Si la page vous demande de vous connecter, c\'est normal : vos comptes sont ceux de la sauvegarde.' => __('Si la page vous demande de vous connecter, c\'est normal : vos comptes sont ceux de la sauvegarde.', 'rempart-backup'),
+			'Supprimer définitivement %s sauvegarde(s) ?' => __('Supprimer définitivement %s sauvegarde(s) ?', 'rempart-backup'),
+			'Supprimer définitivement cette sauvegarde ?' => __('Supprimer définitivement cette sauvegarde ?', 'rempart-backup'),
+			'Sélectionnez au moins une sauvegarde.' => __('Sélectionnez au moins une sauvegarde.', 'rempart-backup'),
+			'Test…' => __('Test…', 'rempart-backup'),
+			'Tâche arrêtée' => __('Tâche arrêtée', 'rempart-backup'),
+			'Tâche en cours' => __('Tâche en cours', 'rempart-backup'),
+			'par exemple %s' => __('par exemple %s', 'rempart-backup'),
+		);
 	}
 
 	private static function restore_info() {
@@ -59,10 +106,10 @@ class Rempart_Admin {
 		}
 		$url = esc_url(admin_url('admin.php?page=rempart-backup'));
 		$message = $last
-			? sprintf('Votre dernière sauvegarde date de %d jours.', floor((time() - $last) / DAY_IN_SECONDS))
-			: 'Vous n\'avez encore aucune sauvegarde de ce site.';
+			? sprintf(__('Votre dernière sauvegarde date de %d jours.', 'rempart-backup'), floor((time() - $last) / DAY_IN_SECONDS))
+			: __('Vous n\'avez encore aucune sauvegarde de ce site.', 'rempart-backup');
 		$nonce = wp_create_nonce('rempart');
-		echo '<div class="notice notice-warning is-dismissible" id="rempart-nag"><p>' . esc_html($message) . ' <a href="' . $url . '">Faire une sauvegarde</a></p></div>';
+		echo '<div class="notice notice-warning is-dismissible" id="rempart-nag"><p>' . esc_html($message) . ' <a href="' . $url . '">' . esc_html__('Faire une sauvegarde', 'rempart-backup') . '</a></p></div>';
 		echo '<script>document.addEventListener("click",function(e){if(e.target.closest&&e.target.closest("#rempart-nag .notice-dismiss")){var b=new URLSearchParams({action:"rempart_hide_nag",_ajax_nonce:' . wp_json_encode($nonce) . '});fetch(' . wp_json_encode(admin_url('admin-ajax.php')) . ',{method:"POST",credentials:"same-origin",body:b})}});</script>';
 	}
 
@@ -80,7 +127,7 @@ class Rempart_Admin {
 			return;
 		}
 		if (isset($_GET['state'], $_GET['error'])) {
-			self::redirect_with('location', 'L\'autorisation a été annulée.', 'error');
+			self::redirect_with('location', __('L\'autorisation a été annulée.', 'rempart-backup'), 'error');
 		}
 
 		if (empty($_POST['rempart_form'])) {
@@ -95,23 +142,23 @@ class Rempart_Admin {
 			switch ($form) {
 				case 'settings':
 					self::save_settings();
-					self::redirect_with('settings', 'Réglages enregistrés.');
+					self::redirect_with('settings', __('Réglages enregistrés.', 'rempart-backup'));
 					break;
 				case 'location':
 					self::save_location();
 					break;
 				case 'delete_location':
 					Rempart_Locations::delete(sanitize_text_field(wp_unslash($_POST['id'])));
-					self::redirect_with('location', 'Emplacement supprimé.');
+					self::redirect_with('location', __('Emplacement supprimé.', 'rempart-backup'));
 					break;
 				case 'channel':
 					$id = !empty($_POST['id']) ? sanitize_text_field(wp_unslash($_POST['id'])) : null;
 					$channel = Rempart_Notifications::save(wp_unslash($_POST), $id);
-					self::redirect_with('notifications', 'Canal « ' . $channel['name'] . ' » enregistré. Utilisez « Envoyer un test » pour vérifier qu\'il fonctionne.');
+					self::redirect_with('notifications', sprintf(__('Canal « %s » enregistré. Utilisez « Envoyer un test » pour vérifier qu\'il fonctionne.', 'rempart-backup'), $channel['name']));
 					break;
 				case 'delete_channel':
 					Rempart_Notifications::delete(sanitize_text_field(wp_unslash($_POST['id'])));
-					self::redirect_with('notifications', 'Canal supprimé.');
+					self::redirect_with('notifications', __('Canal supprimé.', 'rempart-backup'));
 					break;
 				case 'connect':
 					$location = Rempart_Locations::get(sanitize_text_field(wp_unslash($_POST['id'])));
@@ -136,7 +183,7 @@ class Rempart_Admin {
 			$state = sanitize_text_field(wp_unslash($_GET['state']));
 			$code = sanitize_text_field(wp_unslash($_GET['code']));
 			$location = Rempart_Locations::oauth_finish($state, $code, wp_unslash($_GET));
-			self::redirect_with('location', '« ' . $location['name'] . ' » est connecté.');
+			self::redirect_with('location', sprintf(__('« %s » est connecté.', 'rempart-backup'), $location['name']));
 		} catch (Exception $e) {
 			self::redirect_with('location', $e->getMessage(), 'error');
 		}
@@ -160,7 +207,7 @@ class Rempart_Admin {
 		$settings['auto_db'] = !empty($_POST['auto_db']) ? 1 : 0;
 		$settings['auto_location'] = isset($_POST['auto_location']) ? sanitize_text_field(wp_unslash($_POST['auto_location'])) : '';
 		if ($settings['schedule'] !== '' && !$settings['auto_files'] && !$settings['auto_db']) {
-			throw new RuntimeException('Pour les sauvegardes automatiques, choisissez les fichiers, la base de données ou les deux.');
+			throw new RuntimeException(__('Pour les sauvegardes automatiques, choisissez les fichiers, la base de données ou les deux.', 'rempart-backup'));
 		}
 
 		$settings['additional'] = isset($_POST['additional']) ? array_map('sanitize_text_field', wp_unslash((array) $_POST['additional'])) : array();
@@ -187,14 +234,14 @@ class Rempart_Admin {
 				wp_redirect(Rempart_Locations::oauth_start($location));
 				exit;
 			}
-			self::redirect_with('location', 'Emplacement enregistré.');
+			self::redirect_with('location', __('Emplacement enregistré.', 'rempart-backup'));
 		}
 		try {
 			Rempart_Storage::make($location)->test();
 		} catch (Exception $e) {
-			self::redirect_with('location', 'Emplacement enregistré, mais la connexion a échoué : ' . $e->getMessage(), 'error');
+			self::redirect_with('location', sprintf(__('Emplacement enregistré, mais la connexion a échoué : %s', 'rempart-backup'), $e->getMessage()), 'error');
 		}
-		self::redirect_with('location', 'Emplacement enregistré. La connexion fonctionne.');
+		self::redirect_with('location', __('Emplacement enregistré. La connexion fonctionne.', 'rempart-backup'));
 	}
 
 	/* ----- The page ----- */
@@ -209,8 +256,8 @@ class Rempart_Admin {
 			<header class="rempart-top">
 				<svg class="rempart-logo" viewBox="0 0 48 48" aria-hidden="true"><path d="M24 3 6 10v13c0 11 7.5 18.6 18 22 10.500-3.400 18-11 18-22V10z" fill="#1f6f8b"/><path d="M15 17h4v-4h3v4h4v-4h3v4h4v8c0 6-4 10-9 12-5-2-9-6-9-12z" fill="#fff"/></svg>
 				<div>
-					<h1>Rempart Backup</h1>
-					<p>Sauvegarde, restauration, migration et clonage. Tout est inclus, sans licence.</p>
+					<h1><?php echo esc_html__('Rempart Backup', 'rempart-backup'); ?></h1>
+					<p><?php echo esc_html__('Sauvegarde, restauration, migration et clonage. Tout est inclus, sans licence.', 'rempart-backup'); ?></p>
 				</div>
 			</header>
 
@@ -219,12 +266,12 @@ class Rempart_Admin {
 			<?php endif; ?>
 
 			<nav class="nav-tab-wrapper rempart-tabs">
-				<a class="nav-tab" href="#dashboard">Tableau de bord</a>
-				<a class="nav-tab" href="#settings">Réglages</a>
-				<a class="nav-tab" href="#location">Emplacements</a>
-				<a class="nav-tab" href="#history">Historique</a>
-				<a class="nav-tab" href="#notifications">Notifications</a>
-				<a class="nav-tab" href="#help">Aide</a>
+				<a class="nav-tab" href="#dashboard"><?php echo esc_html__('Tableau de bord', 'rempart-backup'); ?></a>
+				<a class="nav-tab" href="#settings"><?php echo esc_html__('Réglages', 'rempart-backup'); ?></a>
+				<a class="nav-tab" href="#location"><?php echo esc_html__('Emplacements', 'rempart-backup'); ?></a>
+				<a class="nav-tab" href="#history"><?php echo esc_html__('Historique', 'rempart-backup'); ?></a>
+				<a class="nav-tab" href="#notifications"><?php echo esc_html__('Notifications', 'rempart-backup'); ?></a>
+				<a class="nav-tab" href="#help"><?php echo esc_html__('Aide', 'rempart-backup'); ?></a>
 			</nav>
 
 			<?php
@@ -247,7 +294,7 @@ class Rempart_Admin {
 	}
 
 	private static function location_options($selected, $locations, $protocols) {
-		echo '<option value="">Dossier local (par défaut)</option>';
+		echo '<option value="">' . esc_html__('Dossier local (par défaut)', 'rempart-backup') . '</option>';
 		foreach ($locations as $id => $location) {
 			printf(
 				'<option value="%s"%s>%s (%s)</option>',
@@ -263,22 +310,22 @@ class Rempart_Admin {
 		$last_backup = (int) get_option('rempart_last_backup', 0);
 		$last_restore = (int) get_option('rempart_last_restore', 0);
 		$next = wp_next_scheduled('rempart_auto_backup');
-		$date_format = 'j F Y à H:i';
+		$date_format = _x('j F Y à H:i', 'date and time format', 'rempart-backup');
 		?>
 		<section id="tab-dashboard" class="rempart-tab">
 			<div class="rempart-facts">
 				<div class="rempart-fact">
-					<span>Dernière sauvegarde</span>
-					<strong><?php echo $last_backup ? esc_html(wp_date($date_format, $last_backup)) : 'Aucune'; ?></strong>
-					<?php if ($last_backup) : ?><button type="button" class="button-link rempart-show-log" data-log="backup">Voir le journal</button><?php endif; ?>
+					<span><?php echo esc_html__('Dernière sauvegarde', 'rempart-backup'); ?></span>
+					<strong><?php echo $last_backup ? esc_html(wp_date($date_format, $last_backup)) : esc_html__('Aucune', 'rempart-backup'); ?></strong>
+					<?php if ($last_backup) : ?><button type="button" class="button-link rempart-show-log" data-log="backup"><?php echo esc_html__('Voir le journal', 'rempart-backup'); ?></button><?php endif; ?>
 				</div>
 				<div class="rempart-fact">
-					<span>Dernière restauration</span>
-					<strong><?php echo $last_restore ? esc_html(wp_date($date_format, $last_restore)) : 'Aucune'; ?></strong>
-					<?php if ($last_restore) : ?><button type="button" class="button-link rempart-show-log" data-log="restore">Voir le journal</button><?php endif; ?>
+					<span><?php echo esc_html__('Dernière restauration', 'rempart-backup'); ?></span>
+					<strong><?php echo $last_restore ? esc_html(wp_date($date_format, $last_restore)) : esc_html__('Aucune', 'rempart-backup'); ?></strong>
+					<?php if ($last_restore) : ?><button type="button" class="button-link rempart-show-log" data-log="restore"><?php echo esc_html__('Voir le journal', 'rempart-backup'); ?></button><?php endif; ?>
 				</div>
 				<div class="rempart-fact">
-					<span>Prochaine sauvegarde automatique</span>
+					<span><?php echo esc_html__('Prochaine sauvegarde automatique', 'rempart-backup'); ?></span>
 					<strong><?php
 					if ($next) {
 						echo esc_html(wp_date($date_format, $next));
@@ -286,9 +333,9 @@ class Rempart_Admin {
 							echo ' (en retard)';
 						}
 					} elseif ($settings['schedule'] === 'custom') {
-						echo 'Tâche cron personnalisée';
+						echo __('Tâche cron personnalisée', 'rempart-backup');
 					} else {
-						echo 'Rien de prévu';
+						echo __('Rien de prévu', 'rempart-backup');
 					}
 					?></strong>
 				</div>
@@ -296,31 +343,31 @@ class Rempart_Admin {
 
 			<?php $ls = Rempart_Litespeed::status(); ?>
 			<?php if ($ls[0] === 'warning') : ?>
-				<div class="notice notice-warning inline"><p><strong>Serveur LiteSpeed détecté.</strong> Si une sauvegarde se bloque sans erreur, <a href="#help">ajoutez la règle LiteSpeed dans l'onglet Aide</a>.</p></div>
+				<div class="notice notice-warning inline"><p><strong><?php echo esc_html__('Serveur LiteSpeed détecté.', 'rempart-backup'); ?></strong> <?php echo esc_html__('Si une sauvegarde se bloque sans erreur,', 'rempart-backup'); ?> <a href="#help"><?php echo esc_html__('ajoutez la règle LiteSpeed dans l\'onglet Aide', 'rempart-backup'); ?></a>.</p></div>
 			<?php endif; ?>
 			<div class="rempart-card">
-				<h2>Créer une sauvegarde</h2>
+				<h2><?php echo esc_html__('Créer une sauvegarde', 'rempart-backup'); ?></h2>
 				<form id="rempart-backup-form">
 					<p class="rempart-checks">
-						<label><input type="checkbox" name="files" value="1" <?php checked(!empty($settings['backup_files'])); ?>> Fichiers du site</label>
-						<label><input type="checkbox" name="db" value="1" <?php checked(!empty($settings['backup_db'])); ?>> Base de données</label>
+						<label><input type="checkbox" name="files" value="1" <?php checked(!empty($settings['backup_files'])); ?>> <?php echo esc_html__('Fichiers du site', 'rempart-backup'); ?></label>
+						<label><input type="checkbox" name="db" value="1" <?php checked(!empty($settings['backup_db'])); ?>> <?php echo esc_html__('Base de données', 'rempart-backup'); ?></label>
 					</p>
 					<p>
-						<label for="rempart-backup-scope" class="rempart-label">Fichiers à garder</label>
+						<label for="rempart-backup-scope" class="rempart-label"><?php echo esc_html__('Fichiers à garder', 'rempart-backup'); ?></label>
 						<select name="scope" id="rempart-backup-scope"><?php self::scope_options($settings['backup_scope']); ?></select>
-						<span class="description">Sans le cœur de WordPress, la sauvegarde se restaure sur un WordPress déjà installé, de la même version.</span>
+						<span class="description"><?php echo esc_html__('Sans le cœur de WordPress, la sauvegarde se restaure sur un WordPress déjà installé, de la même version.', 'rempart-backup'); ?></span>
 					</p>
 					<p>
-						<label for="rempart-backup-location" class="rempart-label">Où la garder</label>
+						<label for="rempart-backup-location" class="rempart-label"><?php echo esc_html__('Où la garder', 'rempart-backup'); ?></label>
 						<select name="location" id="rempart-backup-location"><?php self::location_options($settings['location'], $locations, $protocols); ?></select>
 					</p>
 					<details class="rempart-more">
-						<summary>Options supplémentaires</summary>
-						<label for="rempart-note" class="rempart-label">Note (facultatif)</label>
-						<textarea name="note" id="rempart-note" maxlength="<?php echo (int) REMPART_NOTE_MAX; ?>" rows="2" placeholder="80 caractères au maximum"></textarea>
+						<summary><?php echo esc_html__('Options supplémentaires', 'rempart-backup'); ?></summary>
+						<label for="rempart-note" class="rempart-label"><?php echo esc_html__('Note (facultatif)', 'rempart-backup'); ?></label>
+						<textarea name="note" id="rempart-note" maxlength="<?php echo (int) REMPART_NOTE_MAX; ?>" rows="2" placeholder="<?php echo esc_attr__('80 caractères au maximum', 'rempart-backup'); ?>"></textarea>
 					</details>
 					<p>
-						<button type="submit" class="button button-primary button-hero rempart-go">Créer la sauvegarde</button>
+						<button type="submit" class="button button-primary button-hero rempart-go"><?php echo esc_html__('Créer la sauvegarde', 'rempart-backup'); ?></button>
 					</p>
 				</form>
 			</div>
@@ -339,49 +386,49 @@ class Rempart_Admin {
 				<input type="hidden" name="rempart_form" value="settings">
 
 				<div class="rempart-card">
-					<h2>Sauvegardes</h2>
+					<h2><?php echo esc_html__('Sauvegardes', 'rempart-backup'); ?></h2>
 					<div class="rempart-row">
-						<div class="rempart-row-label">Par défaut, sauvegarder</div>
+						<div class="rempart-row-label"><?php echo esc_html__('Par défaut, sauvegarder', 'rempart-backup'); ?></div>
 						<div class="rempart-checks">
-							<label><input type="checkbox" name="backup_files" value="1" <?php checked(!empty($settings['backup_files'])); ?>> Fichiers du site</label>
-							<label><input type="checkbox" name="backup_db" value="1" <?php checked(!empty($settings['backup_db'])); ?>> Base de données</label>
+							<label><input type="checkbox" name="backup_files" value="1" <?php checked(!empty($settings['backup_files'])); ?>> <?php echo esc_html__('Fichiers du site', 'rempart-backup'); ?></label>
+							<label><input type="checkbox" name="backup_db" value="1" <?php checked(!empty($settings['backup_db'])); ?>> <?php echo esc_html__('Base de données', 'rempart-backup'); ?></label>
 						</div>
 					</div>
 					<div class="rempart-row">
-						<label class="rempart-row-label" for="rempart-default-scope">Fichiers à garder par défaut</label>
+						<label class="rempart-row-label" for="rempart-default-scope"><?php echo esc_html__('Fichiers à garder par défaut', 'rempart-backup'); ?></label>
 						<select name="backup_scope" id="rempart-default-scope"><?php self::scope_options($settings['backup_scope']); ?></select>
 					</div>
 					<div class="rempart-row">
-						<label class="rempart-row-label" for="rempart-default-location">Emplacement par défaut</label>
+						<label class="rempart-row-label" for="rempart-default-location"><?php echo esc_html__('Emplacement par défaut', 'rempart-backup'); ?></label>
 						<select name="location" id="rempart-default-location"><?php self::location_options($settings['location'], $locations, $protocols); ?></select>
 					</div>
 					<div class="rempart-row">
-						<div class="rempart-row-label">Avant les mises à jour de WordPress</div>
+						<div class="rempart-row-label"><?php echo esc_html__('Avant les mises à jour de WordPress', 'rempart-backup'); ?></div>
 						<div class="rempart-checks rempart-stack">
-							<label><input type="checkbox" name="pre_update_backup" value="1" <?php checked(!empty($settings['pre_update_backup'])); ?>> Sauvegarder avant une mise à jour manuelle</label>
-							<label><input type="checkbox" name="auto_update_backup" value="1" <?php checked(!empty($settings['auto_update_backup'])); ?>> Retenir les mises à jour automatiques jusqu'à la fin d'une sauvegarde</label>
+							<label><input type="checkbox" name="pre_update_backup" value="1" <?php checked(!empty($settings['pre_update_backup'])); ?>> <?php echo esc_html__('Sauvegarder avant une mise à jour manuelle', 'rempart-backup'); ?></label>
+							<label><input type="checkbox" name="auto_update_backup" value="1" <?php checked(!empty($settings['auto_update_backup'])); ?>> <?php echo esc_html__('Retenir les mises à jour automatiques jusqu\'à la fin d\'une sauvegarde', 'rempart-backup'); ?></label>
 						</div>
 					</div>
 				</div>
 
 				<div class="rempart-card">
-					<h2>Sauvegardes automatiques</h2>
+					<h2><?php echo esc_html__('Sauvegardes automatiques', 'rempart-backup'); ?></h2>
 					<div class="rempart-row">
-						<label class="rempart-row-label" for="rempart-schedule">Fréquence</label>
+						<label class="rempart-row-label" for="rempart-schedule"><?php echo esc_html__('Fréquence', 'rempart-backup'); ?></label>
 						<select name="schedule" id="rempart-schedule">
-							<option value="">Pas de sauvegarde automatique</option>
+							<option value=""><?php echo esc_html__('Pas de sauvegarde automatique', 'rempart-backup'); ?></option>
 							<?php foreach (Rempart_Schedule::intervals() as $key => $interval) : ?>
 								<option value="<?php echo esc_attr($key); ?>" <?php selected($settings['schedule'], $key); ?>><?php echo esc_html($interval['display']); ?></option>
 							<?php endforeach; ?>
-							<option value="custom" <?php selected($settings['schedule'], 'custom'); ?>>Personnalisée (tâche cron du serveur)</option>
+							<option value="custom" <?php selected($settings['schedule'], 'custom'); ?>><?php echo esc_html__('Personnalisée (tâche cron du serveur)', 'rempart-backup'); ?></option>
 						</select>
 					</div>
 					<div class="rempart-row">
-						<div class="rempart-row-label">Comment ça marche</div>
+						<div class="rempart-row-label"><?php echo esc_html__('Comment ça marche', 'rempart-backup'); ?></div>
 						<div class="rempart-cron-note">
-							<p data-for="none">Aucune sauvegarde automatique.</p>
-							<p data-for="auto"><strong>Automatique :</strong> rien d'autre à configurer. Elle part à la première visite du site après l'heure prévue. Pour une heure précise, choisissez « Personnalisée ».</p>
-							<p data-for="custom">Ajoutez la commande ci-dessous aux tâches cron de votre hébergement.</p>
+							<p data-for="none"><?php echo esc_html__('Aucune sauvegarde automatique.', 'rempart-backup'); ?></p>
+							<p data-for="auto"><strong><?php echo esc_html__('Automatique :', 'rempart-backup'); ?></strong> <?php echo esc_html__('rien d\'autre à configurer. Elle part à la première visite du site après l\'heure prévue. Pour une heure précise, choisissez « Personnalisée ».', 'rempart-backup'); ?></p>
+							<p data-for="custom"><?php echo esc_html__('Ajoutez la commande ci-dessous aux tâches cron de votre hébergement.', 'rempart-backup'); ?></p>
 							<?php
 							$cron_status = self::cron_status($settings);
 							if ($cron_status) :
@@ -391,48 +438,48 @@ class Rempart_Admin {
 						</div>
 					</div>
 					<div class="rempart-row" id="rempart-cron-row">
-						<div class="rempart-row-label">Commande à planifier</div>
+						<div class="rempart-row-label"><?php echo esc_html__('Commande à planifier', 'rempart-backup'); ?></div>
 						<div>
 							<code class="rempart-code" id="rempart-cron-command">wget -q -O /dev/null "<?php echo esc_html(Rempart_Schedule::cron_url()); ?>"</code>
-							<button type="button" class="button rempart-copy" data-copy="#rempart-cron-command">Copier</button>						</div>
+							<button type="button" class="button rempart-copy" data-copy="#rempart-cron-command"><?php echo esc_html__('Copier', 'rempart-backup'); ?></button>						</div>
 					</div>
 					<div class="rempart-row">
-						<label class="rempart-row-label" for="rempart-rotation">Sauvegardes automatiques à conserver</label>
+						<label class="rempart-row-label" for="rempart-rotation"><?php echo esc_html__('Sauvegardes automatiques à conserver', 'rempart-backup'); ?></label>
 						<div class="rempart-inline">
 							<select name="rotation" id="rempart-rotation">
-								<option value="0" <?php selected($rotation, 0); ?>>Toutes</option>
+								<option value="0" <?php selected($rotation, 0); ?>><?php echo esc_html__('Toutes', 'rempart-backup'); ?></option>
 								<?php for ($i = 1; $i <= 10; $i++) : ?>
 									<option value="<?php echo (int) $i; ?>" <?php selected($rotation, $i); ?>><?php echo (int) $i; ?></option>
 								<?php endfor; ?>
-								<option value="custom" <?php selected($rotation > 10); ?>>Autre nombre</option>
+								<option value="custom" <?php selected($rotation > 10); ?>><?php echo esc_html__('Autre nombre', 'rempart-backup'); ?></option>
 							</select>
 							<input type="number" min="1" name="rotation_custom" id="rempart-rotation-custom" value="<?php echo $rotation > 10 ? (int) $rotation : ''; ?>">
-							<span id="rempart-rotation-warning" class="rempart-warn">Plus de 30 sauvegardes peuvent occuper beaucoup de place.</span>
+							<span id="rempart-rotation-warning" class="rempart-warn"><?php echo esc_html__('Plus de 30 sauvegardes peuvent occuper beaucoup de place.', 'rempart-backup'); ?></span>
 						</div>
 					</div>
 					<div class="rempart-row">
-						<div class="rempart-row-label">Contenu</div>
+						<div class="rempart-row-label"><?php echo esc_html__('Contenu', 'rempart-backup'); ?></div>
 						<div class="rempart-checks">
-							<label><input type="checkbox" name="auto_files" value="1" <?php checked(!empty($settings['auto_files'])); ?>> Fichiers du site</label>
-							<label><input type="checkbox" name="auto_db" value="1" <?php checked(!empty($settings['auto_db'])); ?>> Base de données</label>
+							<label><input type="checkbox" name="auto_files" value="1" <?php checked(!empty($settings['auto_files'])); ?>> <?php echo esc_html__('Fichiers du site', 'rempart-backup'); ?></label>
+							<label><input type="checkbox" name="auto_db" value="1" <?php checked(!empty($settings['auto_db'])); ?>> <?php echo esc_html__('Base de données', 'rempart-backup'); ?></label>
 						</div>
 					</div>
 					<div class="rempart-row">
-						<label class="rempart-row-label" for="rempart-auto-scope">Fichiers à garder</label>
+						<label class="rempart-row-label" for="rempart-auto-scope"><?php echo esc_html__('Fichiers à garder', 'rempart-backup'); ?></label>
 						<select name="auto_scope" id="rempart-auto-scope"><?php self::scope_options($settings['auto_scope']); ?></select>
 					</div>
 					<div class="rempart-row">
-						<label class="rempart-row-label" for="rempart-auto-location">Emplacement</label>
+						<label class="rempart-row-label" for="rempart-auto-location"><?php echo esc_html__('Emplacement', 'rempart-backup'); ?></label>
 						<select name="auto_location" id="rempart-auto-location"><?php self::location_options($settings['auto_location'], $locations, $protocols); ?></select>
 					</div>
 				</div>
 
 				<div class="rempart-card">
-					<h2>Exclusions</h2>
+					<h2><?php echo esc_html__('Exclusions', 'rempart-backup'); ?></h2>
 					<div class="rempart-row">
-						<div class="rempart-row-label">Tables de la base à exclure</div>
+						<div class="rempart-row-label"><?php echo esc_html__('Tables de la base à exclure', 'rempart-backup'); ?></div>
 						<details class="rempart-more">
-							<summary>Choisir dans la liste</summary>
+							<summary><?php echo esc_html__('Choisir dans la liste', 'rempart-backup'); ?></summary>
 							<div class="rempart-scroll">
 								<?php foreach ((array) $wpdb->get_col('SHOW TABLES') as $table) : ?>
 									<label class="rempart-line"><input type="checkbox" name="exclude_db[]" value="<?php echo esc_attr($table); ?>" <?php checked(in_array($table, $excludes['db'], true)); ?>> <?php echo esc_html($table); ?></label>
@@ -441,19 +488,19 @@ class Rempart_Admin {
 						</details>
 					</div>
 					<div class="rempart-row">
-						<div class="rempart-row-label">Fichiers et dossiers à exclure</div>
+						<div class="rempart-row-label"><?php echo esc_html__('Fichiers et dossiers à exclure', 'rempart-backup'); ?></div>
 						<div>
 							<div class="rempart-rule-box">
-								<strong>Par nom</strong>
+								<strong><?php echo esc_html__('Par nom', 'rempart-backup'); ?></strong>
 								<div class="rempart-inline">
 									<select id="rempart-rule-type">
-										<option value="extension">Avec l'extension</option>
-										<option value="beginning">Dont le nom commence par</option>
-										<option value="end">Dont le nom finit par</option>
-										<option value="anywhere">Dont le chemin contient</option>
+										<option value="extension"><?php echo esc_html__('Avec l\'extension', 'rempart-backup'); ?></option>
+										<option value="beginning"><?php echo esc_html__('Dont le nom commence par', 'rempart-backup'); ?></option>
+										<option value="end"><?php echo esc_html__('Dont le nom finit par', 'rempart-backup'); ?></option>
+										<option value="anywhere"><?php echo esc_html__('Dont le chemin contient', 'rempart-backup'); ?></option>
 									</select>
-									<input type="text" id="rempart-rule-pattern" placeholder="par exemple zip">
-									<button type="button" class="button" id="rempart-rule-add">Ajouter</button>
+									<input type="text" id="rempart-rule-pattern" placeholder="<?php echo esc_attr__('par exemple zip', 'rempart-backup'); ?>">
+									<button type="button" class="button" id="rempart-rule-add"><?php echo esc_html__('Ajouter', 'rempart-backup'); ?></button>
 								</div>
 								<ul class="rempart-rules" id="rempart-rules-pattern">
 									<?php
@@ -467,8 +514,8 @@ class Rempart_Admin {
 								</ul>
 							</div>
 							<div class="rempart-rule-box">
-								<strong>Dossiers ou fichiers précis</strong>
-								<button type="button" class="button" id="rempart-tree-open">Parcourir le site…</button>
+								<strong><?php echo esc_html__('Dossiers ou fichiers précis', 'rempart-backup'); ?></strong>
+								<button type="button" class="button" id="rempart-tree-open"><?php echo esc_html__('Parcourir le site…', 'rempart-backup'); ?></button>
 								<ul class="rempart-rules" id="rempart-rules-exact">
 									<?php
 									foreach ($excludes['exact'] as $key => $pattern) {
@@ -482,15 +529,15 @@ class Rempart_Admin {
 				</div>
 
 				<div class="rempart-card">
-					<h2>Autres réglages</h2>
+					<h2><?php echo esc_html__('Autres réglages', 'rempart-backup'); ?></h2>
 					<?php
 					$extra = self::additional_entries();
 					if ($extra) :
 						?>
 					<div class="rempart-row">
-						<div class="rempart-row-label">Autres éléments à la racine du site</div>
+						<div class="rempart-row-label"><?php echo esc_html__('Autres éléments à la racine du site', 'rempart-backup'); ?></div>
 						<details class="rempart-more">
-							<summary>Choisir ceux à inclure</summary>
+							<summary><?php echo esc_html__('Choisir ceux à inclure', 'rempart-backup'); ?></summary>
 							<div class="rempart-scroll">
 								<?php foreach ($extra as $item) : ?>
 									<label class="rempart-line"><input type="checkbox" name="additional[]" value="<?php echo esc_attr($item); ?>" <?php checked(in_array($item, (array) $settings['additional'], true)); ?>> <?php echo esc_html($item); ?></label>
@@ -500,20 +547,20 @@ class Rempart_Admin {
 					</div>
 					<?php endif; ?>
 					<div class="rempart-row">
-						<div class="rempart-row-label">Compression</div>
-						<label>Niveau <select name="gzip_level">
+						<div class="rempart-row-label"><?php echo esc_html__('Compression', 'rempart-backup'); ?></div>
+						<label><?php echo esc_html__('Niveau', 'rempart-backup'); ?> <select name="gzip_level">
 							<?php for ($level = 1; $level <= 9; $level++) : ?>
-								<option value="<?php echo $level; ?>" <?php selected((int) $settings['gzip_level'], $level); ?>><?php echo $level; ?><?php echo $level === 9 ? ' (archive la plus petite, la plus lente)' : ($level === 1 ? ' (la plus rapide, archive plus grosse)' : ''); ?></option>
+								<option value="<?php echo $level; ?>" <?php selected((int) $settings['gzip_level'], $level); ?>><?php echo $level; ?><?php echo $level === 9 ? ' ' . __('(archive la plus petite, la plus lente)', 'rempart-backup') : ($level === 1 ? ' ' . __('(la plus rapide, archive plus grosse)', 'rempart-backup') : ''); ?></option>
 							<?php endfor; ?>
 						</select></label>
 					</div>
 					<div class="rempart-row">
-						<div class="rempart-row-label">Mode débogage</div>
-						<label><input type="checkbox" name="debug" value="1" <?php checked(!empty($settings['debug'])); ?>> Écrire plus de détails dans le journal (ne le laissez pas activé)</label>
+						<div class="rempart-row-label"><?php echo esc_html__('Mode débogage', 'rempart-backup'); ?></div>
+						<label><input type="checkbox" name="debug" value="1" <?php checked(!empty($settings['debug'])); ?>> <?php echo esc_html__('Écrire plus de détails dans le journal (ne le laissez pas activé)', 'rempart-backup'); ?></label>
 					</div>
 				</div>
 
-				<p><button type="submit" class="button button-primary button-large">Enregistrer les réglages</button></p>
+				<p><button type="submit" class="button button-primary button-large"><?php echo esc_html__('Enregistrer les réglages', 'rempart-backup'); ?></button></p>
 			</form>
 		</section>
 		<?php
@@ -532,16 +579,16 @@ class Rempart_Admin {
 			return null;
 		}
 		if ($cron_disabled) {
-			return array('warning', 'WP-Cron est désactivé sur ce site : rien ne partira seul. Choisissez « Personnalisée ».');
+			return array('warning', __('WP-Cron est désactivé sur ce site : rien ne partira seul. Choisissez « Personnalisée ».', 'rempart-backup'));
 		}
 		$next = wp_next_scheduled('rempart_auto_backup');
 		if (!$next) {
-			return array('warning', 'Cliquez sur « Enregistrer les réglages » pour activer la planification.');
+			return array('warning', __('Cliquez sur « Enregistrer les réglages » pour activer la planification.', 'rempart-backup'));
 		}
 		if (time() - $next > 300) {
-			return array('warning', sprintf('En retard de %s : en attente d\'une visite du site.', human_time_diff($next)));
+			return array('warning', sprintf(__('En retard de %s : en attente d\'une visite du site.', 'rempart-backup'), human_time_diff($next)));
 		}
-		return array('ok', 'Prochaine sauvegarde automatique : ' . wp_date('j F Y à H:i', $next) . '.');
+		return array('ok', sprintf(__('Prochaine sauvegarde automatique : %s.', 'rempart-backup'), wp_date(_x('j F Y à H:i', 'date and time format', 'rempart-backup'), $next)));
 	}
 
 	private static function rule_item($type, $key, $text) {
@@ -576,12 +623,12 @@ class Rempart_Admin {
 		?>
 		<section id="tab-location" class="rempart-tab" hidden>
 			<div class="rempart-card">
-				<h2>Emplacements de sauvegarde</h2>
+				<h2><?php echo esc_html__('Emplacements de sauvegarde', 'rempart-backup'); ?></h2>
 				<table class="widefat striped rempart-table">
-					<thead><tr><th>Nom</th><th>Type</th><th>Serveur</th><th>Dossier</th><th>Espace utilisé</th><th>Actions</th></tr></thead>
+					<thead><tr><th><?php echo esc_html__('Nom', 'rempart-backup'); ?></th><th><?php echo esc_html__('Type', 'rempart-backup'); ?></th><th><?php echo esc_html__('Serveur', 'rempart-backup'); ?></th><th><?php echo esc_html__('Dossier', 'rempart-backup'); ?></th><th><?php echo esc_html__('Espace utilisé', 'rempart-backup'); ?></th><th><?php echo esc_html__('Actions', 'rempart-backup'); ?></th></tr></thead>
 					<tbody>
 						<tr>
-							<td>Dossier local</td><td>-</td><td>-</td>
+							<td><?php echo esc_html__('Dossier local', 'rempart-backup'); ?></td><td>-</td><td>-</td>
 							<td><code><?php echo esc_html(rempart_clean_path((string) rempart_folder('backups'))); ?></code></td>
 							<td><?php echo esc_html($local_text); ?></td><td>-</td>
 						</tr>
@@ -613,39 +660,39 @@ class Rempart_Admin {
 								<td><?php echo esc_html(($config['bucket'] ?? '') . (isset($config['bucket']) ? '/' : '') . ($config['folder'] ?? '')); ?></td>
 								<td>
 									<?php if ($is_oauth) : ?>
-										<button type="button" class="button-link rempart-quota" data-id="<?php echo esc_attr($id); ?>" title="Actualiser"><?php echo esc_html($quota_text); ?></button>
+										<button type="button" class="button-link rempart-quota" data-id="<?php echo esc_attr($id); ?>" title="<?php echo esc_attr__('Actualiser', 'rempart-backup'); ?>"><?php echo esc_html($quota_text); ?></button>
 									<?php else : ?>
 										<?php echo esc_html($quota_text); ?>
 									<?php endif; ?>
 								</td>
 								<td class="rempart-actions">
 									<?php if ($is_oauth && !$connected) : ?>
-										<form method="post"><?php wp_nonce_field('rempart_form'); ?><input type="hidden" name="rempart_form" value="connect"><input type="hidden" name="id" value="<?php echo esc_attr($id); ?>"><button class="button button-primary">Connecter le compte</button></form>
+										<form method="post"><?php wp_nonce_field('rempart_form'); ?><input type="hidden" name="rempart_form" value="connect"><input type="hidden" name="id" value="<?php echo esc_attr($id); ?>"><button class="button button-primary"><?php echo esc_html__('Connecter le compte', 'rempart-backup'); ?></button></form>
 									<?php else : ?>
-										<button type="button" class="button rempart-test" data-id="<?php echo esc_attr($id); ?>">Tester</button>
+										<button type="button" class="button rempart-test" data-id="<?php echo esc_attr($id); ?>"><?php echo esc_html__('Tester', 'rempart-backup'); ?></button>
 									<?php endif; ?>
-									<button type="button" class="button rempart-edit" data-location="<?php echo esc_attr(wp_json_encode(array('id' => $location['id'], 'name' => $location['name'], 'protocol' => $location['protocol']) + $config)); ?>">Modifier</button>
-									<form method="post" class="rempart-confirm" data-confirm="Supprimer cet emplacement ? Les sauvegardes déjà envoyées y restent."><?php wp_nonce_field('rempart_form'); ?><input type="hidden" name="rempart_form" value="delete_location"><input type="hidden" name="id" value="<?php echo esc_attr($id); ?>"><button class="button rempart-danger">Supprimer</button></form>
+									<button type="button" class="button rempart-edit" data-location="<?php echo esc_attr(wp_json_encode(array('id' => $location['id'], 'name' => $location['name'], 'protocol' => $location['protocol']) + $config)); ?>"><?php echo esc_html__('Modifier', 'rempart-backup'); ?></button>
+									<form method="post" class="rempart-confirm" data-confirm="<?php echo esc_attr__('Supprimer cet emplacement ? Les sauvegardes déjà envoyées y restent.', 'rempart-backup'); ?>"><?php wp_nonce_field('rempart_form'); ?><input type="hidden" name="rempart_form" value="delete_location"><input type="hidden" name="id" value="<?php echo esc_attr($id); ?>"><button class="button rempart-danger"><?php echo esc_html__('Supprimer', 'rempart-backup'); ?></button></form>
 								</td>
 							</tr>
 						<?php endforeach; ?>
 					</tbody>
 				</table>
-				<p><button type="button" class="button button-primary" id="rempart-add-location">Ajouter un emplacement</button></p>
+				<p><button type="button" class="button button-primary" id="rempart-add-location"><?php echo esc_html__('Ajouter un emplacement', 'rempart-backup'); ?></button></p>
 			</div>
 
 			<div class="rempart-card" id="rempart-location-form-card" hidden>
-				<h2 id="rempart-location-form-title">Ajouter un emplacement</h2>
+				<h2 id="rempart-location-form-title"><?php echo esc_html__('Ajouter un emplacement', 'rempart-backup'); ?></h2>
 				<form method="post" id="rempart-location-form" autocomplete="off">
 					<?php wp_nonce_field('rempart_form'); ?>
 					<input type="hidden" name="rempart_form" value="location">
 					<input type="hidden" name="id" value="">
 					<div class="rempart-row">
-						<label class="rempart-row-label" for="rempart-loc-name">Nom</label>
+						<label class="rempart-row-label" for="rempart-loc-name"><?php echo esc_html__('Nom', 'rempart-backup'); ?></label>
 						<input type="text" name="name" id="rempart-loc-name" class="regular-text" required>
 					</div>
 					<div class="rempart-row">
-						<label class="rempart-row-label" for="rempart-loc-protocol">Type</label>
+						<label class="rempart-row-label" for="rempart-loc-protocol"><?php echo esc_html__('Type', 'rempart-backup'); ?></label>
 						<select name="protocol" id="rempart-loc-protocol">
 							<?php foreach ($protocols as $key => $protocol) : ?>
 								<option value="<?php echo esc_attr($key); ?>"><?php echo esc_html($protocol['label']); ?></option>
@@ -654,12 +701,12 @@ class Rempart_Admin {
 					</div>
 					<?php self::location_fields($protocols); ?>
 					<div class="rempart-oauth-help" hidden>
-						<p><strong>Adresse de retour à déclarer dans votre application :</strong><br><code class="rempart-code" id="rempart-redirect"><?php echo esc_html(admin_url('admin.php?page=rempart-backup')); ?></code> <button type="button" class="button rempart-copy" data-copy="#rempart-redirect">Copier</button></p>
-						<p class="description">Ce service demande votre propre application : l'onglet Aide explique comment la créer. Après l'enregistrement, vous serez envoyé sur sa page pour accepter l'accès.</p>
+						<p><strong><?php echo esc_html__('Adresse de retour à déclarer dans votre application :', 'rempart-backup'); ?></strong><br><code class="rempart-code" id="rempart-redirect"><?php echo esc_html(admin_url('admin.php?page=rempart-backup')); ?></code> <button type="button" class="button rempart-copy" data-copy="#rempart-redirect"><?php echo esc_html__('Copier', 'rempart-backup'); ?></button></p>
+						<p class="description"><?php echo esc_html__('Ce service demande votre propre application : l\'onglet Aide explique comment la créer. Après l\'enregistrement, vous serez envoyé sur sa page pour accepter l\'accès.', 'rempart-backup'); ?></p>
 					</div>
 					<p>
-						<button type="submit" class="button button-primary" id="rempart-loc-submit">Enregistrer</button>
-						<button type="button" class="button" id="rempart-loc-cancel">Annuler</button>
+						<button type="submit" class="button button-primary" id="rempart-loc-submit"><?php echo esc_html__('Enregistrer', 'rempart-backup'); ?></button>
+						<button type="button" class="button" id="rempart-loc-cancel"><?php echo esc_html__('Annuler', 'rempart-backup'); ?></button>
 					</p>
 				</form>
 			</div>
@@ -700,7 +747,7 @@ class Rempart_Admin {
 					echo '<p class="description">' . esc_html($field['help']) . '</p>';
 				}
 				if (!empty($field['secret'])) {
-					echo '<p class="description rempart-secret-note" hidden>Laissez vide pour garder la valeur enregistrée.</p>';
+					echo '<p class="description rempart-secret-note" hidden>' . esc_html__('Laissez vide pour garder la valeur enregistrée.', 'rempart-backup') . '</p>';
 				}
 				echo '</div></div>';
 			}
@@ -730,54 +777,54 @@ class Rempart_Admin {
 				<div class="rempart-history-tools">
 					<form method="get" action="<?php echo esc_url(admin_url('admin.php')); ?>#history" class="rempart-inline">
 						<input type="hidden" name="page" value="rempart-backup">
-						<label>Afficher :
+						<label><?php echo esc_html__('Afficher :', 'rempart-backup'); ?>
 							<select name="history_location">
-								<option value="all" <?php selected($filter, 'all'); ?>>Tous les emplacements</option>
-								<option value="local" <?php selected($filter, 'local'); ?>>Dossier local</option>
+								<option value="all" <?php selected($filter, 'all'); ?>><?php echo esc_html__('Tous les emplacements', 'rempart-backup'); ?></option>
+								<option value="local" <?php selected($filter, 'local'); ?>><?php echo esc_html__('Dossier local', 'rempart-backup'); ?></option>
 								<?php foreach ($locations as $id => $location) : ?>
 									<option value="<?php echo esc_attr($id); ?>" <?php selected($filter, (string) $id); ?>><?php echo esc_html($location['name']); ?></option>
 								<?php endforeach; ?>
 							</select>
 						</label>
-						<button type="submit" class="button">Filtrer</button>
+						<button type="submit" class="button"><?php echo esc_html__('Filtrer', 'rempart-backup'); ?></button>
 					</form>
 					<div class="rempart-inline">
-						<label>Synchroniser depuis :
+						<label><?php echo esc_html__('Synchroniser depuis :', 'rempart-backup'); ?>
 						<select id="rempart-sync-location">
-							<option value="local">Dossier local</option>
+							<option value="local"><?php echo esc_html__('Dossier local', 'rempart-backup'); ?></option>
 							<?php foreach ($locations as $id => $location) : ?>
 								<option value="<?php echo esc_attr($id); ?>"><?php echo esc_html($location['name']); ?></option>
 							<?php endforeach; ?>
 						</select>
 						</label>
-						<button type="button" class="button" id="rempart-sync">Synchroniser</button>
-						<button type="button" class="button" id="rempart-upload-open"><span class="dashicons dashicons-upload"></span> Importer une sauvegarde</button>
+						<button type="button" class="button" id="rempart-sync"><?php echo esc_html__('Synchroniser', 'rempart-backup'); ?></button>
+						<button type="button" class="button" id="rempart-upload-open"><span class="dashicons dashicons-upload"></span> <?php echo esc_html__('Importer une sauvegarde', 'rempart-backup'); ?></button>
 						<input type="file" id="rempart-upload-file" accept=".gz" hidden>
 					</div>
 					<div class="rempart-inline">
-						<button type="button" class="button" id="rempart-select-all">Tout sélectionner</button>
-						<button type="button" class="button rempart-danger" id="rempart-delete-selected">Supprimer</button>
+						<button type="button" class="button" id="rempart-select-all"><?php echo esc_html__('Tout sélectionner', 'rempart-backup'); ?></button>
+						<button type="button" class="button rempart-danger" id="rempart-delete-selected"><?php echo esc_html__('Supprimer', 'rempart-backup'); ?></button>
 					</div>
 				</div>
 				<div id="rempart-upload-progress" hidden><div class="rempart-bar"><i></i></div><span></span></div>
 
 				<table class="widefat striped rempart-table" id="rempart-history-table">
-					<thead><tr><th class="check-column"></th><th>Date</th><th>Emplacement</th><th>Taille</th><th>Contenu</th><th>Note</th><th>Actions</th></tr></thead>
+					<thead><tr><th class="check-column"></th><th><?php echo esc_html__('Date', 'rempart-backup'); ?></th><th><?php echo esc_html__('Emplacement', 'rempart-backup'); ?></th><th><?php echo esc_html__('Taille', 'rempart-backup'); ?></th><th><?php echo esc_html__('Contenu', 'rempart-backup'); ?></th><th><?php echo esc_html__('Note', 'rempart-backup'); ?></th><th><?php echo esc_html__('Actions', 'rempart-backup'); ?></th></tr></thead>
 					<tbody>
 						<?php if (!$rows) : ?>
-							<tr><td colspan="7" class="rempart-empty"><?php echo $filter === 'all' ? 'Aucune sauvegarde pour le moment.' : 'Aucune sauvegarde à cet emplacement.'; ?></td></tr>
+							<tr><td colspan="7" class="rempart-empty"><?php echo $filter === 'all' ? esc_html__('Aucune sauvegarde pour le moment.', 'rempart-backup') : esc_html__('Aucune sauvegarde à cet emplacement.', 'rempart-backup'); ?></td></tr>
 						<?php endif; ?>
 						<?php
 						foreach ($rows as $info) :
 							$location = !empty($info['location']) ? ($locations[$info['location']] ?? null) : null;
-							$location_label = empty($info['location']) ? 'Local' : ($location ? $location['name'] : 'Emplacement supprimé');
+							$location_label = empty($info['location']) ? __('Local', 'rempart-backup') : ($location ? $location['name'] : __('Emplacement supprimé', 'rempart-backup'));
 							$has_log = file_exists(REMPART_ROOT . 'logs/' . $info['name'] . '.log.php');
 							$content = array();
 							if (!empty($info['backup_dir'])) {
-								$content[] = 'Fichiers';
+								$content[] = __('Fichiers', 'rempart-backup');
 							}
 							if (!empty($info['backup_db'])) {
-								$content[] = 'Base de données';
+								$content[] = __('Base de données', 'rempart-backup');
 							}
 							$note = $info['note'] ?? ($info['backup_note'] ?? '');
 							$download = wp_nonce_url(admin_url('admin-ajax.php?action=rempart_download&name=' . rawurlencode($info['name'])), 'rempart');
@@ -787,7 +834,7 @@ class Rempart_Admin {
 								<td><input type="checkbox" class="rempart-pick" value="<?php echo esc_attr($info['name']); ?>"></td>
 								<td>
 									<?php echo esc_html(wp_date('j M Y H:i', (int) $info['btime'])); ?>
-									<?php if (!empty($info['auto_backup'])) : ?><span class="rempart-tag">Auto</span><?php endif; ?>
+									<?php if (!empty($info['auto_backup'])) : ?><span class="rempart-tag"><?php echo esc_html__('Auto', 'rempart-backup'); ?></span><?php endif; ?>
 								</td>
 								<td><?php echo esc_html($location_label); ?></td>
 								<td><?php echo esc_html(rempart_format_size($info['size'] ?? 0)); ?></td>
@@ -798,10 +845,10 @@ class Rempart_Admin {
 										data-name="<?php echo esc_attr($info['name']); ?>"
 										data-files="<?php echo !empty($info['backup_dir']) ? '1' : '0'; ?>"
 										data-db="<?php echo !empty($info['backup_db']) ? '1' : '0'; ?>"
-										data-source="<?php echo esc_attr($info['site_url'] ?? ($info['backup_site_url'] ?? '')); ?>">Restaurer</button>
-									<?php if (!$unreachable) : ?><a class="button" href="<?php echo esc_url($download); ?>">Télécharger</a><?php endif; ?>
-									<?php if ($has_log) : ?><button type="button" class="button rempart-show-log" data-log="<?php echo esc_attr($info['name']); ?>">Journal</button><?php endif; ?>
-									<button type="button" class="button rempart-danger rempart-delete" data-name="<?php echo esc_attr($info['name']); ?>">Supprimer</button>
+										data-source="<?php echo esc_attr($info['site_url'] ?? ($info['backup_site_url'] ?? '')); ?>"><?php echo esc_html__('Restaurer', 'rempart-backup'); ?></button>
+									<?php if (!$unreachable) : ?><a class="button" href="<?php echo esc_url($download); ?>"><?php echo esc_html__('Télécharger', 'rempart-backup'); ?></a><?php endif; ?>
+									<?php if ($has_log) : ?><button type="button" class="button rempart-show-log" data-log="<?php echo esc_attr($info['name']); ?>"><?php echo esc_html__('Journal', 'rempart-backup'); ?></button><?php endif; ?>
+									<button type="button" class="button rempart-danger rempart-delete" data-name="<?php echo esc_attr($info['name']); ?>"><?php echo esc_html__('Supprimer', 'rempart-backup'); ?></button>
 								</td>
 							</tr>
 						<?php endforeach; ?>
@@ -810,7 +857,7 @@ class Rempart_Admin {
 
 				<?php if ($pages > 1) : ?>
 					<div class="tablenav"><div class="tablenav-pages">
-						<span class="displaying-num"><?php echo (int) $total; ?> sauvegardes</span>
+						<span class="displaying-num"><?php echo (int) $total; ?> <?php echo esc_html__('sauvegardes', 'rempart-backup'); ?></span>
 						<?php for ($i = 1; $i <= $pages; $i++) : ?>
 							<a class="button <?php echo $i === $page ? 'button-primary' : ''; ?>" href="<?php echo esc_url(admin_url('admin.php?page=rempart-backup&history_page=' . $i . $filter_query . '#history')); ?>"><?php echo (int) $i; ?></a>
 						<?php endfor; ?>
@@ -827,36 +874,36 @@ class Rempart_Admin {
 		?>
 		<section id="tab-notifications" class="rempart-tab" hidden>
 			<div class="rempart-card">
-				<h2>Être prévenu</h2>
-				<p>Chaque sauvegarde réussie ou ratée peut envoyer un message. L'e-mail est un service comme les autres : ajoutez-en autant que vous voulez, de toutes sortes, et choisissez pour chacun s'il veut les réussites, les échecs ou les deux.</p>
+				<h2><?php echo esc_html__('Être prévenu', 'rempart-backup'); ?></h2>
+				<p><?php echo esc_html__('Chaque sauvegarde réussie ou ratée peut envoyer un message. L\'e-mail est un service comme les autres : ajoutez-en autant que vous voulez, de toutes sortes, et choisissez pour chacun s\'il veut les réussites, les échecs ou les deux.', 'rempart-backup'); ?></p>
 				<table class="widefat striped rempart-table">
-					<thead><tr><th>Nom</th><th>Service</th><th>Prévenir en cas de</th><th>Dernier envoi</th><th>Actions</th></tr></thead>
+					<thead><tr><th><?php echo esc_html__('Nom', 'rempart-backup'); ?></th><th><?php echo esc_html__('Service', 'rempart-backup'); ?></th><th><?php echo esc_html__('Prévenir en cas de', 'rempart-backup'); ?></th><th><?php echo esc_html__('Dernier envoi', 'rempart-backup'); ?></th><th><?php echo esc_html__('Actions', 'rempart-backup'); ?></th></tr></thead>
 					<tbody>
 						<?php if (!$channels) : ?>
-							<tr><td colspan="5" class="rempart-empty">Aucune notification pour le moment. Ajoutez un e-mail ou un service.</td></tr>
+							<tr><td colspan="5" class="rempart-empty"><?php echo esc_html__('Aucune notification pour le moment. Ajoutez un e-mail ou un service.', 'rempart-backup'); ?></td></tr>
 						<?php endif; ?>
 						<?php
 						foreach ($channels as $id => $channel) :
 							$last = $channel['last'] ?? null;
 							$events = array();
 							if (!empty($channel['on_success'])) {
-								$events[] = 'réussite';
+								$events[] = __('réussite', 'rempart-backup');
 							}
 							if (!empty($channel['on_failure'])) {
-								$events[] = 'échec';
+								$events[] = __('échec', 'rempart-backup');
 							}
 							$edit = array('id' => $channel['id'], 'name' => $channel['name'], 'type' => $channel['type'], 'enabled' => !empty($channel['enabled']) ? 1 : 0, 'on_success' => !empty($channel['on_success']) ? 1 : 0, 'on_failure' => !empty($channel['on_failure']) ? 1 : 0) + (array) $channel['config'];
 							?>
 							<tr>
 								<td>
-									<strong><?php echo esc_html($channel['name']); ?></strong><?php echo empty($channel['enabled']) ? ' <span class="rempart-tag">En pause</span>' : ''; ?>
+									<strong><?php echo esc_html($channel['name']); ?></strong><?php echo empty($channel['enabled']) ? ' <span class="rempart-tag">' . esc_html__('En pause', 'rempart-backup') . '</span>' : ''; ?>
 									<?php if ($channel['type'] === 'email' && !empty($channel['config']['address'])) : ?><br><small><?php echo esc_html($channel['config']['address']); ?></small><?php endif; ?>
 								</td>
 								<td><?php echo esc_html($types[$channel['type']]['label'] ?? $channel['type']); ?></td>
 								<td><?php echo esc_html($events ? implode(' et ', $events) : 'rien'); ?></td>
 								<td>
 									<?php if ($last) : ?>
-										<span class="<?php echo !empty($last['ok']) ? 'rempart-ok' : 'rempart-bad'; ?>"><?php echo esc_html(!empty($last['ok']) ? 'Réussi' : 'Échec'); ?></span>
+										<span class="<?php echo !empty($last['ok']) ? 'rempart-ok' : 'rempart-bad'; ?>"><?php echo esc_html(!empty($last['ok']) ? _x('Réussi', 'result of the last send', 'rempart-backup') : _x('Échec', 'result of the last send', 'rempart-backup')); ?></span>
 										<?php echo esc_html(wp_date('j M H:i', (int) $last['t'])); ?>
 										<?php if (empty($last['ok'])) : ?><br><small><?php echo esc_html($last['text']); ?></small><?php endif; ?>
 									<?php else : ?>
@@ -864,25 +911,25 @@ class Rempart_Admin {
 									<?php endif; ?>
 								</td>
 								<td class="rempart-actions">
-									<button type="button" class="button rempart-ch-test" data-id="<?php echo esc_attr($id); ?>">Envoyer un test</button>
-									<button type="button" class="button rempart-ch-edit" data-channel="<?php echo esc_attr(wp_json_encode($edit)); ?>">Modifier</button>
-									<form method="post" class="rempart-confirm" data-confirm="Supprimer ce canal de notification ?"><?php wp_nonce_field('rempart_form'); ?><input type="hidden" name="rempart_form" value="delete_channel"><input type="hidden" name="id" value="<?php echo esc_attr($id); ?>"><button class="button rempart-danger">Supprimer</button></form>
+									<button type="button" class="button rempart-ch-test" data-id="<?php echo esc_attr($id); ?>"><?php echo esc_html__('Envoyer un test', 'rempart-backup'); ?></button>
+									<button type="button" class="button rempart-ch-edit" data-channel="<?php echo esc_attr(wp_json_encode($edit)); ?>"><?php echo esc_html__('Modifier', 'rempart-backup'); ?></button>
+									<form method="post" class="rempart-confirm" data-confirm="<?php echo esc_attr__('Supprimer ce canal de notification ?', 'rempart-backup'); ?>"><?php wp_nonce_field('rempart_form'); ?><input type="hidden" name="rempart_form" value="delete_channel"><input type="hidden" name="id" value="<?php echo esc_attr($id); ?>"><button class="button rempart-danger"><?php echo esc_html__('Supprimer', 'rempart-backup'); ?></button></form>
 								</td>
 							</tr>
 						<?php endforeach; ?>
 					</tbody>
 				</table>
-				<p><button type="button" class="button button-primary" id="rempart-ch-add">Ajouter une notification</button></p>
+				<p><button type="button" class="button button-primary" id="rempart-ch-add"><?php echo esc_html__('Ajouter une notification', 'rempart-backup'); ?></button></p>
 			</div>
 
 			<div class="rempart-card" id="rempart-ch-card" hidden>
-				<h2 id="rempart-ch-title">Ajouter un service</h2>
+				<h2 id="rempart-ch-title"><?php echo esc_html__('Ajouter un service', 'rempart-backup'); ?></h2>
 				<form method="post" id="rempart-ch-form" autocomplete="off">
 					<?php wp_nonce_field('rempart_form'); ?>
 					<input type="hidden" name="rempart_form" value="channel">
 					<input type="hidden" name="id" value="">
 					<div class="rempart-row">
-						<label class="rempart-row-label" for="rempart-ch-type">Service</label>
+						<label class="rempart-row-label" for="rempart-ch-type"><?php echo esc_html__('Service', 'rempart-backup'); ?></label>
 						<select name="type" id="rempart-ch-type">
 							<?php foreach ($types as $key => $type) : ?>
 								<option value="<?php echo esc_attr($key); ?>"><?php echo esc_html($type['label']); ?></option>
@@ -890,8 +937,8 @@ class Rempart_Admin {
 						</select>
 					</div>
 					<div class="rempart-row">
-						<label class="rempart-row-label" for="rempart-ch-name">Nom (facultatif)</label>
-						<input type="text" name="name" id="rempart-ch-name" class="regular-text" placeholder="Par exemple : Salon alertes">
+						<label class="rempart-row-label" for="rempart-ch-name"><?php echo esc_html__('Nom (facultatif)', 'rempart-backup'); ?></label>
+						<input type="text" name="name" id="rempart-ch-name" class="regular-text" placeholder="<?php echo esc_attr__('Par exemple : Salon alertes', 'rempart-backup'); ?>">
 					</div>
 					<?php
 					foreach ($types as $key => $type) {
@@ -905,7 +952,7 @@ class Rempart_Admin {
 								echo '<p class="description">' . esc_html($field['help']) . '</p>';
 							}
 							if (!empty($field['secret'])) {
-								echo '<p class="description rempart-secret-note" hidden>Laissez vide pour garder la valeur enregistrée.</p>';
+								echo '<p class="description rempart-secret-note" hidden>' . esc_html__('Laissez vide pour garder la valeur enregistrée.', 'rempart-backup') . '</p>';
 							}
 							echo '</div></div>';
 						}
@@ -913,19 +960,19 @@ class Rempart_Admin {
 					}
 					?>
 					<div class="rempart-row">
-						<div class="rempart-row-label">Prévenir en cas de</div>
+						<div class="rempart-row-label"><?php echo esc_html__('Prévenir en cas de', 'rempart-backup'); ?></div>
 						<div class="rempart-checks">
-							<label><input type="checkbox" name="on_success" value="1" checked> Réussite</label>
-							<label><input type="checkbox" name="on_failure" value="1" checked> Échec</label>
+							<label><input type="checkbox" name="on_success" value="1" checked> <?php echo esc_html__('Réussite', 'rempart-backup'); ?></label>
+							<label><input type="checkbox" name="on_failure" value="1" checked> <?php echo esc_html__('Échec', 'rempart-backup'); ?></label>
 						</div>
 					</div>
 					<div class="rempart-row">
-						<div class="rempart-row-label">État</div>
-						<label><input type="checkbox" name="enabled" value="1" checked> Actif</label>
+						<div class="rempart-row-label"><?php echo esc_html__('État', 'rempart-backup'); ?></div>
+						<label><input type="checkbox" name="enabled" value="1" checked> <?php echo esc_html__('Actif', 'rempart-backup'); ?></label>
 					</div>
 					<p>
-						<button type="submit" class="button button-primary">Enregistrer</button>
-						<button type="button" class="button" id="rempart-ch-cancel">Annuler</button>
+						<button type="submit" class="button button-primary"><?php echo esc_html__('Enregistrer', 'rempart-backup'); ?></button>
+						<button type="button" class="button" id="rempart-ch-cancel"><?php echo esc_html__('Annuler', 'rempart-backup'); ?></button>
 					</p>
 				</form>
 			</div>
@@ -937,73 +984,73 @@ class Rempart_Admin {
 		?>
 		<section id="tab-help" class="rempart-tab" hidden>
 			<div class="rempart-card">
-				<h2>Vérifier mon site</h2>
-				<p>Contrôle ce dont les sauvegardes ont besoin sur votre hébergement.</p>
-				<p><button type="button" class="button button-primary" id="rempart-diagnose">Lancer la vérification</button></p>
+				<h2><?php echo esc_html__('Vérifier mon site', 'rempart-backup'); ?></h2>
+				<p><?php echo esc_html__('Contrôle ce dont les sauvegardes ont besoin sur votre hébergement.', 'rempart-backup'); ?></p>
+				<p><button type="button" class="button button-primary" id="rempart-diagnose"><?php echo esc_html__('Lancer la vérification', 'rempart-backup'); ?></button></p>
 				<ul id="rempart-diagnose-list" class="rempart-checklist"></ul>
 			</div>
 			<?php $litespeed = Rempart_Litespeed::status(); ?>
 			<div class="rempart-card" id="rempart-litespeed">
-				<h2>Sauvegarde qui se bloque sans erreur (LiteSpeed)</h2>
-				<p>Sur certains serveurs LiteSpeed, une sauvegarde est tuée en route, sans message : elle reste coincée à un pourcentage fixe. La parade est une règle « noabort » dans le fichier .htaccess du site.</p>
+				<h2><?php echo esc_html__('Sauvegarde qui se bloque sans erreur (LiteSpeed)', 'rempart-backup'); ?></h2>
+				<p><?php echo esc_html__('Sur certains serveurs LiteSpeed, une sauvegarde est tuée en route, sans message : elle reste coincée à un pourcentage fixe. La parade est une règle « noabort » dans le fichier .htaccess du site.', 'rempart-backup'); ?></p>
 				<p class="rempart-cron-status rempart-cron-<?php echo $litespeed[0] === 'warning' ? 'warning' : ($litespeed[0] === 'ok' ? 'ok' : 'info'); ?>" id="rempart-litespeed-status"><?php echo esc_html($litespeed[1]); ?></p>
 				<p class="rempart-inline">
-					<button type="button" class="button button-primary rempart-litespeed" data-what="1">Ajouter la règle</button>
-					<button type="button" class="button rempart-litespeed" data-what="2">Essayer l'autre forme</button>
-					<button type="button" class="button rempart-litespeed" data-what="remove">Retirer la règle</button>
+					<button type="button" class="button button-primary rempart-litespeed" data-what="1"><?php echo esc_html__('Ajouter la règle', 'rempart-backup'); ?></button>
+					<button type="button" class="button rempart-litespeed" data-what="2"><?php echo esc_html__('Essayer l\'autre forme', 'rempart-backup'); ?></button>
+					<button type="button" class="button rempart-litespeed" data-what="remove"><?php echo esc_html__('Retirer la règle', 'rempart-backup'); ?></button>
 				</p>
-				<p class="description">La règle est ajoutée au début du .htaccess, après en avoir gardé une copie. Si le site se met à planter à cause d'elle, elle est retirée toute seule. L'autre forme sert quand la première reste sans effet.</p>
+				<p class="description"><?php echo esc_html__('La règle est ajoutée au début du .htaccess, après en avoir gardé une copie. Si le site se met à planter à cause d\'elle, elle est retirée toute seule. L\'autre forme sert quand la première reste sans effet.', 'rempart-backup'); ?></p>
 			</div>
 			<div class="rempart-card">
-				<h2>Déplacer ou cloner un site</h2>
+				<h2><?php echo esc_html__('Déplacer ou cloner un site', 'rempart-backup'); ?></h2>
 				<ol>
-					<li>Sur le site d'origine, créez une sauvegarde complète et téléchargez-la, ou gardez-la sur un emplacement distant.</li>
-					<li>Sur le nouveau site, installez WordPress puis ce plugin.</li>
-					<li>Dans Historique, importez le fichier, ou ajoutez le même emplacement et cliquez sur Synchroniser.</li>
-					<li>Cliquez sur Restaurer. L'adresse du site est remplacée partout dans la base de données ; la connexion à la base et les règles du serveur du nouveau site sont conservées.</li>
+					<li><?php echo esc_html__('Sur le site d\'origine, créez une sauvegarde complète et téléchargez-la, ou gardez-la sur un emplacement distant.', 'rempart-backup'); ?></li>
+					<li><?php echo esc_html__('Sur le nouveau site, installez WordPress puis ce plugin.', 'rempart-backup'); ?></li>
+					<li><?php echo esc_html__('Dans Historique, importez le fichier, ou ajoutez le même emplacement et cliquez sur Synchroniser.', 'rempart-backup'); ?></li>
+					<li><?php echo esc_html__('Cliquez sur Restaurer. L\'adresse du site est remplacée partout dans la base de données ; la connexion à la base et les règles du serveur du nouveau site sont conservées.', 'rempart-backup'); ?></li>
 				</ol>
-				<p class="description">Les sauvegardes faites avec le plugin Backuply peuvent aussi être importées et restaurées ici.</p>
+				<p class="description"><?php echo esc_html__('Les sauvegardes faites avec le plugin Backuply peuvent aussi être importées et restaurées ici.', 'rempart-backup'); ?></p>
 			</div>
 			<div class="rempart-card">
-				<h2>Connecter un compte cloud</h2>
-				<p>Google Drive, OneDrive, Dropbox et pCloud demandent une application à votre nom : c'est gratuit, et vos autorisations ne passent par aucun service tiers. L'adresse de retour à déclarer est :</p>
+				<h2><?php echo esc_html__('Connecter un compte cloud', 'rempart-backup'); ?></h2>
+				<p><?php echo esc_html__('Google Drive, OneDrive, Dropbox et pCloud demandent une application à votre nom : c\'est gratuit, et vos autorisations ne passent par aucun service tiers. L\'adresse de retour à déclarer est :', 'rempart-backup'); ?></p>
 				<p><code class="rempart-code"><?php echo esc_html(admin_url('admin.php?page=rempart-backup')); ?></code></p>
 				<details class="rempart-more"><summary>Google Drive</summary><ol>
-					<li>Sur console.cloud.google.com, créez un projet et activez l'API Google Drive.</li>
-					<li>Configurez l'écran de consentement OAuth, avec votre adresse comme utilisateur de test.</li>
-					<li>Créez des identifiants « ID client OAuth », de type Application Web, avec l'adresse de retour ci-dessus.</li>
-					<li>Copiez l'identifiant et le secret dans le formulaire de l'emplacement.</li>
-				</ol><p class="description">Tant que l'application reste en mode Test, Google retire son autorisation au bout de 7 jours. Publiez-la pour une connexion durable.</p></details>
-				<details class="rempart-more"><summary>Microsoft OneDrive</summary><ol>
-					<li>Sur entra.microsoft.com, ouvrez « Inscriptions d'applications » et créez-en une pour tous les comptes Microsoft.</li>
-					<li>Ajoutez l'adresse de retour ci-dessus, de type Web.</li>
-					<li>Dans « Certificats et secrets », créez un secret. Copiez sa valeur et l'ID d'application dans le formulaire.</li>
+					<li><?php echo esc_html__('Sur console.cloud.google.com, créez un projet et activez l\'API Google Drive.', 'rempart-backup'); ?></li>
+					<li><?php echo esc_html__('Configurez l\'écran de consentement OAuth, avec votre adresse comme utilisateur de test.', 'rempart-backup'); ?></li>
+					<li><?php echo esc_html__('Créez des identifiants « ID client OAuth », de type Application Web, avec l\'adresse de retour ci-dessus.', 'rempart-backup'); ?></li>
+					<li><?php echo esc_html__('Copiez l\'identifiant et le secret dans le formulaire de l\'emplacement.', 'rempart-backup'); ?></li>
+				</ol><p class="description"><?php echo esc_html__('Tant que l\'application reste en mode Test, Google retire son autorisation au bout de 7 jours. Publiez-la pour une connexion durable.', 'rempart-backup'); ?></p></details>
+				<details class="rempart-more"><summary><?php echo esc_html__('Microsoft OneDrive', 'rempart-backup'); ?></summary><ol>
+					<li><?php echo esc_html__('Sur entra.microsoft.com, ouvrez « Inscriptions d\'applications » et créez-en une pour tous les comptes Microsoft.', 'rempart-backup'); ?></li>
+					<li><?php echo esc_html__('Ajoutez l\'adresse de retour ci-dessus, de type Web.', 'rempart-backup'); ?></li>
+					<li><?php echo esc_html__('Dans « Certificats et secrets », créez un secret. Copiez sa valeur et l\'ID d\'application dans le formulaire.', 'rempart-backup'); ?></li>
 				</ol></details>
 				<details class="rempart-more"><summary>Dropbox</summary><ol>
-					<li>Sur dropbox.com/developers/apps, créez une application avec l'accès « Scoped », type « Full Dropbox ».</li>
-					<li>Dans Permissions, cochez files.content.read, files.content.write et files.metadata.read.</li>
-					<li>Dans Settings, ajoutez l'adresse de retour puis copiez App key et App secret dans le formulaire.</li>
+					<li><?php echo esc_html__('Sur dropbox.com/developers/apps, créez une application avec l\'accès « Scoped », type « Full Dropbox ».', 'rempart-backup'); ?></li>
+					<li><?php echo esc_html__('Dans Permissions, cochez files.content.read, files.content.write et files.metadata.read.', 'rempart-backup'); ?></li>
+					<li><?php echo esc_html__('Dans Settings, ajoutez l\'adresse de retour puis copiez App key et App secret dans le formulaire.', 'rempart-backup'); ?></li>
 				</ol></details>
 				<details class="rempart-more"><summary>pCloud</summary><ol>
-					<li>Sur docs.pcloud.com/my_apps, créez une application avec l'accès aux fichiers.</li>
-					<li>Ajoutez l'adresse de retour puis copiez Client ID et Client secret dans le formulaire.</li>
+					<li><?php echo esc_html__('Sur docs.pcloud.com/my_apps, créez une application avec l\'accès aux fichiers.', 'rempart-backup'); ?></li>
+					<li><?php echo esc_html__('Ajoutez l\'adresse de retour puis copiez Client ID et Client secret dans le formulaire.', 'rempart-backup'); ?></li>
 				</ol></details>
 			</div>
 			<div class="rempart-card">
-				<h2>Recevoir les notifications sur son téléphone ou un salon</h2>
-				<p>Dans l'onglet Notifications, ajoutez un e-mail ou un service, collez l'adresse ou le jeton qu'il vous donne, puis cliquez sur « Envoyer un test ».</p>
+				<h2><?php echo esc_html__('Recevoir les notifications sur son téléphone ou un salon', 'rempart-backup'); ?></h2>
+				<p><?php echo esc_html__('Dans l\'onglet Notifications, ajoutez un e-mail ou un service, collez l\'adresse ou le jeton qu\'il vous donne, puis cliquez sur « Envoyer un test ».', 'rempart-backup'); ?></p>
 				<ul class="rempart-bullets">
-					<li><strong>Pushover</strong> : le jeton d'application se crée sur pushover.net/apps, la clé utilisateur est sur votre tableau de bord.</li>
-					<li><strong>Gotify</strong> : adresse de votre serveur, puis un jeton d'application créé dans son interface.</li>
-					<li><strong>ntfy</strong> : choisissez un sujet long et secret, abonnez-vous-y dans l'application ntfy.</li>
-					<li><strong>Telegram</strong> : créez un bot avec @BotFather, écrivez-lui, puis relevez l'identifiant de la discussion.</li>
-					<li><strong>Discord</strong> : réglages du salon, Intégrations, Webhooks, Copier l'URL.</li>
-					<li><strong>Slack</strong> : créez un « Incoming Webhook » dans votre espace de travail.</li>
-					<li><strong>Webhook</strong> : n'importe quelle adresse qui accepte un POST en JSON (Zapier, n8n, Home Assistant...).</li>
+					<li><strong>Pushover</strong> <?php echo esc_html__(': le jeton d\'application se crée sur pushover.net/apps, la clé utilisateur est sur votre tableau de bord.', 'rempart-backup'); ?></li>
+					<li><strong>Gotify</strong> <?php echo esc_html__(': adresse de votre serveur, puis un jeton d\'application créé dans son interface.', 'rempart-backup'); ?></li>
+					<li><strong>ntfy</strong> <?php echo esc_html__(': choisissez un sujet long et secret, abonnez-vous-y dans l\'application ntfy.', 'rempart-backup'); ?></li>
+					<li><strong>Telegram</strong> <?php echo esc_html__(': créez un bot avec @BotFather, écrivez-lui, puis relevez l\'identifiant de la discussion.', 'rempart-backup'); ?></li>
+					<li><strong>Discord</strong> <?php echo esc_html__(': réglages du salon, Intégrations, Webhooks, Copier l\'URL.', 'rempart-backup'); ?></li>
+					<li><strong>Slack</strong> <?php echo esc_html__(': créez un « Incoming Webhook » dans votre espace de travail.', 'rempart-backup'); ?></li>
+					<li><strong>Webhook</strong> <?php echo esc_html__(': n\'importe quelle adresse qui accepte un POST en JSON (Zapier, n8n, Home Assistant...).', 'rempart-backup'); ?></li>
 				</ul>
 			</div>
 			<div class="rempart-card">
-				<h2>En ligne de commande</h2>
+				<h2><?php echo esc_html__('En ligne de commande', 'rempart-backup'); ?></h2>
 				<pre class="rempart-pre">wp rempart backup [--files-only] [--db-only] [--location=&lt;id&gt;] [--note=&lt;texte&gt;]
 wp rempart list
 wp rempart locations
@@ -1018,50 +1065,50 @@ wp rempart delete &lt;nom&gt;</pre>
 		?>
 		<div class="rempart-modal" id="rempart-progress" hidden role="dialog" aria-modal="true" aria-labelledby="rempart-progress-title">
 			<div class="rempart-modal-box">
-				<h2 id="rempart-progress-title">Sauvegarde en cours</h2>
+				<h2 id="rempart-progress-title"><?php echo esc_html__('Sauvegarde en cours', 'rempart-backup'); ?></h2>
 				<div class="rempart-bar"><i id="rempart-progress-bar"></i></div>
 				<p class="rempart-percent"><span id="rempart-progress-percent">0</span> %</p>
-				<p class="rempart-hint" id="rempart-progress-hint">Vous pouvez fermer cette page, sauf si l'onglet Aide indique que le site ne peut pas s'appeler lui-même.</p>
+				<p class="rempart-hint" id="rempart-progress-hint"><?php echo esc_html__('Vous pouvez fermer cette page, sauf si l\'onglet Aide indique que le site ne peut pas s\'appeler lui-même.', 'rempart-backup'); ?></p>
 				<div class="rempart-log" id="rempart-progress-log" tabindex="0"></div>
 				<p class="rempart-modal-actions">
-					<button type="button" class="button" id="rempart-progress-stop">Arrêter</button>
-					<button type="button" class="button" id="rempart-progress-force" hidden>Forcer l'arrêt</button>
-					<button type="button" class="button button-primary" id="rempart-progress-close" hidden>Fermer</button>
+					<button type="button" class="button" id="rempart-progress-stop"><?php echo esc_html__('Arrêter', 'rempart-backup'); ?></button>
+					<button type="button" class="button" id="rempart-progress-force" hidden><?php echo esc_html__('Forcer l\'arrêt', 'rempart-backup'); ?></button>
+					<button type="button" class="button button-primary" id="rempart-progress-close" hidden><?php echo esc_html__('Fermer', 'rempart-backup'); ?></button>
 				</p>
 			</div>
 		</div>
 
 		<div class="rempart-modal" id="rempart-restore-box" hidden role="dialog" aria-modal="true" aria-labelledby="rempart-restore-title">
 			<div class="rempart-modal-box">
-				<h2 id="rempart-restore-title">Restaurer cette sauvegarde</h2>
+				<h2 id="rempart-restore-title"><?php echo esc_html__('Restaurer cette sauvegarde', 'rempart-backup'); ?></h2>
 				<p class="rempart-checks">
-					<label id="rempart-restore-files-wrap"><input type="checkbox" id="rempart-restore-files" checked> Fichiers du site</label>
-					<label id="rempart-restore-db-wrap"><input type="checkbox" id="rempart-restore-db" checked> Base de données</label>
+					<label id="rempart-restore-files-wrap"><input type="checkbox" id="rempart-restore-files" checked> <?php echo esc_html__('Fichiers du site', 'rempart-backup'); ?></label>
+					<label id="rempart-restore-db-wrap"><input type="checkbox" id="rempart-restore-db" checked> <?php echo esc_html__('Base de données', 'rempart-backup'); ?></label>
 				</p>
 				<p class="rempart-migrate" id="rempart-restore-migrate" hidden></p>
-				<p class="rempart-warn-box"><strong>Le contenu actuel sera remplacé</strong> par celui de cette sauvegarde. Le site sera en maintenance pendant l'opération.</p>
-				<p><label><input type="checkbox" id="rempart-restore-confirm"> J'ai compris</label></p>
+				<p class="rempart-warn-box"><strong><?php echo esc_html__('Le contenu actuel sera remplacé', 'rempart-backup'); ?></strong> <?php echo esc_html__('par celui de cette sauvegarde. Le site sera en maintenance pendant l\'opération.', 'rempart-backup'); ?></p>
+				<p><label><input type="checkbox" id="rempart-restore-confirm"> <?php echo esc_html__('J\'ai compris', 'rempart-backup'); ?></label></p>
 				<p class="rempart-modal-actions">
-					<button type="button" class="button" id="rempart-restore-cancel">Annuler</button>
-					<button type="button" class="button button-primary" id="rempart-restore-go" disabled>Restaurer</button>
+					<button type="button" class="button" id="rempart-restore-cancel"><?php echo esc_html__('Annuler', 'rempart-backup'); ?></button>
+					<button type="button" class="button button-primary" id="rempart-restore-go" disabled><?php echo esc_html__('Restaurer', 'rempart-backup'); ?></button>
 				</p>
 			</div>
 		</div>
 
 		<div class="rempart-modal" id="rempart-log-box" hidden role="dialog" aria-modal="true" aria-labelledby="rempart-log-title">
 			<div class="rempart-modal-box">
-				<h2 id="rempart-log-title">Journal</h2>
+				<h2 id="rempart-log-title"><?php echo esc_html__('Journal', 'rempart-backup'); ?></h2>
 				<div class="rempart-log" id="rempart-log-content" tabindex="0"></div>
-				<p class="rempart-modal-actions"><button type="button" class="button button-primary" id="rempart-log-close">Fermer</button></p>
+				<p class="rempart-modal-actions"><button type="button" class="button button-primary" id="rempart-log-close"><?php echo esc_html__('Fermer', 'rempart-backup'); ?></button></p>
 			</div>
 		</div>
 
 		<div class="rempart-modal" id="rempart-tree-box" hidden role="dialog" aria-modal="true" aria-labelledby="rempart-tree-title">
 			<div class="rempart-modal-box">
-				<h2 id="rempart-tree-title">Choisir ce qu'il faut exclure</h2>
+				<h2 id="rempart-tree-title"><?php echo esc_html__('Choisir ce qu\'il faut exclure', 'rempart-backup'); ?></h2>
 				<ul class="rempart-tree" id="rempart-tree-root"></ul>
 				<p class="rempart-modal-actions">
-					<button type="button" class="button" id="rempart-tree-close">Fermer</button>
+					<button type="button" class="button" id="rempart-tree-close"><?php echo esc_html__('Fermer', 'rempart-backup'); ?></button>
 				</p>
 			</div>
 		</div>

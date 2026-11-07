@@ -9,6 +9,7 @@
  * License: LGPL v2.1
  * License URI: http://www.gnu.org/licenses/lgpl-2.1.html
  * Text Domain: rempart-backup
+ * Domain Path: /languages
  */
 
 if (!defined('ABSPATH')) {
@@ -58,6 +59,22 @@ require_once REMPART_DIR . '/includes/class-job.php';
 require_once REMPART_DIR . '/includes/class-restore.php';
 require_once REMPART_DIR . '/includes/class-schedule.php';
 require_once REMPART_DIR . '/includes/class-updates.php';
+
+/**
+ * The plugin is written in French. Sites in French get the texts as they are; every other language
+ * gets the English translation (languages/rempart-backup-en_US.mo), whatever the English variant.
+ * The file is registered for the site's own locale, which is what WordPress looks translations up by.
+ */
+add_action('plugins_loaded', 'rempart_load_translations', 0);
+add_action('change_locale', 'rempart_load_translations');
+function rempart_load_translations() {
+	unload_textdomain('rempart-backup');
+	$locale = determine_locale();
+	if (strpos((string) $locale, 'fr') === 0) {
+		return;
+	}
+	load_textdomain('rempart-backup', REMPART_DIR . '/languages/rempart-backup-en_US.mo', $locale);
+}
 
 register_activation_hook(__FILE__, 'rempart_activate');
 register_deactivation_hook(__FILE__, 'rempart_deactivate');
