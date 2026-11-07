@@ -102,7 +102,6 @@ class Rempart_Storage_Webdav extends Rempart_Storage {
 		curl_exec($curl);
 		$code = (int) curl_getinfo($curl, CURLINFO_HTTP_CODE);
 		$error = curl_error($curl);
-		curl_close($curl);
 		fclose($source);
 		if ($error !== '') {
 			throw new RuntimeException('Envoi WebDAV interrompu : ' . $error);

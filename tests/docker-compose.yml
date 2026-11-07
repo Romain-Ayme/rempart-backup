@@ -30,6 +30,8 @@ services:
 
   ftps:
     image: delfer/alpine-ftp-server
+    # vsftpd s'arrête parfois au démarrage (« process has died ») : on le relance.
+    restart: always
     depends_on:
       tls-init:
         condition: service_completed_successfully
