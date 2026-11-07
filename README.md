@@ -7,6 +7,10 @@ Plugin WordPress de sauvegarde, restauration, migration et clonage, **sans licen
 
 ## Fonctionnalités
 
+### Langues
+
+Le plugin est écrit en français. Un site en français affiche les textes tels qu'ils sont dans le code ; tous les autres sites (anglais et autres langues) reçoivent la traduction anglaise, `languages/rempart-backup-en_US.mo`. Les textes sont traduisibles avec les fonctions WordPress habituelles (`__()`, `esc_html__()`, etc.), domaine `rempart-backup`.
+
 ### Sauvegarde
 
 - Fichiers, base de données, ou les deux.
@@ -100,6 +104,7 @@ npm run test:destinations    # aller-retour (petit fichier, 5 Mo) sur chaque des
 npm run test:notifications   # un message par type de canal, e-mail compris
 npm run test:backups         # sauvegardes complètes : locale, SFTP, refus, échec, arrêt, modes de fichiers
 npm run test:errors          # erreurs provoquées (voir ci-dessous)
+npm run test:i18n            # traductions : anglais, français, fichiers à jour avec le code
 npm run services:down
 npm run env:destroy
 ```
@@ -114,6 +119,16 @@ Choisir les versions de PHP et de WordPress avant `npm run env:start` :
 WP_ENV_PHP_VERSION=8.4
 WP_ENV_CORE=https://wordpress.org/wordpress-7.1.4.zip
 ```
+
+### Traductions
+
+Les textes sont écrits en français dans le code. Après avoir ajouté ou modifié un texte :
+
+1. `npm run i18n:build` (avec `npm run env:start` lancé) régénère `languages/rempart-backup.pot` et recompile les `.mo`.
+2. Ajouter la traduction anglaise du nouveau texte dans `languages/rempart-backup-en_US.po` (un texte sans traduction ou des `%s` qui ne correspondent pas font échouer `npm run test:i18n`).
+3. `npm run i18n:build` une seconde fois pour recompiler le `.mo`.
+
+Les textes du script de l'administration (`assets/admin.js`) passent par `T('texte')` et la liste `js_strings()` de `includes/class-admin.php`. Le programme de restauration n'a pas WordPress : ses messages utilisent `__()` et sont traduits au lancement de la restauration.
 
 ### Intégration continue (GitHub Actions)
 

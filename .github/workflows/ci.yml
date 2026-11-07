@@ -135,6 +135,9 @@ jobs:
       - name: Sauvegardes complètes (réussite, échec, arrêt)
         run: npm run test:backups
 
+      - name: Traductions (anglais, français, fichiers à jour)
+        run: npm run test:i18n
+
       - name: Erreurs (identifiants, réseau coupé, tâche bloquée, restauration)
         run: npm run test:errors
 

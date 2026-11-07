@@ -66,9 +66,9 @@ class Rempart_CLI {
 		} while ($state && empty($state['finished']));
 
 		if (!$state || $state['status'] !== 'success') {
-			WP_CLI::error('La tâche n\'a pas abouti : ' . implode(' ', (array) ($state['errors'] ?? array())));
+			WP_CLI::error(sprintf(__('La tâche n\'a pas abouti : %s', 'rempart-backup'), implode(' ', (array) ($state['errors'] ?? array()))));
 		}
-		WP_CLI::success('Terminé.');
+		WP_CLI::success(__('Terminé.', 'rempart-backup'));
 	}
 
 	/**
@@ -134,7 +134,7 @@ class Rempart_CLI {
 		} catch (Exception $e) {
 			WP_CLI::error($e->getMessage());
 		}
-		WP_CLI::success('Sauvegarde supprimée.');
+		WP_CLI::success(__('Sauvegarde supprimée.', 'rempart-backup'));
 	}
 
 	/**
@@ -155,7 +155,7 @@ class Rempart_CLI {
 	 * : Don't ask for confirmation.
 	 */
 	public function restore($args, $assoc) {
-		WP_CLI::confirm('Le contenu actuel du site sera remplacé. Continuer ?', $assoc);
+		WP_CLI::confirm(__('Le contenu actuel du site sera remplacé. Continuer ?', 'rempart-backup'), $assoc);
 		try {
 			$result = Rempart_Restore::start($args[0], array('files' => empty($assoc['db-only']), 'db' => empty($assoc['files-only'])));
 		} catch (Exception $e) {
@@ -173,11 +173,11 @@ class Rempart_CLI {
 			} while ($state && !$finished);
 			$restore = Rempart_Restore::current();
 			if (!$restore) {
-				WP_CLI::error('La sauvegarde n\'a pas pu être récupérée.');
+				WP_CLI::error(__('La sauvegarde n\'a pas pu être récupérée.', 'rempart-backup'));
 			}
 			$result = array('url' => $restore['runner_url'], 'key' => $restore['key']);
 		}
-		WP_CLI::log('Restauration en cours…');
+		WP_CLI::log(__('Restauration en cours…', 'rempart-backup'));
 		$restore = Rempart_Restore::current();
 		$from = 0;
 		// The program runs right here: it needs no web server, and its progress is read from
@@ -194,10 +194,10 @@ class Rempart_CLI {
 				WP_CLI::log($line['m']);
 			}
 			if (!$current) {
-				WP_CLI::error('Le programme de restauration a disparu.');
+				WP_CLI::error(__('Le programme de restauration a disparu.', 'rempart-backup'));
 			}
 			if ($exit !== 0 && empty($current['finished'])) {
-				WP_CLI::error('Le programme de restauration s\'est interrompu : ' . implode(' ', $output));
+				WP_CLI::error(sprintf(__('Le programme de restauration s\'est interrompu : %s', 'rempart-backup'), implode(' ', $output)));
 			}
 		} while (empty($current['finished']));
 		$status = $current['status'];
@@ -206,9 +206,9 @@ class Rempart_CLI {
 			Rempart_Restore::acknowledge();
 		}
 		if ($status === 'success') {
-			WP_CLI::success('Restauration terminée.');
+			WP_CLI::success(__('Restauration terminée.', 'rempart-backup'));
 		} else {
-			WP_CLI::error('La restauration n\'a pas abouti.');
+			WP_CLI::error(__('La restauration n\'a pas abouti.', 'rempart-backup'));
 		}
 	}
 }

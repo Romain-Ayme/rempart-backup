@@ -17,6 +17,8 @@
 		"test:destinations": "node tools/connect-network.js && npx --yes @wordpress/env@12 run cli wp eval-file wp-content/plugins/rempart-backup/tests/integration/destinations.php",
 		"test:notifications": "node tools/connect-network.js && npx --yes @wordpress/env@12 run cli wp eval-file wp-content/plugins/rempart-backup/tests/integration/notifications.php",
 		"test:backups": "node tools/connect-network.js && npx --yes @wordpress/env@12 run cli wp eval-file wp-content/plugins/rempart-backup/tests/integration/backups.php",
+		"i18n:build": "npx --yes @wordpress/env@12 run cli wp i18n make-pot wp-content/plugins/rempart-backup wp-content/plugins/rempart-backup/languages/rempart-backup.pot --slug=rempart-backup --domain=rempart-backup --exclude=vendor,tests,tools,dist,node_modules,languages && npx --yes @wordpress/env@12 run cli wp i18n make-mo wp-content/plugins/rempart-backup/languages",
+		"test:i18n": "node tools/connect-network.js && npx --yes @wordpress/env@12 run cli wp eval-file wp-content/plugins/rempart-backup/tests/integration/i18n.php",
 		"test:errors": "node tools/connect-network.js && npx --yes @wordpress/env@12 run cli wp eval-file wp-content/plugins/rempart-backup/tests/integration/errors.php"
 	}
 }

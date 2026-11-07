@@ -21,7 +21,7 @@ class Rempart_Ajax {
 	public static function guard() {
 		check_ajax_referer('rempart');
 		if (!current_user_can('manage_options')) {
-			wp_send_json_error('Vous n\'avez pas les droits nécessaires.', 403);
+			wp_send_json_error(__('Vous n\'avez pas les droits nécessaires.', 'rempart-backup'), 403);
 		}
 		$action = substr(current_action(), strlen('wp_ajax_rempart_'));
 		try {
@@ -124,17 +124,17 @@ class Rempart_Ajax {
 	private static function do_test_location() {
 		$location = Rempart_Locations::get(self::post('id'));
 		if (!$location) {
-			throw new RuntimeException('Cet emplacement n\'existe plus.');
+			throw new RuntimeException(__('Cet emplacement n\'existe plus.', 'rempart-backup'));
 		}
 		Rempart_Storage::make($location)->test();
-		return 'Connexion réussie, le dossier est accessible en écriture.';
+		return __('Connexion réussie, le dossier est accessible en écriture.', 'rempart-backup');
 	}
 
 	private static function do_quota() {
 		$id = self::post('id');
 		$location = Rempart_Locations::get($id);
 		if (!$location) {
-			throw new RuntimeException('Cet emplacement n\'existe plus.');
+			throw new RuntimeException(__('Cet emplacement n\'existe plus.', 'rempart-backup'));
 		}
 		$quota = Rempart_Storage::make($location)->quota();
 		Rempart_Locations::set_quota($id, $quota);
@@ -148,7 +148,7 @@ class Rempart_Ajax {
 		$type = self::post('type');
 		$pattern = self::post('pattern');
 		if (!in_array($type, array('exact', 'extension', 'beginning', 'end', 'anywhere'), true) || $pattern === '') {
-			throw new RuntimeException('Règle incomplète.');
+			throw new RuntimeException(__('Règle incomplète.', 'rempart-backup'));
 		}
 		if ($type === 'exact') {
 			$pattern = trim(str_replace(array('..', '\\'), array('', '/'), $pattern), '/');
@@ -158,7 +158,7 @@ class Rempart_Ajax {
 		}
 		$excludes = rempart_excludes();
 		if (in_array($pattern, $excludes[$type], true)) {
-			throw new RuntimeException('Cette règle existe déjà.');
+			throw new RuntimeException(__('Cette règle existe déjà.', 'rempart-backup'));
 		}
 		$key = wp_generate_password(8, false);
 		$excludes[$type][$key] = $pattern;
@@ -171,7 +171,7 @@ class Rempart_Ajax {
 		$key = self::post('key');
 		$excludes = rempart_excludes();
 		if (!isset($excludes[$type][$key])) {
-			throw new RuntimeException('Règle introuvable.');
+			throw new RuntimeException(__('Règle introuvable.', 'rempart-backup'));
 		}
 		unset($excludes[$type][$key]);
 		update_option('rempart_excludes', $excludes, false);
@@ -204,11 +204,11 @@ class Rempart_Ajax {
 	private static function do_upload_chunk() {
 		$file_name = self::post('file_name');
 		if (!preg_match('/\.tar\.gz$/i', $file_name)) {
-			throw new RuntimeException('Ce fichier n\'est pas une sauvegarde : il doit se terminer par .tar.gz');
+			throw new RuntimeException(__('Ce fichier n\'est pas une sauvegarde : il doit se terminer par .tar.gz', 'rempart-backup'));
 		}
 		$name = rempart_safe_backup_name($file_name);
 		if ($name === '') {
-			throw new RuntimeException('Nom de fichier invalide.');
+			throw new RuntimeException(__('Nom de fichier invalide.', 'rempart-backup'));
 		}
 		$dir = rempart_folder('backups');
 		$working = $dir . '/.' . $name . '.tar.gz';
@@ -219,16 +219,16 @@ class Rempart_Ajax {
 			return true;
 		}
 		if (file_exists($final)) {
-			throw new RuntimeException('Un fichier du même nom existe déjà.');
+			throw new RuntimeException(__('Un fichier du même nom existe déjà.', 'rempart-backup'));
 		}
 		$number = (int) self::post('chunk');
 		$total = (int) self::post('total');
 		if (empty($_FILES['file']['tmp_name']) || !is_uploaded_file($_FILES['file']['tmp_name'])) {
-			throw new RuntimeException('Le morceau de fichier n\'est pas arrivé. Le serveur limite peut-être la taille des envois.');
+			throw new RuntimeException(__('Le morceau de fichier n\'est pas arrivé. Le serveur limite peut-être la taille des envois.', 'rempart-backup'));
 		}
 		$data = file_get_contents($_FILES['file']['tmp_name']);
 		if (strlen($data) > REMPART_UPLOAD_CHUNK || ($number < $total && strlen($data) !== REMPART_UPLOAD_CHUNK)) {
-			throw new RuntimeException('Morceau de fichier de taille inattendue.');
+			throw new RuntimeException(__('Morceau de fichier de taille inattendue.', 'rempart-backup'));
 		}
 		$handle = fopen($working, 'c+b');
 		fseek($handle, ($number - 1) * REMPART_UPLOAD_CHUNK);
@@ -243,13 +243,13 @@ class Rempart_Ajax {
 		fclose($probe);
 		if ($magic !== "\x1f\x8b") {
 			@unlink($working);
-			throw new RuntimeException('Ce fichier n\'est pas une archive .tar.gz valide.');
+			throw new RuntimeException(__('Ce fichier n\'est pas une archive .tar.gz valide.', 'rempart-backup'));
 		}
 		rename($working, $final);
 		$info = Rempart_Backups::read_archive_info($final, $name);
 		if (!$info) {
 			@unlink($final);
-			throw new RuntimeException('Cette archive est illisible.');
+			throw new RuntimeException(__('Cette archive est illisible.', 'rempart-backup'));
 		}
 		Rempart_Backups::save_info($info);
 		return array('done' => true, 'name' => $name);
@@ -273,7 +273,7 @@ class Rempart_Ajax {
 
 	private static function do_test_channel() {
 		Rempart_Notifications::test(self::post('id'));
-		return 'Message de test envoyé : vérifiez qu\'il est bien arrivé.';
+		return __('Message de test envoyé : vérifiez qu\'il est bien arrivé.', 'rempart-backup');
 	}
 
 	/** Adds (form 1 or 2) or removes the LiteSpeed rule in .htaccess. */
@@ -284,7 +284,7 @@ class Rempart_Ajax {
 		} elseif ($what === '1' || $what === '2') {
 			$result = Rempart_Litespeed::apply((int) $what);
 		} else {
-			throw new RuntimeException('Action inconnue.');
+			throw new RuntimeException(__('Action inconnue.', 'rempart-backup'));
 		}
 		$status = Rempart_Litespeed::status();
 		return array('level' => $result[0], 'text' => $result[1], 'status' => $status[1], 'present' => $status[2]);
@@ -301,17 +301,17 @@ class Rempart_Ajax {
 		$add = function ($label, $ok, $detail) use (&$checks) {
 			$checks[] = array('label' => $label, 'ok' => (bool) $ok, 'detail' => $detail);
 		};
-		$add('Version de PHP', version_compare(PHP_VERSION, '8.3', '>='), PHP_VERSION);
-		$add('Module zlib (compression)', function_exists('inflate_init'), function_exists('inflate_init') ? 'Présent' : 'Absent : les sauvegardes sont impossibles');
-		$add('Module cURL (WebDAV)', function_exists('curl_init'), function_exists('curl_init') ? 'Présent' : 'Absent : l\'envoi WebDAV est impossible');
-		$add('Dossier de travail', is_writable(REMPART_ROOT), is_writable(REMPART_ROOT) ? 'Accessible en écriture' : 'Impossible d\'écrire dans ' . REMPART_ROOT);
+		$add(__('Version de PHP', 'rempart-backup'), version_compare(PHP_VERSION, '8.3', '>='), PHP_VERSION);
+		$add(__('Module zlib (compression)', 'rempart-backup'), function_exists('inflate_init'), function_exists('inflate_init') ? __('Présent', 'rempart-backup') : __('Absent : les sauvegardes sont impossibles', 'rempart-backup'));
+		$add(__('Module cURL (WebDAV)', 'rempart-backup'), function_exists('curl_init'), function_exists('curl_init') ? __('Présent', 'rempart-backup') : __('Absent : l\'envoi WebDAV est impossible', 'rempart-backup'));
+		$add(__('Dossier de travail', 'rempart-backup'), is_writable(REMPART_ROOT), is_writable(REMPART_ROOT) ? __('Accessible en écriture', 'rempart-backup') : sprintf(__('Impossible d\'écrire dans %s', 'rempart-backup'), REMPART_ROOT));
 
 		$free = @disk_free_space(REMPART_ROOT);
-		$add('Espace disque libre', $free === false || $free > 104857600, $free === false ? 'Inconnu' : rempart_format_size($free));
+		$add(__('Espace disque libre', 'rempart-backup'), $free === false || $free > 104857600, $free === false ? __('Inconnu', 'rempart-backup') : rempart_format_size($free));
 
 		$limit = (int) ini_get('max_execution_time');
-		$add('Temps maximum d\'un script', $limit === 0 || $limit >= REMPART_SLICE_SECONDS + 5, $limit === 0 ? 'Illimité' : $limit . ' s');
-		$add('Mémoire PHP', wp_convert_hr_to_bytes(ini_get('memory_limit')) >= 67108864 || (int) ini_get('memory_limit') === -1, (string) ini_get('memory_limit'));
+		$add(__('Temps maximum d\'un script', 'rempart-backup'), $limit === 0 || $limit >= REMPART_SLICE_SECONDS + 5, $limit === 0 ? __('Illimité', 'rempart-backup') : $limit . ' s');
+		$add(__('Mémoire PHP', 'rempart-backup'), wp_convert_hr_to_bytes(ini_get('memory_limit')) >= 67108864 || (int) ini_get('memory_limit') === -1, (string) ini_get('memory_limit'));
 
 		$response = wp_remote_post(admin_url('admin-ajax.php'), array(
 			'timeout'   => 10,
@@ -319,12 +319,12 @@ class Rempart_Ajax {
 			'body'      => array('action' => 'rempart_slice', 'token' => 'test'),
 		));
 		$code = is_wp_error($response) ? 0 : (int) wp_remote_retrieve_response_code($response);
-		$add('Le site peut s\'appeler lui-même', $code === 403, $code === 403 ? 'Oui' : 'Non : gardez la page ouverte pendant les sauvegardes, elle prendra le relais (' . (is_wp_error($response) ? $response->get_error_message() : 'code ' . $code) . ')');
+		$add(__('Le site peut s\'appeler lui-même', 'rempart-backup'), $code === 403, $code === 403 ? __('Oui', 'rempart-backup') : sprintf(__('Non : gardez la page ouverte pendant les sauvegardes, elle prendra le relais (%s)', 'rempart-backup'), is_wp_error($response) ? $response->get_error_message() : sprintf(__('code %s', 'rempart-backup'), $code)));
 
-		$add('WP-Cron', !(defined('DISABLE_WP_CRON') && DISABLE_WP_CRON), (defined('DISABLE_WP_CRON') && DISABLE_WP_CRON) ? 'Désactivé : utilisez la planification personnalisée' : 'Actif');
+		$add('WP-Cron', !(defined('DISABLE_WP_CRON') && DISABLE_WP_CRON), (defined('DISABLE_WP_CRON') && DISABLE_WP_CRON) ? __('Désactivé : utilisez la planification personnalisée', 'rempart-backup') : __('Actif', 'rempart-backup'));
 
 		$litespeed = Rempart_Litespeed::status();
-		$add('LiteSpeed : règle « noabort »', $litespeed[0] !== 'warning', $litespeed[1]);
+		$add(__('LiteSpeed : règle « noabort »', 'rempart-backup'), $litespeed[0] !== 'warning', $litespeed[1]);
 
 		$blocked = false;
 		$backups_dir = rempart_folder('backups');
@@ -333,7 +333,7 @@ class Rempart_Ajax {
 			$probe = wp_remote_get($public, array('timeout' => 10, 'sslverify' => false));
 			$blocked = !is_wp_error($probe) && (int) wp_remote_retrieve_response_code($probe) === 403;
 		}
-		$add('Dossier des sauvegardes protégé', $blocked, $blocked ? 'Inaccessible depuis le web' : 'Le serveur ignore .htaccess (nginx ?). Le nom du dossier reste aléatoire ; ajoutez une règle pour le bloquer.');
+		$add(__('Dossier des sauvegardes protégé', 'rempart-backup'), $blocked, $blocked ? __('Inaccessible depuis le web', 'rempart-backup') : __('Le serveur ignore .htaccess (nginx ?). Le nom du dossier reste aléatoire ; ajoutez une règle pour le bloquer.', 'rempart-backup'));
 		return $checks;
 	}
 
@@ -341,19 +341,19 @@ class Rempart_Ajax {
 	public static function download() {
 		check_admin_referer('rempart');
 		if (!current_user_can('manage_options')) {
-			wp_die('Vous n\'avez pas les droits nécessaires.', 403);
+			wp_die(__('Vous n\'avez pas les droits nécessaires.', 'rempart-backup'), 403);
 		}
 		$name = rempart_safe_backup_name(isset($_GET['name']) ? wp_unslash($_GET['name']) : '');
 		$info = Rempart_Backups::get($name);
 		if (!$info) {
-			wp_die('Sauvegarde introuvable.', 404);
+			wp_die(__('Sauvegarde introuvable.', 'rempart-backup'), 404);
 		}
 		$path = Rempart_Backups::archive_path($name);
 		$remove_after = false;
 		if (!file_exists($path)) {
 			$location = !empty($info['location']) ? Rempart_Locations::get($info['location']) : null;
 			if (!$location) {
-				wp_die('Le fichier de cette sauvegarde est introuvable.', 404);
+				wp_die(__('Le fichier de cette sauvegarde est introuvable.', 'rempart-backup'), 404);
 			}
 			@set_time_limit(0);
 			$tmp = rempart_folder('backups') . '/.dl-' . $name . '.tar.gz';

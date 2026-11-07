@@ -119,7 +119,7 @@ $cases = array(
 			$message = rempart_it_throws(function () {
 				Rempart_Job::start_backup(array('files' => false, 'db' => true, 'location' => ''));
 			}, array(), 'La deuxième sauvegarde');
-			rempart_it_expect(strpos($message, 'déjà en cours') !== false, 'Message inattendu : ' . $message);
+			rempart_it_expect(preg_match('/déjà en cours|already running/', $message), 'Message inattendu : ' . $message);
 		} finally {
 			Rempart_Job::force_stop();
 		}
@@ -134,7 +134,7 @@ $cases = array(
 			$message = rempart_it_throws(function () {
 				Rempart_Job::start_backup(array('files' => false, 'db' => true, 'location' => ''));
 			}, array(), 'Le second démarrage');
-			rempart_it_expect(strpos($message, 'déjà en cours') !== false, 'Message inattendu : ' . $message);
+			rempart_it_expect(preg_match('/déjà en cours|already running/', $message), 'Message inattendu : ' . $message);
 			rempart_it_expect(!Rempart_Job::is_active(), 'Une tâche a démarré malgré le verrou.');
 		} finally {
 			flock($lock, LOCK_UN);
@@ -188,7 +188,7 @@ $cases = array(
 		Rempart_Job::save($state);
 		$state = Rempart_Job::watchdog();
 		rempart_it_expect($state['status'] === 'error', 'État attendu : error, obtenu : ' . $state['status']);
-		rempart_it_expect(!empty($state['errors']) && strpos($state['errors'][0], 'ne répond plus') !== false, 'Message d\'erreur inattendu.');
+		rempart_it_expect(!empty($state['errors']) && preg_match('/ne répond plus|has not responded/', $state['errors'][0]), 'Message d\'erreur inattendu.');
 		rempart_it_expect(!Rempart_Job::is_active(), 'La tâche est restée active.');
 	},
 

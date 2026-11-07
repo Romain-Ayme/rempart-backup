@@ -43,22 +43,22 @@ class Rempart_Litespeed {
 
 		if ($present) {
 			$own = $content !== null && strpos($content, self::BEGIN) !== false;
-			return array('ok', $own ? 'La règle LiteSpeed est en place (ajoutée par ce plugin).' : 'Une règle « noabort » est déjà dans votre .htaccess.', true);
+			return array('ok', $own ? __('La règle LiteSpeed est en place (ajoutée par ce plugin).', 'rempart-backup') : __('Une règle « noabort » est déjà dans votre .htaccess.', 'rempart-backup'), true);
 		}
 		if (!self::detected()) {
-			return array('info', 'LiteSpeed n\'est pas détecté sur ce serveur : cette règle n\'est probablement pas nécessaire. Vous pouvez quand même l\'ajouter si une sauvegarde se bloque sans erreur.', false);
+			return array('info', __('LiteSpeed n\'est pas détecté sur ce serveur : cette règle n\'est probablement pas nécessaire. Vous pouvez quand même l\'ajouter si une sauvegarde se bloque sans erreur.', 'rempart-backup'), false);
 		}
 		if ($content === null) {
-			return array('warning', 'Ce serveur utilise LiteSpeed, mais le fichier .htaccess du site est introuvable ou illisible.', false);
+			return array('warning', __('Ce serveur utilise LiteSpeed, mais le fichier .htaccess du site est introuvable ou illisible.', 'rempart-backup'), false);
 		}
-		return array('warning', 'Ce serveur utilise LiteSpeed, qui interrompt parfois les tâches longues sans message d\'erreur. Ajoutez la règle ci-dessous si une sauvegarde se bloque.', false);
+		return array('warning', __('Ce serveur utilise LiteSpeed, qui interrompt parfois les tâches longues sans message d\'erreur. Ajoutez la règle ci-dessous si une sauvegarde se bloque.', 'rempart-backup'), false);
 	}
 
 	/** Without the rule on LiteSpeed, a job that went quiet has a likely cause worth naming. */
 	public static function stall_hint() {
 		$status = self::status();
 		if (self::detected() && !$status[2]) {
-			return ' Ce serveur utilise LiteSpeed, qui interrompt parfois les tâches longues : ouvrez l\'onglet Aide, puis ajoutez la règle LiteSpeed.';
+			return __(' Ce serveur utilise LiteSpeed, qui interrompt parfois les tâches longues : ouvrez l\'onglet Aide, puis ajoutez la règle LiteSpeed.', 'rempart-backup');
 		}
 		return '';
 	}
@@ -77,15 +77,15 @@ class Rempart_Litespeed {
 	public static function apply($variant = 1) {
 		$file = self::file();
 		if (!file_exists($file)) {
-			return array('error', 'Le fichier .htaccess n\'existe pas à la racine du site. Créez-le, puis réessayez.');
+			return array('error', __('Le fichier .htaccess n\'existe pas à la racine du site. Créez-le, puis réessayez.', 'rempart-backup'));
 		}
 		if (!is_writable($file)) {
-			return array('error', 'Le fichier .htaccess n\'est pas modifiable : vérifiez ses droits, puis réessayez.');
+			return array('error', __('Le fichier .htaccess n\'est pas modifiable : vérifiez ses droits, puis réessayez.', 'rempart-backup'));
 		}
 		$original = (string) file_get_contents($file);
 		$without = preg_replace(self::own_block_pattern(), '', $original);
 		if (stripos($without, 'noabort') !== false) {
-			return array('ok', 'Une règle « noabort » est déjà dans votre .htaccess : rien n\'a été changé.');
+			return array('ok', __('Une règle « noabort » est déjà dans votre .htaccess : rien n\'a été changé.', 'rempart-backup'));
 		}
 
 		$backup = REMPART_ROOT . 'tmp/htaccess-avant-litespeed.bak';
@@ -93,26 +93,26 @@ class Rempart_Litespeed {
 
 		$before = self::site_code();
 		if (file_put_contents($file, self::block($variant) . "\n" . $without, LOCK_EX) === false) {
-			return array('error', 'Impossible d\'écrire dans le fichier .htaccess : vérifiez ses droits.');
+			return array('error', __('Impossible d\'écrire dans le fichier .htaccess : vérifiez ses droits.', 'rempart-backup'));
 		}
 		$after = self::site_code();
 		if ($after >= 500 && $before < 500) {
 			file_put_contents($file, $original, LOCK_EX);
-			return array('error', 'Le site a répondu par une erreur (code ' . $after . ') avec cette règle : elle a été retirée et votre .htaccess est revenu comme avant.' . ((int) $variant === 1 ? ' Essayez l\'autre forme de la règle.' : ''));
+			return array('error', sprintf(__('Le site a répondu par une erreur (code %s) avec cette règle : elle a été retirée et votre .htaccess est revenu comme avant.', 'rempart-backup'), $after) . ((int) $variant === 1 ? ' ' . __("Essayez l'autre forme de la règle.", 'rempart-backup') : ''));
 		}
-		return array('ok', 'Règle ajoutée au début du fichier .htaccess (forme ' . (int) $variant . '). Relancez la sauvegarde qui se bloquait.' . ((int) $variant === 1 ? ' Si elle se bloque encore, essayez l\'autre forme.' : ''));
+		return array('ok', sprintf(__('Règle ajoutée au début du fichier .htaccess (forme %d). Relancez la sauvegarde qui se bloquait.', 'rempart-backup'), (int) $variant) . ((int) $variant === 1 ? ' ' . __("Si elle se bloque encore, essayez l'autre forme.", 'rempart-backup') : ''));
 	}
 
 	public static function remove() {
 		$file = self::file();
 		if (!is_readable($file) || !is_writable($file)) {
-			return array('error', 'Le fichier .htaccess n\'est pas modifiable.');
+			return array('error', __('Le fichier .htaccess n\'est pas modifiable.', 'rempart-backup'));
 		}
 		$content = (string) file_get_contents($file);
 		if (strpos($content, self::BEGIN) === false) {
-			return array('info', 'Ce plugin n\'a pas ajouté de règle : rien à retirer.');
+			return array('info', __('Ce plugin n\'a pas ajouté de règle : rien à retirer.', 'rempart-backup'));
 		}
 		file_put_contents($file, preg_replace(self::own_block_pattern(), '', $content), LOCK_EX);
-		return array('ok', 'La règle a été retirée du fichier .htaccess.');
+		return array('ok', __('La règle a été retirée du fichier .htaccess.', 'rempart-backup'));
 	}
 }
