@@ -10,6 +10,7 @@
  * Author URI: https://karom.studio
  * License: LGPL v2.1
  * License URI: http://www.gnu.org/licenses/lgpl-2.1.html
+ * Update URI: https://karom.studio/wp/plugin/backup-guard
  * Text Domain: backup-guard
  * Domain Path: /languages
  */
