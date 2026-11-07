@@ -4,25 +4,27 @@
 			<stop offset="0" stop-color="#5b2dd8"/>
 			<stop offset="1" stop-color="#2a1070"/>
 		</linearGradient>
-		<linearGradient id="db" x1="0" y1="0" x2="0" y2="1">
+		<linearGradient id="db" gradientUnits="userSpaceOnUse" x1="0" y1="50" x2="0" y2="205">
 			<stop offset="0" stop-color="#ffffff"/>
-			<stop offset="1" stop-color="#cfc8f2"/>
+			<stop offset="1" stop-color="#d4cdf5"/>
 		</linearGradient>
-		<clipPath id="body"><path d="M46 82v108a62 24 0 0 0 124 0V82z"/></clipPath>
 		<clipPath id="tile"><rect x="8" y="8" width="240" height="240" rx="58"/></clipPath>
 		<mask id="cut">
 			<rect width="256" height="256" fill="#fff"/>
-			<circle cx="172" cy="160" r="49" fill="#000"/>
+			<circle cx="176" cy="164" r="50" fill="#000"/>
 		</mask>
 	</defs>
 	<rect x="8" y="8" width="240" height="240" rx="58" fill="url(#bg)"/>
-	<circle cx="236" cy="250" r="150" fill="#1b0a55" opacity=".35" clip-path="url(#tile)"/>
-	<g mask="url(#cut)">
-		<path d="M46 82v108a62 24 0 0 0 124 0V82z" fill="url(#db)"/>
-		<path clip-path="url(#body)" d="M46 118a62 24 0 0 0 124 0M46 154a62 24 0 0 0 124 0" fill="none" stroke="#35177f" stroke-width="9"/>
-		<ellipse cx="108" cy="82" rx="62" ry="24" fill="#fff"/>
+	<circle cx="236" cy="250" r="150" fill="#1b0a55" opacity=".3" clip-path="url(#tile)"/>
+	<g mask="url(#cut)" fill="url(#db)">
+		<ellipse cx="100" cy="72" rx="60" ry="22"/>
+		<path d="M40 81 a60 22 0 0 0 120 0v28 a60 22 0 0 1 -120 0z"/>
+		<path d="M40 118 a60 22 0 0 0 120 0v28 a60 22 0 0 1 -120 0z"/>
+		<path d="M40 155 a60 22 0 0 0 120 0v28 a60 22 0 0 1 -120 0z"/>
 	</g>
-	<path d="M203.950 148.370A34 34 0 1 1 180.800 127.160" fill="none" stroke="#fff" stroke-width="12" stroke-linecap="round"/>
-	<path d="M194.300 130.800 184.200 114.600 177.400 139.700z" fill="#fff" stroke="#fff" stroke-width="4" stroke-linejoin="round"/>
-	<path d="M172 160v-18M172 160l13 8" fill="none" stroke="#fff" stroke-width="8" stroke-linecap="round"/>
+	<g fill="none" stroke="#fff" stroke-linecap="round">
+		<path d="M209.800 154.900A35 35 0 1 1 188 131.100" stroke-width="13"/>
+		<path d="M176 164v-19M176 164l14 8.500" stroke-width="9"/>
+	</g>
+	<path d="M191.700 120.800 203.900 136.900 184.200 141.500z" fill="#fff" stroke="#fff" stroke-width="3" stroke-linejoin="round"/>
 </svg>
