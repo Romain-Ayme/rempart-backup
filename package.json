@@ -16,6 +16,7 @@
 		"services:down": "docker compose -f tests/docker-compose.yml down -v",
 		"test:destinations": "node tools/connect-network.js && npx --yes @wordpress/env@12 run cli wp eval-file wp-content/plugins/rempart-backup/tests/integration/destinations.php",
 		"test:notifications": "node tools/connect-network.js && npx --yes @wordpress/env@12 run cli wp eval-file wp-content/plugins/rempart-backup/tests/integration/notifications.php",
-		"test:backups": "node tools/connect-network.js && npx --yes @wordpress/env@12 run cli wp eval-file wp-content/plugins/rempart-backup/tests/integration/backups.php"
+		"test:backups": "node tools/connect-network.js && npx --yes @wordpress/env@12 run cli wp eval-file wp-content/plugins/rempart-backup/tests/integration/backups.php",
+		"test:errors": "node tools/connect-network.js && npx --yes @wordpress/env@12 run cli wp eval-file wp-content/plugins/rempart-backup/tests/integration/errors.php"
 	}
 }

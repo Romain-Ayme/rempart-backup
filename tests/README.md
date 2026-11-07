@@ -43,6 +43,7 @@ npm run env:start            # WordPress de test (PHP et WordPress au choix, voi
 npm run test:destinations    # aller-retour sur chaque destination
 npm run test:notifications   # un message par type de canal
 npm run test:backups         # sauvegardes complètes : locale, SFTP, refus, échec, arrêt, notifications
+npm run test:errors          # erreurs provoquées : identifiants, réseau coupé, tâche bloquée, archive tronquée, restauration
 npm run services:down
 ```
 
