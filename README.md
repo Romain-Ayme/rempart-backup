@@ -1,6 +1,6 @@
 # Backup Guard
 
-Par Karom Studio - Romain AYME.
+Par [Karom Studio](https://karom.studio) - Romain AYME.
 
 Plugin WordPress de sauvegarde, restauration, migration et clonage, **sans licence et sans fonction réservée**.
 

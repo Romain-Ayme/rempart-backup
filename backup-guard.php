@@ -6,6 +6,7 @@
  * Requires at least: 7.1
  * Requires PHP: 8.3
  * Author: Karom Studio - Romain AYME
+ * Author URI: https://karom.studio
  * License: LGPL v2.1
  * License URI: http://www.gnu.org/licenses/lgpl-2.1.html
  * Text Domain: backup-guard

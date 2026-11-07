@@ -2714,3 +2714,8 @@ msgstr "Access denied."
 #: backup-guard.php
 msgid "Karom Studio - Romain AYME"
 msgstr "Karom Studio - Romain AYME"
+
+#. Author URI of the plugin
+#: backup-guard.php
+msgid "https://karom.studio"
+msgstr "https://karom.studio"
