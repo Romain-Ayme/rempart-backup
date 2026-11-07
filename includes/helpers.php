@@ -17,6 +17,8 @@ function rempart_default_settings() {
 	return array(
 		'backup_files'       => 1,
 		'backup_db'          => 1,
+		// gzip level of the archive, 1 (fastest, biggest) to 9 (smallest, slowest).
+		'gzip_level'         => 9,
 		'location'           => '',
 		'pre_update_backup'  => 0,
 		'auto_update_backup' => 0,
@@ -239,6 +241,7 @@ function rempart_self_heal() {
 	if (!wp_next_scheduled('rempart_watchdog')) {
 		wp_schedule_event(time() + 300, 'rempart_five_minutes', 'rempart_watchdog');
 	}
+	Rempart_Notifications::migrate_email();
 	$settings = rempart_settings();
 	$intervals = Rempart_Schedule::intervals();
 	if (isset($intervals[$settings['schedule']]) && !wp_next_scheduled('rempart_auto_backup')) {

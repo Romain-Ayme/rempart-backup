@@ -1,0 +1,4 @@
+# Outils de développement (tests, analyse) : installés par tests/composer.json, non livrés.
+tests/vendor/
+tests/.phpunit.cache/
+tests/.phpstan.cache/

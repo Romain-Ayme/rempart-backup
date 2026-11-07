@@ -15,7 +15,10 @@ class Rempart_Storage_S3 extends Rempart_Storage {
 	private function endpoint() {
 		$endpoint = trim((string) ($this->config['endpoint'] ?? ''));
 		if ($endpoint === '') {
-			$endpoint = 's3.' . $this->region() . '.amazonaws.com';
+			// Services of the list follow a fixed pattern: the address comes from the region.
+			$preset = Rempart_Locations::s3_presets()[$this->config['service'] ?? ''] ?? null;
+			$template = $preset ? $preset['endpoint'] : '';
+			$endpoint = $template !== '' ? str_replace('{region}', $this->region(), $template) : 's3.' . $this->region() . '.amazonaws.com';
 		}
 		if (!preg_match('#^https?://#i', $endpoint)) {
 			$endpoint = 'https://' . $endpoint;
@@ -122,7 +125,9 @@ class Rempart_Storage_S3 extends Rempart_Storage {
 				throw new RuntimeException('Impossible de créer le bucket : ' . self::error_text($made));
 			}
 		} elseif ($head['code'] === 403) {
-			throw new RuntimeException('Accès refusé au bucket : vérifiez la clé d\'accès, la clé secrète et la région.');
+			// A key limited to one bucket may be refused this look yet allowed to write in it,
+			// so the real operations below decide, and they name what is refused.
+			rempart_debug('S3 : HEAD du bucket refusé, essai des opérations.');
 		} elseif ($head['code'] >= 300) {
 			throw new RuntimeException('Le service S3 répond : code ' . $head['code'] . '. Vérifiez l\'adresse et la région.');
 		}

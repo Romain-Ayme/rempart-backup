@@ -38,11 +38,11 @@ class Rempart_Locations {
 			)),
 			's3'       => array('label' => 'Amazon S3 et compatibles', 'fields' => array(
 				'service'    => array('label' => 'Service', 'type' => 'select', 'options' => self::s3_services()),
-				'endpoint'   => array('label' => 'Adresse du service', 'help' => 'Laissez vide pour Amazon. Sinon, par exemple nyc3.digitaloceanspaces.com'),
-				'region'     => array('label' => 'Région', 'help' => 'Par exemple eu-west-3. Pour Cloudflare R2, indiquez auto.', 'default' => 'us-east-1'),
+				'endpoint'   => array('label' => 'Adresse du service', 'help' => 'Laissez vide : elle est déduite de la région pour les services de la liste.'),
+				'region'     => array('label' => 'Région'),
 				'access_key' => array('label' => 'Clé d\'accès', 'required' => true),
 				'secret_key' => array('label' => 'Clé secrète', 'type' => 'password', 'secret' => true, 'required' => true),
-				'bucket'     => array('label' => 'Bucket', 'help' => 'Il sera créé s\'il n\'existe pas.', 'required' => true),
+				'bucket'     => array('label' => 'Bucket', 'required' => true),
 				'sse'        => array('label' => 'Chiffrer côté serveur', 'type' => 'checkbox', 'help' => 'Le service chiffre les fichiers reçus (AES-256).'),
 				'folder'     => $folder,
 			)),
@@ -53,9 +53,30 @@ class Rempart_Locations {
 		);
 	}
 
+	/**
+	 * What each S3-compatible service needs: how its address follows from the region (when it
+	 * does), an example region, and a hint shown under the form. Services without a template
+	 * need their address typed in.
+	 */
+	public static function s3_presets() {
+		return array(
+			'aws'          => array('endpoint' => '', 'region' => 'eu-west-3', 'example' => 'Laissez vide', 'hint' => 'Laissez l\'adresse vide : elle est déduite de la région.'),
+			'hetzner'      => array('endpoint' => 'https://{region}.your-objectstorage.com', 'region' => 'fsn1', 'example' => 'Laissez vide', 'hint' => 'Régions : fsn1 (Falkenstein), nbg1 (Nuremberg), hel1 (Helsinki). Clés créées dans la console Hetzner, section Object Storage.'),
+			'backblaze'    => array('endpoint' => 'https://s3.{region}.backblazeb2.com', 'region' => 'us-west-004', 'example' => 'Laissez vide', 'hint' => 'La région est dans l\'adresse S3 de votre bucket (s3.us-west-004.backblazeb2.com, région us-west-004). Clé d\'accès = keyID, clé secrète = applicationKey. Le bucket doit déjà exister si votre clé est limitée à un bucket.'),
+			'digitalocean' => array('endpoint' => 'https://{region}.digitaloceanspaces.com', 'region' => 'nyc3', 'example' => 'Laissez vide', 'hint' => 'Région : nyc3, ams3, sgp1, fra1...'),
+			'linode'       => array('endpoint' => 'https://{region}.linodeobjects.com', 'region' => 'fr-par-1', 'example' => 'Laissez vide', 'hint' => 'Région : l\'identifiant du cluster, par exemple fr-par-1 ou us-east-1.'),
+			'vultr'        => array('endpoint' => 'https://{region}.vultrobjects.com', 'region' => 'ams1', 'example' => 'Laissez vide', 'hint' => 'Région : ams1, ewr1, sjc1...'),
+			'wasabi'       => array('endpoint' => 'https://s3.{region}.wasabisys.com', 'region' => 'eu-central-1', 'example' => 'Laissez vide', 'hint' => 'Région : eu-central-1, us-east-1...'),
+			'cloudflare'   => array('endpoint' => '', 'region' => 'auto', 'example' => 'https://IDENTIFIANT.r2.cloudflarestorage.com', 'hint' => 'Adresse : https://IDENTIFIANT-DU-COMPTE.r2.cloudflarestorage.com. Région : auto.'),
+			'custom'       => array('endpoint' => '', 'region' => 'us-east-1', 'example' => 'https://s3.mondomaine.fr', 'hint' => 'Indiquez l\'adresse fournie par votre service.'),
+		);
+	}
+
 	public static function s3_services() {
 		return array(
 			'aws'          => 'Amazon S3',
+			'hetzner'      => 'Hetzner Object Storage',
+			'backblaze'    => 'Backblaze B2',
 			'digitalocean' => 'DigitalOcean Spaces',
 			'linode'       => 'Linode Object Storage',
 			'vultr'        => 'Vultr Object Storage',
@@ -121,6 +142,18 @@ class Rempart_Locations {
 			$config[$key] = sanitize_text_field((string) $value);
 		}
 
+		if ($protocol === 's3') {
+			$service = $config['service'] ?? 'custom';
+			$preset = self::s3_presets()[$service] ?? self::s3_presets()['custom'];
+			if (($config['endpoint'] ?? '') === '') {
+				if (strpos($preset['endpoint'], '{region}') !== false && ($config['region'] ?? '') === '') {
+					throw new RuntimeException('Indiquez la région : elle sert à calculer l\'adresse du service (par exemple ' . $preset['region'] . ').');
+				}
+				if ($preset['endpoint'] === '' && !in_array($service, array('aws'), true)) {
+					throw new RuntimeException('Indiquez l\'adresse du service, par exemple ' . $preset['example'] . '.');
+				}
+			}
+		}
 		if (!empty($config['url']) && !wp_http_validate_url($config['url']) && !preg_match('#^https?://#i', $config['url'])) {
 			throw new RuntimeException('L\'adresse WebDAV doit commencer par http:// ou https://');
 		}

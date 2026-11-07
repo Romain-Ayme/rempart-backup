@@ -300,7 +300,7 @@ class Rempart_Ajax {
 		$add = function ($label, $ok, $detail) use (&$checks) {
 			$checks[] = array('label' => $label, 'ok' => (bool) $ok, 'detail' => $detail);
 		};
-		$add('Version de PHP', version_compare(PHP_VERSION, '7.4', '>='), PHP_VERSION);
+		$add('Version de PHP', version_compare(PHP_VERSION, '8.3', '>='), PHP_VERSION);
 		$add('Module zlib (compression)', function_exists('inflate_init'), function_exists('inflate_init') ? 'Présent' : 'Absent : les sauvegardes sont impossibles');
 		$add('Module cURL (WebDAV)', function_exists('curl_init'), function_exists('curl_init') ? 'Présent' : 'Absent : l\'envoi WebDAV est impossible');
 		$add('Dossier de travail', is_writable(REMPART_ROOT), is_writable(REMPART_ROOT) ? 'Accessible en écriture' : 'Impossible d\'écrire dans ' . REMPART_ROOT);

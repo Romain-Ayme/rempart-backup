@@ -332,6 +332,24 @@
 	var locForm = $('#rempart-location-form');
 	var locProtocol = $('#rempart-loc-protocol');
 
+	/** S3 services: show the example region, the address pattern and the hint of the chosen one. */
+	function applyS3Preset() {
+		var service = $('#rempart-s3-service');
+		if (!service) { return; }
+		var all = JSON.parse(service.dataset.presets || '{}');
+		var preset = all[service.value] || {};
+		$('#rempart-s3-region').placeholder = preset.region ? 'par exemple ' + preset.region : '';
+		$('#rempart-s3-endpoint').placeholder = preset.example || '';
+		var hint = $('#rempart-s3-hint');
+		if (!hint) {
+			hint = document.createElement('p');
+			hint.id = 'rempart-s3-hint';
+			hint.className = 'description';
+			service.parentNode.appendChild(hint);
+		}
+		hint.textContent = preset.hint || '';
+	}
+
 	function showLocationFields() {
 		var chosen = locProtocol.value;
 		var oauth = false;
@@ -345,6 +363,7 @@
 			});
 			if (on) { oauth = g.dataset.oauth === '1'; }
 		});
+		applyS3Preset();
 		$('.rempart-oauth-help', locForm).hidden = !oauth;
 		$('#rempart-loc-submit').textContent = oauth && !locForm.elements.id.value ? 'Enregistrer et connecter le compte' : 'Enregistrer';
 	}
@@ -375,6 +394,8 @@
 
 	if (locForm) {
 		locProtocol.addEventListener('change', showLocationFields);
+		var s3Service = $('#rempart-s3-service');
+		if (s3Service) { s3Service.addEventListener('change', applyS3Preset); }
 		$('#rempart-add-location').addEventListener('click', function () { resetLocationForm(null); });
 		$('#rempart-loc-cancel').addEventListener('click', function () { locCard.hidden = true; });
 		$$('.rempart-edit').forEach(function (b) {

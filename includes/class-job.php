@@ -394,7 +394,7 @@ class Rempart_Job {
 			$state['added'] = 0;
 		}
 		$cursor = &$state['archive'];
-		$writer = new Rempart_Tar_Writer($archive_path, $cursor['committed']);
+		$writer = new Rempart_Tar_Writer($archive_path, $cursor['committed'], (int) rempart_settings()['gzip_level']);
 
 		$commit = function () use ($writer, &$cursor, &$state) {
 			$cursor['committed'] = $writer->flush();

@@ -53,7 +53,9 @@
 .rempart-bad { color: #b32d2e; font-weight: 600; }
 .rempart-empty { text-align: center; color: #50575e; padding: 24px !important; }
 .rempart-history-tools { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 10px; margin-bottom: 12px; }
-#rempart-upload-open .dashicons { vertical-align: text-bottom; font-size: 18px; }
+/* Icon and label sit on one line and share the same centre, whatever the font size around them. */
+#rempart-upload-open { display: inline-flex; align-items: center; justify-content: center; gap: 6px; }
+#rempart-upload-open .dashicons { width: 18px; height: 18px; font-size: 18px; line-height: 18px; margin: 0; vertical-align: baseline; }
 #rempart-upload-progress { margin-bottom: 12px; }
 
 .rempart-bar { height: 12px; background: #dcdcde; border-radius: 6px; overflow: hidden; }

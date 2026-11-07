@@ -156,6 +156,7 @@ class Rempart_CLI {
 			$result = Rempart_Restore::start($args[0], array('files' => empty($assoc['db-only']), 'db' => empty($assoc['files-only'])));
 		} catch (Exception $e) {
 			WP_CLI::error($e->getMessage());
+			return;
 		}
 		if ($result['mode'] === 'fetch') {
 			$printed = 0;

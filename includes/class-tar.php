@@ -15,6 +15,7 @@ class Rempart_Tar_Writer {
 	private $buffer = '';
 	private $level;
 
+	/** @param int $level gzip level, 1 (fastest) to 9 (smallest). */
 	public function __construct($path, $committed_size = 0, $level = 9) {
 		$this->level = $level;
 		$this->handle = @fopen($path, 'c+b');

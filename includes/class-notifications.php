@@ -15,6 +15,9 @@ class Rempart_Notifications {
 	public static function types() {
 		$username = array('label' => 'Nom affiché (facultatif)', 'default' => 'Rempart Backup');
 		return array(
+			'email' => array('label' => 'E-mail', 'fields' => array(
+				'address' => array('label' => 'Adresse e-mail', 'required' => true, 'help' => 'Utilise la messagerie de WordPress. Pour plusieurs adresses, séparez-les par une virgule.'),
+			)),
 			'pushover' => array('label' => 'Pushover', 'fields' => array(
 				'token'  => array('label' => 'Jeton de l\'application (API token)', 'secret' => true, 'required' => true),
 				'user'   => array('label' => 'Clé utilisateur ou groupe', 'secret' => true, 'required' => true),
@@ -45,6 +48,23 @@ class Rempart_Notifications {
 				'auth' => array('label' => 'En-tête Authorization (facultatif)', 'secret' => true, 'help' => 'Par exemple Bearer abc123. Envoyé tel quel.'),
 			)),
 		);
+	}
+
+	/**
+	 * Before, the e-mail address lived in the general settings. It becomes a channel like the
+	 * others, once, with the same address and with both outcomes switched on as they always were.
+	 */
+	public static function migrate_email() {
+		if (get_option('rempart_email_migrated')) {
+			return;
+		}
+		update_option('rempart_email_migrated', 1, false);
+		$settings = rempart_settings();
+		if (!empty($settings['email']) && is_email($settings['email'])) {
+			self::save(array('type' => 'email', 'name' => 'E-mail', 'address' => $settings['email'], 'enabled' => 1, 'on_success' => 1, 'on_failure' => 1));
+			$settings['email'] = '';
+			update_option('rempart_settings', $settings, false);
+		}
 	}
 
 	public static function all() {
@@ -117,6 +137,15 @@ class Rempart_Notifications {
 				throw new RuntimeException('L\'adresse doit commencer par http:// ou https://');
 			}
 		}
+		if ($type === 'email') {
+			$addresses = array_filter(array_map('trim', explode(',', $config['address'])));
+			foreach ($addresses as $address) {
+				if (!is_email($address)) {
+					throw new RuntimeException('Cette adresse e-mail n\'est pas valide : ' . $address);
+				}
+			}
+			$config['address'] = implode(', ', $addresses);
+		}
 		$name = sanitize_text_field((string) ($values['name'] ?? ''));
 		if ($name === '') {
 			$name = $types[$type]['label'];
@@ -162,10 +191,6 @@ class Rempart_Notifications {
 	 * @param array  $details Label => value pairs, for services that can lay them out.
 	 */
 	public static function event($event, $title, $message, array $details = array()) {
-		$settings = rempart_settings();
-		if (!empty($settings['email']) && is_email($settings['email'])) {
-			wp_mail($settings['email'], $title, $message);
-		}
 		foreach (self::all() as $id => $channel) {
 			if (empty($channel['enabled']) || empty($channel['on_' . $event])) {
 				continue;
@@ -252,6 +277,16 @@ class Rempart_Notifications {
 
 	private static function colour($event) {
 		return $event === 'failure' ? 0xb32d2e : ($event === 'success' ? 0x2e9e4f : 0x1f6f8b);
+	}
+
+	private static function send_email($c, $ctx) {
+		$to = array_filter(array_map('trim', explode(',', (string) $c['address'])));
+		if (!$to) {
+			throw new RuntimeException('Aucune adresse e-mail renseignée.');
+		}
+		if (!wp_mail($to, $ctx['title'], $ctx['message'])) {
+			throw new RuntimeException('WordPress n\'a pas pu envoyer l\'e-mail : vérifiez la messagerie de ce site.');
+		}
 	}
 
 	private static function send_pushover($c, $ctx) {

@@ -161,13 +161,9 @@ class Rempart_Admin {
 			throw new RuntimeException('Pour les sauvegardes automatiques, choisissez les fichiers, la base de données ou les deux.');
 		}
 
-		$email = isset($_POST['email']) ? sanitize_email(wp_unslash($_POST['email'])) : '';
-		if (!empty($_POST['email']) && $email === '') {
-			throw new RuntimeException('Cette adresse e-mail n\'est pas valide.');
-		}
-		$settings['email'] = $email;
 		$settings['additional'] = isset($_POST['additional']) ? array_map('sanitize_text_field', wp_unslash((array) $_POST['additional'])) : array();
 		$settings['debug'] = !empty($_POST['debug']) ? 1 : 0;
+		$settings['gzip_level'] = min(9, max(1, (int) ($_POST['gzip_level'] ?? 9)));
 		update_option('rempart_settings', $settings, false);
 
 		$excludes = rempart_excludes();
@@ -279,7 +275,7 @@ class Rempart_Admin {
 					if ($next) {
 						echo esc_html(wp_date($date_format, $next));
 						if (time() - $next > 300) {
-							echo ' (en retard : attend une visite du site)';
+							echo ' (en retard)';
 						}
 					} elseif ($settings['schedule'] === 'custom') {
 						echo 'Tâche cron personnalisée';
@@ -366,13 +362,9 @@ class Rempart_Admin {
 					<div class="rempart-row">
 						<div class="rempart-row-label">Comment ça marche</div>
 						<div class="rempart-cron-note">
-							<p data-for="none">Aucune sauvegarde automatique n'est prévue. Choisissez une fréquence, puis enregistrez.</p>
-							<p data-for="auto">
-								<strong>C'est automatique.</strong> Une fois la fréquence enregistrée, WordPress lance les sauvegardes tout seul : il n'y a rien d'autre à faire ni à configurer.
-								Il s'appuie sur ses tâches planifiées (WP-Cron), qui se réveillent quand quelqu'un visite le site. Sur un site peu visité, une sauvegarde peut donc partir avec un peu de retard.
-								Pour une heure précise, choisissez « Personnalisée » et ajoutez la commande proposée aux tâches cron de votre hébergement.
-							</p>
-							<p data-for="custom">Rien ne se lance tout seul ici : c'est la tâche cron de votre hébergement qui appelle l'adresse ci-dessous, à l'heure que vous avez choisie.</p>
+							<p data-for="none">Aucune sauvegarde automatique.</p>
+							<p data-for="auto"><strong>Automatique :</strong> rien d'autre à configurer. Elle part à la première visite du site après l'heure prévue. Pour une heure précise, choisissez « Personnalisée ».</p>
+							<p data-for="custom">Ajoutez la commande ci-dessous aux tâches cron de votre hébergement.</p>
 							<?php
 							$cron_status = self::cron_status($settings);
 							if ($cron_status) :
@@ -385,9 +377,7 @@ class Rempart_Admin {
 						<div class="rempart-row-label">Commande à planifier</div>
 						<div>
 							<code class="rempart-code" id="rempart-cron-command">wget -q -O /dev/null "<?php echo esc_html(Rempart_Schedule::cron_url()); ?>"</code>
-							<button type="button" class="button rempart-copy" data-copy="#rempart-cron-command">Copier</button>
-							<p class="description">Ajoutez-la aux tâches cron de votre hébergement, à l'heure que vous voulez.</p>
-						</div>
+							<button type="button" class="button rempart-copy" data-copy="#rempart-cron-command">Copier</button>						</div>
 					</div>
 					<div class="rempart-row">
 						<label class="rempart-row-label" for="rempart-rotation">Sauvegardes automatiques à conserver</label>
@@ -472,13 +462,6 @@ class Rempart_Admin {
 
 				<div class="rempart-card">
 					<h2>Autres réglages</h2>
-					<div class="rempart-row">
-						<label class="rempart-row-label" for="rempart-email">E-mail de notification</label>
-						<div>
-							<input type="email" name="email" id="rempart-email" class="regular-text" value="<?php echo esc_attr($settings['email']); ?>">
-							<p class="description">Reçoit le résultat de chaque sauvegarde. Laissez vide pour ne rien recevoir.</p>
-						</div>
-					</div>
 					<?php
 					$extra = self::additional_entries();
 					if ($extra) :
@@ -495,6 +478,14 @@ class Rempart_Admin {
 						</details>
 					</div>
 					<?php endif; ?>
+					<div class="rempart-row">
+						<div class="rempart-row-label">Compression</div>
+						<label>Niveau <select name="gzip_level">
+							<?php for ($level = 1; $level <= 9; $level++) : ?>
+								<option value="<?php echo $level; ?>" <?php selected((int) $settings['gzip_level'], $level); ?>><?php echo $level; ?><?php echo $level === 9 ? ' (archive la plus petite, la plus lente)' : ($level === 1 ? ' (la plus rapide, archive plus grosse)' : ''); ?></option>
+							<?php endfor; ?>
+						</select></label>
+					</div>
 					<div class="rempart-row">
 						<div class="rempart-row-label">Mode débogage</div>
 						<label><input type="checkbox" name="debug" value="1" <?php checked(!empty($settings['debug'])); ?>> Écrire plus de détails dans le journal (ne le laissez pas activé)</label>
@@ -517,18 +508,17 @@ class Rempart_Admin {
 			return null;
 		}
 		if ($settings['schedule'] === 'custom') {
-			return $cron_disabled ? null : array('info', 'La tâche cron de votre hébergement doit appeler l\'adresse ci-dessous : vérifiez qu\'elle est bien créée.');
+			return null;
 		}
 		if ($cron_disabled) {
-			return array('warning', 'Les tâches planifiées de WordPress sont désactivées sur ce site (DISABLE_WP_CRON). Rien ne partira tout seul tant qu\'une tâche cron de l\'hébergement n\'appelle pas wp-cron.php. Le plus simple : choisissez « Personnalisée ».');
+			return array('warning', 'WP-Cron est désactivé sur ce site : rien ne partira seul. Choisissez « Personnalisée ».');
 		}
 		$next = wp_next_scheduled('rempart_auto_backup');
 		if (!$next) {
-			return array('warning', 'La planification n\'est pas encore enregistrée : cliquez sur « Enregistrer les réglages ».');
+			return array('warning', 'Cliquez sur « Enregistrer les réglages » pour activer la planification.');
 		}
-		$late = time() - $next;
-		if ($late > 300) {
-			return array('warning', sprintf('La prochaine sauvegarde aurait dû partir il y a %s : WordPress attend une visite du site pour la lancer. Si cela se répète, utilisez « Personnalisée » avec une tâche cron de l\'hébergement.', human_time_diff($next)));
+		if (time() - $next > 300) {
+			return array('warning', sprintf('En retard de %s : en attente d\'une visite du site.', human_time_diff($next)));
 		}
 		return array('ok', 'Prochaine sauvegarde automatique : ' . wp_date('j F Y à H:i', $next) . '.');
 	}
@@ -554,6 +544,14 @@ class Rempart_Admin {
 	}
 
 	private static function tab_locations($locations, $protocols) {
+		// Space taken by our backups in each place. The local folder is keyed by ''.
+		$stored_by_location = array();
+		foreach (Rempart_Backups::all() as $backup) {
+			$where = (string) ($backup['location'] ?? '');
+			$stored_by_location[$where] = ($stored_by_location[$where] ?? 0) + (float) ($backup['size'] ?? 0);
+		}
+		$local_stored = $stored_by_location[''] ?? 0;
+		$local_text = rempart_format_size($local_stored);
 		?>
 		<section id="tab-location" class="rempart-tab" hidden>
 			<div class="rempart-card">
@@ -564,7 +562,7 @@ class Rempart_Admin {
 						<tr>
 							<td>Dossier local</td><td>-</td><td>-</td>
 							<td><code><?php echo esc_html(rempart_clean_path((string) rempart_folder('backups'))); ?></code></td>
-							<td>-</td><td>-</td>
+							<td><?php echo esc_html($local_text); ?></td><td>-</td>
 						</tr>
 						<?php
 						foreach ($locations as $id => $location) :
@@ -578,8 +576,14 @@ class Rempart_Admin {
 									$connected = false;
 								}
 							}
+							// The provider's own usage when it reports one (OAuth services), otherwise what our backups take up there.
 							$quota = $location['quota'] ?? null;
-							$quota_text = $quota ? rempart_format_size($quota['used']) . (!empty($quota['total']) ? ' / ' . rempart_format_size($quota['total']) : '') : '-';
+							$stored = $stored_by_location[(string) $id] ?? 0;
+							if ($quota) {
+								$quota_text = rempart_format_size($quota['used']) . (!empty($quota['total']) ? ' / ' . rempart_format_size($quota['total']) : '');
+							} else {
+								$quota_text = rempart_format_size($stored);
+							}
 							?>
 							<tr>
 								<td><strong><?php echo esc_html($location['name']); ?></strong></td>
@@ -590,7 +594,7 @@ class Rempart_Admin {
 									<?php if ($is_oauth) : ?>
 										<button type="button" class="button-link rempart-quota" data-id="<?php echo esc_attr($id); ?>" title="Actualiser"><?php echo esc_html($quota_text); ?></button>
 									<?php else : ?>
-										-
+										<?php echo esc_html($quota_text); ?>
 									<?php endif; ?>
 								</td>
 								<td class="rempart-actions">
@@ -657,7 +661,8 @@ class Rempart_Admin {
 				echo '<div class="rempart-row"><label class="rempart-row-label" for="' . esc_attr($input_id) . '">' . esc_html($field['label']) . '</label><div>';
 				$common = 'name="' . esc_attr($name) . '" id="' . esc_attr($input_id) . '" data-default="' . esc_attr($default) . '"' . ($required ? ' data-required="1"' : '') . (!empty($field['secret']) ? ' data-secret="1"' : '');
 				if ($type === 'select') {
-					echo '<select ' . $common . '>';
+					$presets = ($key === 's3' && $name === 'service') ? ' data-presets="' . esc_attr(wp_json_encode(Rempart_Locations::s3_presets())) . '"' : '';
+					echo '<select ' . $common . $presets . '>';
 					foreach ($field['options'] as $value => $label) {
 						echo '<option value="' . esc_attr($value) . '">' . esc_html($label) . '</option>';
 					}
@@ -684,7 +689,16 @@ class Rempart_Admin {
 
 	private static function tab_history($locations, $protocols) {
 		Rempart_Backups::sync_local();
-		$all = Rempart_Backups::all();
+		// 'all', 'local' (the local folder, stored as location '') or the id of a location.
+		$filter = isset($_GET['history_location']) ? sanitize_text_field(wp_unslash($_GET['history_location'])) : 'all';
+		$all = array_values(array_filter(Rempart_Backups::all(), function ($info) use ($filter) {
+			if ($filter === 'all') {
+				return true;
+			}
+			$where = (string) ($info['location'] ?? '');
+			return $filter === 'local' ? $where === '' : $where === $filter;
+		}));
+		$filter_query = $filter === 'all' ? '' : '&history_location=' . rawurlencode($filter);
 		$total = count($all);
 		$pages = max(1, (int) ceil($total / REMPART_HISTORY_PER_PAGE));
 		$page = isset($_GET['history_page']) ? max(1, min($pages, (int) $_GET['history_page'])) : 1;
@@ -693,13 +707,28 @@ class Rempart_Admin {
 		<section id="tab-history" class="rempart-tab" hidden>
 			<div class="rempart-card">
 				<div class="rempart-history-tools">
+					<form method="get" action="<?php echo esc_url(admin_url('admin.php')); ?>#history" class="rempart-inline">
+						<input type="hidden" name="page" value="rempart-backup">
+						<label>Afficher :
+							<select name="history_location">
+								<option value="all" <?php selected($filter, 'all'); ?>>Tous les emplacements</option>
+								<option value="local" <?php selected($filter, 'local'); ?>>Dossier local</option>
+								<?php foreach ($locations as $id => $location) : ?>
+									<option value="<?php echo esc_attr($id); ?>" <?php selected($filter, (string) $id); ?>><?php echo esc_html($location['name']); ?></option>
+								<?php endforeach; ?>
+							</select>
+						</label>
+						<button type="submit" class="button">Filtrer</button>
+					</form>
 					<div class="rempart-inline">
+						<label>Synchroniser depuis :
 						<select id="rempart-sync-location">
 							<option value="local">Dossier local</option>
 							<?php foreach ($locations as $id => $location) : ?>
 								<option value="<?php echo esc_attr($id); ?>"><?php echo esc_html($location['name']); ?></option>
 							<?php endforeach; ?>
 						</select>
+						</label>
 						<button type="button" class="button" id="rempart-sync">Synchroniser</button>
 						<button type="button" class="button" id="rempart-upload-open"><span class="dashicons dashicons-upload"></span> Importer une sauvegarde</button>
 						<input type="file" id="rempart-upload-file" accept=".gz" hidden>
@@ -715,7 +744,7 @@ class Rempart_Admin {
 					<thead><tr><th class="check-column"></th><th>Date</th><th>Emplacement</th><th>Taille</th><th>Contenu</th><th>Note</th><th>Actions</th></tr></thead>
 					<tbody>
 						<?php if (!$rows) : ?>
-							<tr><td colspan="7" class="rempart-empty">Aucune sauvegarde pour le moment.</td></tr>
+							<tr><td colspan="7" class="rempart-empty"><?php echo $filter === 'all' ? 'Aucune sauvegarde pour le moment.' : 'Aucune sauvegarde à cet emplacement.'; ?></td></tr>
 						<?php endif; ?>
 						<?php
 						foreach ($rows as $info) :
@@ -762,7 +791,7 @@ class Rempart_Admin {
 					<div class="tablenav"><div class="tablenav-pages">
 						<span class="displaying-num"><?php echo (int) $total; ?> sauvegardes</span>
 						<?php for ($i = 1; $i <= $pages; $i++) : ?>
-							<a class="button <?php echo $i === $page ? 'button-primary' : ''; ?>" href="<?php echo esc_url(admin_url('admin.php?page=rempart-backup&history_page=' . $i . '#history')); ?>"><?php echo (int) $i; ?></a>
+							<a class="button <?php echo $i === $page ? 'button-primary' : ''; ?>" href="<?php echo esc_url(admin_url('admin.php?page=rempart-backup&history_page=' . $i . $filter_query . '#history')); ?>"><?php echo (int) $i; ?></a>
 						<?php endfor; ?>
 					</div></div>
 				<?php endif; ?>
@@ -774,19 +803,16 @@ class Rempart_Admin {
 	private static function tab_notifications() {
 		$types = Rempart_Notifications::types();
 		$channels = Rempart_Notifications::all();
-		$settings = rempart_settings();
 		?>
 		<section id="tab-notifications" class="rempart-tab" hidden>
 			<div class="rempart-card">
 				<h2>Être prévenu</h2>
-				<p>Chaque sauvegarde réussie ou ratée peut envoyer un message. L'e-mail se règle dans <a href="#settings">Réglages</a>
-					<?php echo $settings['email'] !== '' ? '(actuellement : ' . esc_html($settings['email']) . ')' : '(aucune adresse pour le moment)'; ?>.
-					Les services ci-dessous s'ajoutent à l'e-mail : vous pouvez en cumuler autant que vous voulez.</p>
+				<p>Chaque sauvegarde réussie ou ratée peut envoyer un message. L'e-mail est un service comme les autres : ajoutez-en autant que vous voulez, de toutes sortes, et choisissez pour chacun s'il veut les réussites, les échecs ou les deux.</p>
 				<table class="widefat striped rempart-table">
 					<thead><tr><th>Nom</th><th>Service</th><th>Prévenir en cas de</th><th>Dernier envoi</th><th>Actions</th></tr></thead>
 					<tbody>
 						<?php if (!$channels) : ?>
-							<tr><td colspan="5" class="rempart-empty">Aucun service de notification pour le moment.</td></tr>
+							<tr><td colspan="5" class="rempart-empty">Aucune notification pour le moment. Ajoutez un e-mail ou un service.</td></tr>
 						<?php endif; ?>
 						<?php
 						foreach ($channels as $id => $channel) :
@@ -801,7 +827,10 @@ class Rempart_Admin {
 							$edit = array('id' => $channel['id'], 'name' => $channel['name'], 'type' => $channel['type'], 'enabled' => !empty($channel['enabled']) ? 1 : 0, 'on_success' => !empty($channel['on_success']) ? 1 : 0, 'on_failure' => !empty($channel['on_failure']) ? 1 : 0) + (array) $channel['config'];
 							?>
 							<tr>
-								<td><strong><?php echo esc_html($channel['name']); ?></strong><?php echo empty($channel['enabled']) ? ' <span class="rempart-tag">En pause</span>' : ''; ?></td>
+								<td>
+									<strong><?php echo esc_html($channel['name']); ?></strong><?php echo empty($channel['enabled']) ? ' <span class="rempart-tag">En pause</span>' : ''; ?>
+									<?php if ($channel['type'] === 'email' && !empty($channel['config']['address'])) : ?><br><small><?php echo esc_html($channel['config']['address']); ?></small><?php endif; ?>
+								</td>
 								<td><?php echo esc_html($types[$channel['type']]['label'] ?? $channel['type']); ?></td>
 								<td><?php echo esc_html($events ? implode(' et ', $events) : 'rien'); ?></td>
 								<td>
@@ -822,7 +851,7 @@ class Rempart_Admin {
 						<?php endforeach; ?>
 					</tbody>
 				</table>
-				<p><button type="button" class="button button-primary" id="rempart-ch-add">Ajouter un service</button></p>
+				<p><button type="button" class="button button-primary" id="rempart-ch-add">Ajouter une notification</button></p>
 			</div>
 
 			<div class="rempart-card" id="rempart-ch-card" hidden>
@@ -941,7 +970,7 @@ class Rempart_Admin {
 			</div>
 			<div class="rempart-card">
 				<h2>Recevoir les notifications sur son téléphone ou un salon</h2>
-				<p>Dans l'onglet Notifications, ajoutez un service, collez l'adresse ou le jeton qu'il vous donne, puis cliquez sur « Envoyer un test ».</p>
+				<p>Dans l'onglet Notifications, ajoutez un e-mail ou un service, collez l'adresse ou le jeton qu'il vous donne, puis cliquez sur « Envoyer un test ».</p>
 				<ul class="rempart-bullets">
 					<li><strong>Pushover</strong> : le jeton d'application se crée sur pushover.net/apps, la clé utilisateur est sur votre tableau de bord.</li>
 					<li><strong>Gotify</strong> : adresse de votre serveur, puis un jeton d'application créé dans son interface.</li>

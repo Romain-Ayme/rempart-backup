@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<ruleset name="Rempart Backup">
+	<description>Compatibilité PHP du plugin : PHP 8.3 à 8.5.</description>
+
+	<file>..</file>
+	<exclude-pattern>*/vendor/*</exclude-pattern>
+	<exclude-pattern>*/tests/*</exclude-pattern>
+	<arg name="extensions" value="php"/>
+	<arg name="colors"/>
+	<arg value="sp"/>
+
+	<config name="testVersion" value="8.3-8.5"/>
+	<rule ref="PHPCompatibilityWP"/>
+</ruleset>

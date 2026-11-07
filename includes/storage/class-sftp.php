@@ -7,21 +7,24 @@ if (!defined('ABSPATH')) {
 class Rempart_Storage_Sftp extends Rempart_Storage {
 	const CHUNK = 2097152;
 
-	/** @var \phpseclib3\Net\SFTP|null */
+	/** @var \phpseclib4\Net\SFTP|null */
 	private $sftp = null;
 
 	private function connect() {
 		if ($this->sftp) {
 			return;
 		}
-		if (!class_exists('\phpseclib3\Net\SFTP')) {
+		if (!class_exists('\phpseclib4\Net\SFTP')) {
 			require_once REMPART_DIR . '/vendor/autoload.php';
 		}
 		$port = (int) ($this->config['port'] ?? 0);
-		$sftp = new \phpseclib3\Net\SFTP($this->config['host'], $port ? $port : 22, 30);
-
-		// Remember the server's identity on first contact and refuse a change afterwards.
-		$host_key = $sftp->getServerPublicHostKey();
+		try {
+			$sftp = new \phpseclib4\Net\SFTP($this->config['host'], $port ? $port : 22, 30);
+			// Remember the server's identity on first contact and refuse a change afterwards.
+			$host_key = $sftp->getServerPublicHostKey();
+		} catch (Exception $e) {
+			throw new RuntimeException('Connexion SFTP à ' . $this->config['host'] . ' impossible : ' . $e->getMessage());
+		}
 		if ($host_key === false) {
 			throw new RuntimeException('Connexion SFTP à ' . $this->config['host'] . ' impossible.');
 		}
@@ -36,11 +39,20 @@ class Rempart_Storage_Sftp extends Rempart_Storage {
 
 		if (!empty($this->config['private_key'])) {
 			$passphrase = !empty($this->config['pass']) ? $this->config['pass'] : false;
-			$credential = \phpseclib3\Crypt\PublicKeyLoader::load($this->config['private_key'], $passphrase);
+			try {
+				$credential = \phpseclib4\Crypt\PublicKeyLoader::load($this->config['private_key'], $passphrase);
+			} catch (Exception $e) {
+				throw new RuntimeException('Clé SFTP illisible : ' . $e->getMessage());
+			}
 		} else {
 			$credential = $this->config['pass'];
 		}
-		if (!$sftp->login($this->config['user'], $credential)) {
+		try {
+			$logged = $sftp->login($this->config['user'], $credential);
+		} catch (Exception $e) {
+			throw new RuntimeException('Connexion SFTP refusée : ' . $e->getMessage());
+		}
+		if (!$logged) {
 			throw new RuntimeException('Identifiant, mot de passe ou clé SFTP refusé.');
 		}
 		$this->sftp = $sftp;
@@ -59,8 +71,12 @@ class Rempart_Storage_Sftp extends Rempart_Storage {
 	public function test() {
 		$this->connect();
 		$base = $this->base();
-		if ($base !== '.' && !$this->sftp->is_dir($base) && !$this->sftp->mkdir($base, -1, true)) {
-			throw new RuntimeException('Impossible de créer le dossier ' . $base . ' sur le serveur SFTP.');
+		if ($base !== '.' && !$this->sftp->is_dir($base)) {
+			try {
+				$this->sftp->mkdir($base, -1, true);
+			} catch (Exception $e) {
+				throw new RuntimeException('Impossible de créer le dossier ' . $base . ' sur le serveur SFTP : ' . $e->getMessage());
+			}
 		}
 		$probe = '.rempart-test-' . wp_generate_password(6, false);
 		$this->put_string($probe, 'ok');
@@ -88,7 +104,11 @@ class Rempart_Storage_Sftp extends Rempart_Storage {
 			if ($base !== '.' && !$this->sftp->is_dir($base)) {
 				$this->sftp->mkdir($base, -1, true);
 			}
-			$this->sftp->delete($this->path($remote));
+			try {
+				$this->sftp->delete($this->path($remote));
+			} catch (Exception $e) {
+				// Nothing to remove: the file is not there yet.
+			}
 			$state['started'] = 1;
 			$state['offset'] = 0;
 		}
@@ -97,9 +117,11 @@ class Rempart_Storage_Sftp extends Rempart_Storage {
 		while ($state['offset'] < $total && time() < $deadline) {
 			self::keep_alive();
 			$chunk = fread($source, self::CHUNK);
-			if (!$this->sftp->put($this->path($remote), $chunk, \phpseclib3\Net\SFTP::SOURCE_STRING, (int) $state['offset'])) {
+			try {
+				$this->sftp->put($this->path($remote), $chunk, \phpseclib4\Net\SFTP::SOURCE_STRING, (int) $state['offset']);
+			} catch (Exception $e) {
 				fclose($source);
-				throw new RuntimeException('Envoi SFTP interrompu : ' . $this->sftp->getLastSFTPError());
+				throw new RuntimeException('Envoi SFTP interrompu : ' . $e->getMessage());
 			}
 			$state['offset'] += strlen($chunk);
 			call_user_func($beat, $state['offset'], $total);
@@ -112,15 +134,23 @@ class Rempart_Storage_Sftp extends Rempart_Storage {
 		$this->connect();
 		$offset = (int) ($state['offset'] ?? 0);
 		if (empty($state['total'])) {
-			$state['total'] = $this->sftp->filesize($this->path($remote));
+			try {
+				$state['total'] = $this->sftp->filesize($this->path($remote));
+			} catch (Exception $e) {
+				$state['total'] = 0;
+			}
 			if (!$state['total']) {
 				throw new RuntimeException('Fichier introuvable sur le serveur SFTP : ' . $remote);
 			}
 		}
 		while ($offset < $state['total'] && time() < $deadline) {
 			self::keep_alive();
-			$chunk = $this->sftp->get($this->path($remote), false, $offset, self::CHUNK);
-			if ($chunk === false || $chunk === '') {
+			try {
+				$chunk = $this->sftp->get($this->path($remote), null, $offset, self::CHUNK);
+			} catch (Exception $e) {
+				$chunk = false;
+			}
+			if ($chunk === null || $chunk === false || $chunk === '') {
 				throw new RuntimeException('Lecture SFTP interrompue.');
 			}
 			self::append_local($local, $offset, $chunk);
@@ -133,15 +163,21 @@ class Rempart_Storage_Sftp extends Rempart_Storage {
 
 	public function put_string($remote, $content) {
 		$this->connect();
-		if (!$this->sftp->put($this->path($remote), $content)) {
-			throw new RuntimeException('Écriture refusée par le serveur SFTP : ' . $this->sftp->getLastSFTPError());
+		try {
+			$this->sftp->put($this->path($remote), $content);
+		} catch (Exception $e) {
+			throw new RuntimeException('Écriture refusée par le serveur SFTP : ' . $e->getMessage());
 		}
 	}
 
 	public function get_string($remote) {
 		$this->connect();
-		$content = $this->sftp->get($this->path($remote));
-		if ($content === false) {
+		try {
+			$content = $this->sftp->get($this->path($remote));
+		} catch (Exception $e) {
+			$content = false;
+		}
+		if ($content === false || $content === null) {
 			throw new RuntimeException('Fichier illisible sur le serveur SFTP : ' . $remote);
 		}
 		return $content;
@@ -149,6 +185,10 @@ class Rempart_Storage_Sftp extends Rempart_Storage {
 
 	public function delete($remote) {
 		$this->connect();
-		$this->sftp->delete($this->path($remote));
+		try {
+			$this->sftp->delete($this->path($remote));
+		} catch (Exception $e) {
+			// Already gone or not removable: nothing more to do here.
+		}
 	}
 }
