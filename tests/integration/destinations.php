@@ -94,7 +94,18 @@ function rempart_it_roundtrip($class, array $config) {
 $failed = 0;
 foreach ($destinations as $name => $destination) {
 	try {
-		rempart_it_roundtrip($destination['class'], $destination['config']);
+		// An FTP server that is restarting (its image sometimes dies on start) gets a few more tries.
+		for ($attempt = 1; ; $attempt++) {
+			try {
+				rempart_it_roundtrip($destination['class'], $destination['config']);
+				break;
+			} catch (Throwable $e) {
+				if ($attempt >= 4 || !preg_match('/getaddrinfo|Could not resolve host|Connection refused|Connexion (SFTP )?à \S+ impossible/i', $e->getMessage())) {
+					throw $e;
+				}
+				sleep(5);
+			}
+		}
 		WP_CLI::success($name . ' : aller-retour OK');
 	} catch (Throwable $e) {
 				$text = $e->getMessage();
