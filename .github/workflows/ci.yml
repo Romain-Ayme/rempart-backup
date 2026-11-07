@@ -1,9 +1,11 @@
 name: CI
 
+# Les branches sont testées par leur pull request : pas de double exécution à chaque push.
 on:
   push:
-    branches: ['**']
+    branches: [main]
   pull_request:
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -54,10 +56,11 @@ jobs:
           name: rempart-backup
           path: dist/rempart-backup.zip
 
-  destinations:
-    name: Destinations et WordPress de test (wp-env)
+  versions:
+    name: Versions de WordPress à tester
     runs-on: ubuntu-latest
-    needs: checks
+    outputs:
+      matrix: ${{ steps.list.outputs.matrix }}
     steps:
       - uses: actions/checkout@v4
 
@@ -65,47 +68,46 @@ jobs:
         with:
           node-version: '20'
 
-      - name: Réseau et services de test
-        run: |
-          docker network create rempart-net
-          docker run -d --name rempart-sftp --network rempart-net atmoz/sftp bob:pass123:1001::upload
-          docker run -d --name rempart-ftp --network rempart-net -e USERS='bob|pass123' -e ADDRESS=rempart-ftp -e MIN_PORT=21000 -e MAX_PORT=21010 delfer/alpine-ftp-server
-          mkdir -p "$RUNNER_TEMP/tls"
-          openssl req -x509 -newkey rsa:2048 -nodes -days 1 -subj "/CN=rempart-ftps" -keyout "$RUNNER_TEMP/tls/k.pem" -out "$RUNNER_TEMP/tls/c.pem"
-          docker run -d --name rempart-ftps --network rempart-net -v "$RUNNER_TEMP/tls:/etc/vsftpd/tls:ro" -e TLS_CERT=/etc/vsftpd/tls/c.pem -e TLS_KEY=/etc/vsftpd/tls/k.pem -e USERS='bob|pass123' -e ADDRESS=rempart-ftps -e MIN_PORT=21000 -e MAX_PORT=21010 delfer/alpine-ftp-server
-          docker run -d --name rempart-dav --network rempart-net -e AUTH_TYPE=Basic -e USERNAME=bob -e PASSWORD=pass123 bytemark/webdav
-          docker run -d --name rempart-s3 --network rempart-net -e MAXIO_ACCESS_KEY=testkey1234 -e MAXIO_SECRET_KEY=testsecret12345678 -e MAXIO_DATA_DIR=/data coollabsio/maxio serve
+      # Dernière version de chaque branche entre le minimum et la branche courante (tests/wordpress.json).
+      - id: list
+        run: echo "matrix=$(node tools/wp-versions.js)" >> "$GITHUB_OUTPUT"
+
+  destinations:
+    name: Destinations sur WordPress ${{ matrix.wp }}
+    runs-on: ubuntu-latest
+    needs: [checks, versions]
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJSON(needs.versions.outputs.matrix) }}
+    env:
+      WP_ENV_CORE: ${{ matrix.zip }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Services de test
+        run: docker compose -f tests/docker-compose.yml up -d
 
       - name: Attendre les services
         run: |
           for name in rempart-sftp rempart-ftp rempart-dav rempart-s3; do
             for i in $(seq 1 30); do
-              docker run --rm --network rempart-net curlimages/curl -s -o /dev/null http://$name/ 2>/dev/null && break
+              docker run --rm --network rempart-tests curlimages/curl -s -o /dev/null http://$name/ 2>/dev/null && break
               sleep 2
             done
           done
 
       - name: Démarrer WordPress de test
-        run: |
-          cat > .wp-env.json <<'EOF'
-          {
-            "plugins": ["."],
-            "config": { "WP_DEBUG": true, "WP_DEBUG_DISPLAY": false }
-          }
-          EOF
-          npx --yes @wordpress/env@12 start
-
-      - name: Relier WordPress au réseau des services
-        run: |
-          for c in $(docker ps --format '{{.Names}}' | grep -E 'wp-env-.*-(cli|wordpress)-1$'); do
-            docker network connect rempart-net "$c" || true
-          done
+        run: npm run env:start
 
       - name: Aller-retour sur chaque destination
-        run: npx --yes @wordpress/env@12 run cli wp eval-file wp-content/plugins/rempart-backup/tests/integration/destinations.php
+        run: npm run test:destinations
 
       - name: Arrêter l'environnement
         if: always()
         run: |
-          npx --yes @wordpress/env@12 destroy || true
-          docker rm -f rempart-sftp rempart-ftp rempart-ftps rempart-dav rempart-s3 || true
+          npm run env:destroy || true
+          npm run services:down || true
