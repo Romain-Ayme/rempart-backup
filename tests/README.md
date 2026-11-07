@@ -42,6 +42,7 @@ npm run services:up          # démarre les services et prépare Garage
 npm run env:start            # WordPress de test (PHP et WordPress au choix, voir ci-dessous)
 npm run test:destinations    # aller-retour sur chaque destination
 npm run test:notifications   # un message par type de canal
+npm run test:backups         # sauvegardes complètes : locale, SFTP, refus, échec, arrêt, notifications
 npm run services:down
 ```
 
