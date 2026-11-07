@@ -5,8 +5,8 @@
  * Runs inside WordPress, because the WebDAV and S3 drivers use WordPress's HTTP functions:
  *   npx @wordpress/env run cli wp eval-file wp-content/plugins/rempart-backup/tests/integration/destinations.php
  *
- * The services are the ones of tests/docker-compose.yml. A destination whose service is not
- * reachable is reported as skipped; any failure makes the script exit with status 1.
+ * The services are the ones of tests/docker-compose.yml. An unreachable service is a failure, unless
+ * IT_SKIP_UNREACHABLE=1 is set (to test a single destination locally). Any failure exits with status 1.
  */
 if (!defined('ABSPATH') || !class_exists('Rempart_Storage')) {
 	fwrite(STDERR, "Ce script doit être lancé dans WordPress avec le plugin actif (wp eval-file).\n");
@@ -43,7 +43,7 @@ $destinations = array(
 	),
 	's3' => array(
 		'class'  => 'Rempart_Storage_S3',
-		'config' => array('endpoint' => $env('IT_S3_ENDPOINT', 'http://rempart-s3:9000'), 'region' => 'us-east-1', 'service' => 'custom', 'bucket' => 'rempart-it', 'access_key' => 'testkey1234', 'secret_key' => 'testsecret12345678', 'folder' => ''),
+		'config' => array('endpoint' => $env('IT_S3_ENDPOINT', 'http://rempart-s3:3900'), 'region' => 'us-east-1', 'service' => 'custom', 'bucket' => 'rempart-it', 'access_key' => 'GK00000000000000000000000a', 'secret_key' => '0000000000000000000000000000000000000000000000000000000000000001', 'folder' => ''),
 	),
 );
 
@@ -97,10 +97,9 @@ foreach ($destinations as $name => $destination) {
 		rempart_it_roundtrip($destination['class'], $destination['config']);
 		WP_CLI::success($name . ' : aller-retour OK');
 	} catch (Throwable $e) {
-		// A service that isn't running is not a failure of the plugin.
-		$text = $e->getMessage();
-		// Only connection-level errors skip a destination: a refused login is a failure.
-		if (preg_match('/Connexion (SFTP )?à \S+ impossible|Could not connect|cURL error [67]|Connection refused|Could not resolve host|getaddrinfo|Cannot connect to/i', $text)) {
+				$text = $e->getMessage();
+		// Opt-in only, and only for connection-level errors: a refused login is always a failure.
+		if (getenv('IT_SKIP_UNREACHABLE') && preg_match('/Connexion (SFTP )?à \S+ impossible|Could not connect|cURL error [67]|Connection refused|Could not resolve host|getaddrinfo|Cannot connect to/i', $text)) {
 			WP_CLI::warning($name . ' : service injoignable, ignoré (' . substr($text, 0, 120) . ')');
 			continue;
 		}

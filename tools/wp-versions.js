@@ -1,6 +1,6 @@
 // Lists the WordPress versions to test: the latest release of every branch from `minimum` to `branch`
 // (see tests/wordpress.json). When a new branch comes out, change `branch` (and `minimum` to drop old ones).
-//   node tools/wp-versions.js          -> {"include":[{"wp":"7.0.8","zip":"https://…"},…]} for a CI matrix
+//   node tools/wp-versions.js          -> {"include":[{"wp":"7.0.8","php":"8.3","zip":"https://…"},…]} for a CI matrix
 const fs = require('fs');
 const path = require('path');
 const https = require('https');
@@ -40,7 +40,17 @@ get('https://api.wordpress.org/core/stable-check/1.0/').then((all) => {
 			}
 		}
 	}
-	const include = [...wanted.values()].sort(compare).map((wp) => ({ wp, zip: 'https://wordpress.org/wordpress-' + wp + '.zip' }));
+	// Every WordPress version runs on the lowest PHP; the newest one runs on every PHP version too.
+	const versions = [...wanted.values()].sort(compare);
+	const [lowest, ...others] = config.php;
+	const include = [];
+	for (const wp of versions) {
+		const zip = 'https://wordpress.org/wordpress-' + wp + '.zip';
+		include.push({ wp, php: lowest, zip });
+		if (wp === versions[versions.length - 1]) {
+			others.forEach((php) => include.push({ wp, php, zip }));
+		}
+	}
 	if (include.length === 0) {
 		throw new Error('Aucune version de WordPress entre ' + config.minimum + ' et ' + config.branch);
 	}
