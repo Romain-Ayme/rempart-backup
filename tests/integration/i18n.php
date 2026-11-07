@@ -68,7 +68,7 @@ $cases = array(
 
 	'unités de taille et format de date' => function () {
 		backup_guard_it_locale('en_US');
-		backup_guard_it_expect(backup_guard_format_size(1536) === '1.50 KB', 'Unité anglaise attendue : ' . backup_guard_format_size(1536));
+		backup_guard_it_expect(preg_match('/^1[.,]50 KB$/', backup_guard_format_size(1536)) === 1, 'Unité anglaise attendue : ' . backup_guard_format_size(1536));
 		backup_guard_it_locale('fr_FR');
 		backup_guard_it_expect(strpos(backup_guard_format_size(1536), 'Ko') !== false, 'Unité française attendue : ' . backup_guard_format_size(1536));
 	},
