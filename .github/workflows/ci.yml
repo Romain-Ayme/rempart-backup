@@ -91,7 +91,7 @@ jobs:
         run: echo "matrix=$(node tools/wp-versions.js)" >> "$GITHUB_OUTPUT"
 
   destinations:
-    name: Destinations sur WordPress ${{ matrix.wp }}
+    name: Services sur WordPress ${{ matrix.wp }} / PHP ${{ matrix.php }}
     runs-on: ubuntu-latest
     needs: [checks, versions]
     strategy:
@@ -99,6 +99,7 @@ jobs:
       matrix: ${{ fromJSON(needs.versions.outputs.matrix) }}
     env:
       WP_ENV_CORE: ${{ matrix.zip }}
+      WP_ENV_PHP_VERSION: ${{ matrix.php }}
     steps:
       - uses: actions/checkout@v7
 
@@ -107,13 +108,13 @@ jobs:
           node-version: '26'
 
       - name: Services de test
-        run: docker compose -f tests/docker-compose.yml up -d
+        run: npm run services:up
 
       - name: Attendre les services
         run: |
-          for name in rempart-sftp rempart-ftp rempart-dav rempart-s3; do
+          for url in rempart-sftp:22 rempart-ftp:21 rempart-dav:80 rempart-gotify:80 rempart-ntfy:80 rempart-mail:8025 rempart-mock:80; do
             for i in $(seq 1 30); do
-              docker run --rm --network rempart-tests curlimages/curl -s -o /dev/null http://$name/ 2>/dev/null && break
+              docker run --rm --network rempart-tests busybox nc -z -w 2 ${url%%:*} ${url##*:} && break
               sleep 2
             done
           done
@@ -123,6 +124,9 @@ jobs:
 
       - name: Aller-retour sur chaque destination
         run: npm run test:destinations
+
+      - name: Notifications
+        run: npm run test:notifications
 
       - name: Arrêter l'environnement
         if: always()

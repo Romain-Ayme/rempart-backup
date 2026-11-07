@@ -56,16 +56,48 @@ services:
       default:
         aliases: [rempart-dav]
 
+  # S3 : Garage, un vrai serveur S3 auto-hébergé. `npm run services:up` crée ensuite la clé et le
+  # bucket (tools/init-services.js).
   s3:
-    image: coollabsio/maxio
-    command: serve
-    environment:
-      MAXIO_ACCESS_KEY: testkey1234
-      MAXIO_SECRET_KEY: testsecret12345678
-      MAXIO_DATA_DIR: /data
+    image: dxflrs/garage:v2.5.0
+    volumes:
+      - ./garage.toml:/etc/garage.toml:ro
     networks:
       default:
         aliases: [rempart-s3]
+
+  # Notifications auto-hébergées.
+  gotify:
+    image: gotify/server
+    environment:
+      GOTIFY_DEFAULTUSER_NAME: admin
+      GOTIFY_DEFAULTUSER_PASS: admin
+    networks:
+      default:
+        aliases: [rempart-gotify]
+
+  ntfy:
+    image: binwiederhier/ntfy
+    command: serve
+    networks:
+      default:
+        aliases: [rempart-ntfy]
+
+  mail:
+    image: axllent/mailpit
+    networks:
+      default:
+        aliases: [rempart-mail]
+
+  # Pushover, Telegram, Discord, Slack et le webhook : un faux serveur qui garde les requêtes reçues.
+  mock:
+    image: node:26-alpine
+    command: node /app/server.js
+    volumes:
+      - ./mock/server.js:/app/server.js:ro
+    networks:
+      default:
+        aliases: [rempart-mock]
 
 volumes:
   tls:
