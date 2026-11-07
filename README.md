@@ -1,5 +1,7 @@
 # Backup Guard
 
+Par Karom Studio - Romain AYME.
+
 Plugin WordPress de sauvegarde, restauration, migration et clonage, **sans licence et sans fonction réservée**.
 
 - PHP 8.3 ou plus, WordPress 7.1 ou plus.

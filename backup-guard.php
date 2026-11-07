@@ -5,7 +5,7 @@
  * Version: 1.0.0
  * Requires at least: 7.1
  * Requires PHP: 8.3
- * Author: Backup Guard
+ * Author: Karom Studio - Romain AYME
  * License: LGPL v2.1
  * License URI: http://www.gnu.org/licenses/lgpl-2.1.html
  * Text Domain: backup-guard
