@@ -1,5 +1,5 @@
 === Rempart Backup ===
-Requires at least: 7.0
+Requires at least: 7.1
 Requires PHP: 8.3
 Stable tag: 1.0.0
 License: LGPL v2.1
