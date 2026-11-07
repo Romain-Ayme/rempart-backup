@@ -112,11 +112,15 @@ jobs:
 
       - name: Attendre les services
         run: |
+          # Deux passes : vsftpd peut s'arrêter au premier démarrage et être relancé.
+          for pass in 1 2; do
           for url in rempart-sftp:22 rempart-ftp:21 rempart-ftps:21 rempart-dav:80 rempart-gotify:80 rempart-ntfy:80 rempart-mail:8025 rempart-mock:80; do
             for i in $(seq 1 30); do
               docker run --rm --network rempart-tests busybox nc -z -w 2 ${url%%:*} ${url##*:} && break
               sleep 2
             done
+          done
+          sleep 5
           done
 
       - name: Démarrer WordPress de test
