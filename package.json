@@ -4,6 +4,9 @@
 	"private": true,
 	"description": "Plugin WordPress de sauvegarde, restauration et migration, sans licence ni verrou.",
 	"license": "LGPL-2.1",
+	"engines": {
+		"node": ">=24.18.0"
+	},
 	"scripts": {
 		"build": "node tools/build-zip.js",
 		"env:start": "npx --yes @wordpress/env@12 start",
