@@ -1,0 +1,111 @@
+name: CI
+
+on:
+  push:
+    branches: ['**']
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  checks:
+    name: Contrôles PHP ${{ matrix.php }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        php: ['8.3', '8.4', '8.5']
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          tools: composer:v2
+
+      - name: Validation des manifestes Composer
+        run: |
+          composer validate --no-check-publish
+          composer validate --no-check-publish --working-dir=tests
+
+      - name: Dépendances de développement
+        run: composer install --working-dir=tests --no-interaction --prefer-dist --no-progress
+
+      - name: Lint, compatibilité PHP 8.3-8.5, analyse statique et tests unitaires
+        run: composer --working-dir=tests run check
+
+  package:
+    name: Paquet du plugin
+    runs-on: ubuntu-latest
+    needs: checks
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Construire le zip
+        run: node tools/build-zip.js
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: rempart-backup
+          path: dist/rempart-backup.zip
+
+  destinations:
+    name: Destinations et WordPress de test (wp-env)
+    runs-on: ubuntu-latest
+    needs: checks
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Réseau et services de test
+        run: |
+          docker network create rempart-net
+          docker run -d --name rempart-sftp --network rempart-net atmoz/sftp bob:pass123:1001::upload
+          docker run -d --name rempart-ftp --network rempart-net -e USERS='bob|pass123' -e ADDRESS=rempart-ftp -e MIN_PORT=21000 -e MAX_PORT=21010 delfer/alpine-ftp-server
+          mkdir -p "$RUNNER_TEMP/tls"
+          openssl req -x509 -newkey rsa:2048 -nodes -days 1 -subj "/CN=rempart-ftps" -keyout "$RUNNER_TEMP/tls/k.pem" -out "$RUNNER_TEMP/tls/c.pem"
+          docker run -d --name rempart-ftps --network rempart-net -v "$RUNNER_TEMP/tls:/etc/vsftpd/tls:ro" -e TLS_CERT=/etc/vsftpd/tls/c.pem -e TLS_KEY=/etc/vsftpd/tls/k.pem -e USERS='bob|pass123' -e ADDRESS=rempart-ftps -e MIN_PORT=21000 -e MAX_PORT=21010 delfer/alpine-ftp-server
+          docker run -d --name rempart-dav --network rempart-net -e AUTH_TYPE=Basic -e USERNAME=bob -e PASSWORD=pass123 bytemark/webdav
+          docker run -d --name rempart-s3 --network rempart-net -e MAXIO_ACCESS_KEY=testkey1234 -e MAXIO_SECRET_KEY=testsecret12345678 -e MAXIO_DATA_DIR=/data coollabsio/maxio serve
+
+      - name: Attendre les services
+        run: |
+          for name in rempart-sftp rempart-ftp rempart-dav rempart-s3; do
+            for i in $(seq 1 30); do
+              docker run --rm --network rempart-net curlimages/curl -s -o /dev/null http://$name/ 2>/dev/null && break
+              sleep 2
+            done
+          done
+
+      - name: Démarrer WordPress de test
+        run: |
+          cat > .wp-env.json <<'EOF'
+          {
+            "plugins": ["."],
+            "config": { "WP_DEBUG": true, "WP_DEBUG_DISPLAY": false }
+          }
+          EOF
+          npx --yes @wordpress/env@12 start
+
+      - name: Relier WordPress au réseau des services
+        run: |
+          for c in $(docker ps --format '{{.Names}}' | grep -E 'wp-env-.*-(cli|wordpress)-1$'); do
+            docker network connect rempart-net "$c" || true
+          done
+
+      - name: Aller-retour sur chaque destination
+        run: npx --yes @wordpress/env@12 run cli wp eval-file wp-content/plugins/rempart-backup/tests/integration/destinations.php
+
+      - name: Arrêter l'environnement
+        if: always()
+        run: |
+          npx --yes @wordpress/env@12 destroy || true
+          docker rm -f rempart-sftp rempart-ftp rempart-ftps rempart-dav rempart-s3 || true
