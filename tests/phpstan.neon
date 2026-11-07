@@ -5,10 +5,10 @@ parameters:
 	level: 3
 	paths:
 		- ../includes
-		- ../rempart-backup.php
+		- ../backup-guard.php
 		- ../uninstall.php
 	scanFiles:
-		- ../rempart-backup.php
+		- ../backup-guard.php
 	scanDirectories:
 		- ../vendor
 	ignoreErrors:
@@ -19,7 +19,7 @@ parameters:
 		  message: '#WP_CLI#'
 		- identifier: constant.notFound
 		  message: '#^Constant DB_[A-Z]+ not found\.$#'
-		# Defined in rempart-backup.php from plugins_url(), a value PHPStan does not evaluate.
+		# Defined in backup-guard.php from plugins_url(), a value PHPStan does not evaluate.
 		- identifier: constant.notFound
-		  message: '#^Constant REMPART_URL not found\.$#'
+		  message: '#^Constant BACKUP_GUARD_URL not found\.$#'
 	tmpDir: .phpstan.cache

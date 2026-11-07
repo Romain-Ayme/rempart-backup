@@ -4,7 +4,7 @@
  * A copy of this file is written under a random name for each restore, answers only to the
  * secret key of that restore, and is removed when the restore ends.
  */
-define('REMPART_RUNNER', 1);
+define('BACKUP_GUARD_RUNNER', 1);
 
 /**
  * WordPress is not loaded here, so there is no gettext: the plugin writes the translations of the
@@ -13,13 +13,13 @@ define('REMPART_RUNNER', 1);
  */
 if (!function_exists('__')) {
 	function __($text, $domain = '') {
-		return isset($GLOBALS['rempart_i18n'][$text]) ? $GLOBALS['rempart_i18n'][$text] : $text;
+		return isset($GLOBALS['backup_guard_i18n'][$text]) ? $GLOBALS['backup_guard_i18n'][$text] : $text;
 	}
 }
 
-/*REMPART_TAR_CLASSES*/
+/*BACKUP_GUARD_TAR_CLASSES*/
 
-class Rempart_Runner {
+class Backup_Guard_Runner {
 	const SLICE = 25;
 	const LONG_SLICE = 60;
 	const LONG_SCRIPT_ABOVE = 180;
@@ -35,7 +35,7 @@ class Rempart_Runner {
 	public function __construct($state_file, array $state) {
 		$this->state_file = $state_file;
 		$this->state = $state;
-		$GLOBALS['rempart_i18n'] = isset($state['i18n']) ? (array) $state['i18n'] : array();
+		$GLOBALS['backup_guard_i18n'] = isset($state['i18n']) ? (array) $state['i18n'] : array();
 		// Servers that allow long scripts get longer slices.
 		$limit = (int) ini_get('max_execution_time');
 		$slice = $limit > self::LONG_SCRIPT_ABOVE ? self::LONG_SLICE : self::SLICE;
@@ -100,7 +100,7 @@ class Rempart_Runner {
 		} catch (Exception $e) {
 			$this->fail($e->getMessage());
 		} catch (Error $e) {
-			$this->fail(sprintf(__('Erreur PHP : %s', 'rempart-backup'), $e->getMessage()));
+			$this->fail(sprintf(__('Erreur PHP : %s', 'backup-guard'), $e->getMessage()));
 		}
 		$this->save();
 		flock($lock, LOCK_UN);
@@ -164,7 +164,7 @@ class Rempart_Runner {
 
 	private function extract($db_only) {
 		$read = &$this->state['read'];
-		$reader = new Rempart_Tar_Reader($this->state['archive'], (int) $read['member'], (int) $read['skip']);
+		$reader = new Backup_Guard_Tar_Reader($this->state['archive'], (int) $read['member'], (int) $read['skip']);
 		$root = $this->state['root'];
 		$archive_size = max(1, $reader->file_size);
 		$low = 3;
@@ -181,7 +181,7 @@ class Rempart_Runner {
 				$read['skip'] = $position[1];
 				$entry = $reader->next_entry();
 				if ($entry === null) {
-					$this->log(sprintf(__('%d éléments restaurés', 'rempart-backup'), $this->state['extracted']));
+					$this->log(sprintf(__('%d éléments restaurés', 'backup-guard'), $this->state['extracted']));
 					$reader->close();
 					$this->next_after_extract();
 					return;
@@ -191,8 +191,8 @@ class Rempart_Runner {
 			}
 
 			$name = $this->safe_target($entry['name']);
-			$is_sql = $name === '.rempart/database.sql' || $name === 'softsql.sql';
-			$is_meta = $name !== null && (strpos($name, '.rempart/') === 0 || $name === 'softver.txt' || $name === 'softperms.txt'
+			$is_sql = $name === '.backup-guard/database.sql' || $name === 'softsql.sql';
+			$is_meta = $name !== null && (strpos($name, '.backup-guard/') === 0 || $name === 'softver.txt' || $name === 'softperms.txt'
 				|| preg_match('#^[^/]+\.php$#', $name) && !$this->is_root_php($name));
 
 			$target = null;
@@ -238,7 +238,7 @@ class Rempart_Runner {
 					}
 					fseek($handle, (int) min($entry['written'], $entry['size']));
 				} else {
-					$this->log(sprintf(__('Écriture impossible, ignoré : %s', 'rempart-backup'), $name), 'warning');
+					$this->log(sprintf(__('Écriture impossible, ignoré : %s', 'backup-guard'), $name), 'warning');
 					$this->state['warnings']++;
 				}
 			}
@@ -251,7 +251,7 @@ class Rempart_Runner {
 				}
 				$block = $reader->read((int) min($remaining, 1048576));
 				if ($block === '') {
-					throw new RuntimeException(sprintf(__('Archive incomplète : elle se termine au milieu de %s', 'rempart-backup'), $entry['name']));
+					throw new RuntimeException(sprintf(__('Archive incomplète : elle se termine au milieu de %s', 'backup-guard'), $entry['name']));
 				}
 				if ($handle) {
 					$payload_left = $entry['size'] - $entry['written'];
@@ -298,7 +298,7 @@ class Rempart_Runner {
 			$read['skip'] = $position[1];
 		}
 		$reader->close();
-		$this->log(sprintf(__('Fichiers : %d éléments restaurés', 'rempart-backup'), $this->state['extracted']));
+		$this->log(sprintf(__('Fichiers : %d éléments restaurés', 'backup-guard'), $this->state['extracted']));
 	}
 
 	private function is_root_php($name) {
@@ -317,11 +317,11 @@ class Rempart_Runner {
 	private function next_after_extract() {
 		if ($this->state['db']) {
 			if (empty($this->state['sql_found'])) {
-				throw new RuntimeException(__('Cette sauvegarde ne contient pas de base de données.', 'rempart-backup'));
+				throw new RuntimeException(__('Cette sauvegarde ne contient pas de base de données.', 'backup-guard'));
 			}
 			$this->state['phase'] = 'import';
 			$this->state['percent'] = max($this->state['percent'], 55);
-			$this->log(__('Fichiers terminés. Import de la base de données.', 'rempart-backup'));
+			$this->log(__('Fichiers terminés. Import de la base de données.', 'backup-guard'));
 		} else {
 			$this->state['phase'] = 'finish';
 		}
@@ -348,7 +348,7 @@ class Rempart_Runner {
 		mysqli_report(MYSQLI_REPORT_OFF);
 		$db = @mysqli_connect($host, $conn['user'], $conn['pass'], $conn['name'], $port, $socket);
 		if (!$db) {
-			throw new RuntimeException(sprintf(__('Connexion à la base de données impossible : %s', 'rempart-backup'), mysqli_connect_error()));
+			throw new RuntimeException(sprintf(__('Connexion à la base de données impossible : %s', 'backup-guard'), mysqli_connect_error()));
 		}
 		mysqli_set_charset($db, 'utf8mb4');
 		mysqli_query($db, 'SET FOREIGN_KEY_CHECKS=0');
@@ -378,7 +378,7 @@ class Rempart_Runner {
 		$file = $this->state['tmp_sql'];
 		$size = filesize($file);
 		if (!$size) {
-			throw new RuntimeException(__('Le fichier de la base de données est vide.', 'rempart-backup'));
+			throw new RuntimeException(__('Le fichier de la base de données est vide.', 'backup-guard'));
 		}
 		$db = $this->db();
 		$handle = fopen($file, 'rb');
@@ -445,13 +445,13 @@ class Rempart_Runner {
 					$errno = mysqli_errno($db);
 				}
 				if ($errno === 2006 || $errno === 2013) {
-					throw new RuntimeException(__('Le serveur de base de données a coupé la connexion. Une requête dépasse peut-être max_allowed_packet.', 'rempart-backup'));
+					throw new RuntimeException(__('Le serveur de base de données a coupé la connexion. Une requête dépasse peut-être max_allowed_packet.', 'backup-guard'));
 				}
 				$errors++;
 				$this->state['warnings']++;
-				$this->log(sprintf(__('Requête refusée : %1$s — %2$s', 'rempart-backup'), mysqli_error($db), substr($statement, 0, 120)), 'warning');
+				$this->log(sprintf(__('Requête refusée : %1$s — %2$s', 'backup-guard'), mysqli_error($db), substr($statement, 0, 120)), 'warning');
 				if ($errors > self::MAX_SQL_ERRORS) {
-					throw new RuntimeException(__('Trop d\'erreurs pendant l\'import de la base de données.', 'rempart-backup'));
+					throw new RuntimeException(__('Trop d\'erreurs pendant l\'import de la base de données.', 'backup-guard'));
 				}
 			}
 		}
@@ -466,7 +466,7 @@ class Rempart_Runner {
 
 		if ($finished) {
 			@unlink($file);
-			$this->log(__('Base de données importée.', 'rempart-backup'));
+			$this->log(__('Base de données importée.', 'backup-guard'));
 			$this->state['phase'] = 'prefix';
 		}
 	}
@@ -585,7 +585,7 @@ class Rempart_Runner {
 			$length = strlen($source) + 1;
 			mysqli_query($db, "UPDATE `{$target}options` SET option_name = CONCAT('{$tgt}', SUBSTRING(option_name, {$length})) WHERE option_name LIKE '{$esc_source}%' AND option_name IN ('{$src}user_roles')");
 			mysqli_query($db, "UPDATE `{$target}usermeta` SET meta_key = CONCAT('{$tgt}', SUBSTRING(meta_key, {$length})) WHERE meta_key LIKE '{$esc_source}%'");
-			$this->log(sprintf(__('Préfixe des tables adapté : %1$s → %2$s', 'rempart-backup'), $source, $target));
+			$this->log(sprintf(__('Préfixe des tables adapté : %1$s → %2$s', 'backup-guard'), $source, $target));
 		}
 		$this->detect_origin_from_database();
 		$this->state['phase'] = !empty($this->state['migration']) ? 'replace' : 'finish';
@@ -612,7 +612,7 @@ class Rempart_Runner {
 			$this->state['migration'] = true;
 			$this->state['source']['url'] = $values['siteurl'];
 			$this->state['source']['home'] = $home;
-			$this->log(sprintf(__('Migration détectée : %1$s → %2$s', 'rempart-backup'), $home, $this->state['target']['home']));
+			$this->log(sprintf(__('Migration détectée : %1$s → %2$s', 'backup-guard'), $home, $this->state['target']['home']));
 		}
 	}
 
@@ -667,7 +667,7 @@ class Rempart_Runner {
 				}
 			}
 			$this->state['replace'] = array('tables' => $tables, 'index' => 0, 'offset' => 0, 'changed' => 0);
-			$this->log(__('Mise à jour de l\'adresse du site dans la base de données.', 'rempart-backup'));
+			$this->log(__('Mise à jour de l\'adresse du site dans la base de données.', 'backup-guard'));
 		}
 		$progress = &$this->state['replace'];
 		$pairs = $this->replacement_pairs();
@@ -682,7 +682,7 @@ class Rempart_Runner {
 			$shape = $this->table_shape($table);
 			if (!$shape['text'] || !$shape['keys']) {
 				if ($shape['text'] && !$shape['keys']) {
-					$this->log(sprintf(__('Table sans clé primaire, adresses non mises à jour : %s', 'rempart-backup'), $table), 'warning');
+					$this->log(sprintf(__('Table sans clé primaire, adresses non mises à jour : %s', 'backup-guard'), $table), 'warning');
 				}
 				$progress['index']++;
 				$progress['offset'] = 0;
@@ -692,7 +692,7 @@ class Rempart_Runner {
 			$order = '`' . implode('`,`', $shape['keys']) . '`';
 			$rows = mysqli_query($db, "SELECT {$cols} FROM `{$table}` ORDER BY {$order} LIMIT " . (int) $progress['offset'] . ', ' . self::BATCH_ROWS);
 			if (!$rows) {
-				$this->log(sprintf(__('Lecture impossible de %1$s : %2$s', 'rempart-backup'), $table, mysqli_error($db)), 'warning');
+				$this->log(sprintf(__('Lecture impossible de %1$s : %2$s', 'backup-guard'), $table, mysqli_error($db)), 'warning');
 				$progress['index']++;
 				$progress['offset'] = 0;
 				continue;
@@ -706,7 +706,7 @@ class Rempart_Runner {
 					if ($value === null || $value === '') {
 						continue;
 					}
-					$new = Rempart_Serialized::replace($value, $search, $replace);
+					$new = Backup_Guard_Serialized::replace($value, $search, $replace);
 					if ($new !== $value) {
 						$sets[] = "`{$column}` = '" . mysqli_real_escape_string($db, $new) . "'";
 					}
@@ -738,7 +738,7 @@ class Rempart_Runner {
 			mysqli_query($db, "UPDATE `{$prefix}options` SET option_value = '{$home}' WHERE option_name = 'home'");
 			mysqli_query($db, "UPDATE `{$prefix}options` SET option_value = '{$url}' WHERE option_name = 'siteurl'");
 			mysqli_query($db, "DELETE FROM `{$prefix}options` WHERE option_name = 'rewrite_rules'");
-			$this->log(sprintf(__('%d lignes mises à jour avec la nouvelle adresse.', 'rempart-backup'), $progress['changed']));
+			$this->log(sprintf(__('%d lignes mises à jour avec la nouvelle adresse.', 'backup-guard'), $progress['changed']));
 			$this->state['phase'] = 'finish';
 		}
 	}
@@ -765,7 +765,7 @@ class Rempart_Runner {
 			$db = $this->db();
 			$prefix = $this->state['prefix'];
 			$now = time();
-			mysqli_query($db, "INSERT INTO `{$prefix}options` (option_name, option_value, autoload) VALUES ('rempart_last_restore', '{$now}', 'no') ON DUPLICATE KEY UPDATE option_value = '{$now}'");
+			mysqli_query($db, "INSERT INTO `{$prefix}options` (option_name, option_value, autoload) VALUES ('backup_guard_last_restore', '{$now}', 'no') ON DUPLICATE KEY UPDATE option_value = '{$now}'");
 			$this->keep_plugin_active($db, $prefix);
 		}
 		$this->maintenance(false);
@@ -774,7 +774,7 @@ class Rempart_Runner {
 			@opcache_reset();
 		}
 		$warnings = (int) $this->state['warnings'];
-		$this->log($warnings ? sprintf(__('Restauration terminée, avec %d avertissements. Consultez le journal.', 'rempart-backup'), $warnings) : __('Restauration terminée.', 'rempart-backup'), 'success');
+		$this->log($warnings ? sprintf(__('Restauration terminée, avec %d avertissements. Consultez le journal.', 'backup-guard'), $warnings) : __('Restauration terminée.', 'backup-guard'), 'success');
 		$this->state['finished'] = 1;
 		$this->state['status'] = 'success';
 		$this->state['percent'] = 100;
@@ -836,7 +836,7 @@ class Rempart_Runner {
  * Replaces text in values that may be PHP serialized data, keeping the length prefixes right.
  * The data is only ever walked as text: nothing is unserialized, so no object from a backup can run code.
  */
-class Rempart_Serialized {
+class Backup_Guard_Serialized {
 	public static function replace($value, array $search, array $replace) {
 		$hit = false;
 		foreach ($search as $needle) {
@@ -962,30 +962,30 @@ class Rempart_Serialized {
 if (PHP_SAPI === 'cli') {
 	parse_str(isset($argv[1]) ? $argv[1] : '', $_REQUEST);
 }
-$rempart_key = isset($_REQUEST['key']) ? (string) $_REQUEST['key'] : '';
-$rempart_state_file = __DIR__ . '/rempart/state/restore.php';
-$rempart_raw = @file_get_contents($rempart_state_file);
-$rempart_state = $rempart_raw === false ? null : json_decode(preg_replace('/^<\?php exit;\?>\n/', '', $rempart_raw), true);
+$backup_guard_key = isset($_REQUEST['key']) ? (string) $_REQUEST['key'] : '';
+$backup_guard_state_file = __DIR__ . '/backup-guard/state/restore.php';
+$backup_guard_raw = @file_get_contents($backup_guard_state_file);
+$backup_guard_state = $backup_guard_raw === false ? null : json_decode(preg_replace('/^<\?php exit;\?>\n/', '', $backup_guard_raw), true);
 
 header('Content-Type: application/json; charset=utf-8');
 header('Cache-Control: no-store');
 header('X-Robots-Tag: noindex');
 
-if (!is_array($rempart_state) || empty($rempart_state['key']) || !hash_equals($rempart_state['key'], $rempart_key)) {
+if (!is_array($backup_guard_state) || empty($backup_guard_state['key']) || !hash_equals($backup_guard_state['key'], $backup_guard_key)) {
 	http_response_code(403);
-	echo json_encode(array('error' => __('Accès refusé.', 'rempart-backup')));
+	echo json_encode(array('error' => __('Accès refusé.', 'backup-guard')));
 	exit;
 }
 
-$rempart_op = isset($_REQUEST['op']) ? (string) $_REQUEST['op'] : 'status';
-$rempart_runner = new Rempart_Runner($rempart_state_file, $rempart_state);
+$backup_guard_op = isset($_REQUEST['op']) ? (string) $_REQUEST['op'] : 'status';
+$backup_guard_runner = new Backup_Guard_Runner($backup_guard_state_file, $backup_guard_state);
 
-if ($rempart_op === 'run' && PHP_SAPI === 'cli') {
-	$rempart_runner->run();
+if ($backup_guard_op === 'run' && PHP_SAPI === 'cli') {
+	$backup_guard_runner->run();
 	exit;
 }
 
-if ($rempart_op === 'run') {
+if ($backup_guard_op === 'run') {
 	ignore_user_abort(true);
 	@set_time_limit(120);
 	echo json_encode(array('ok' => 1));
@@ -998,49 +998,49 @@ if ($rempart_op === 'run') {
 		@ob_end_flush();
 		@flush();
 	}
-	$rempart_runner->run();
-	$rempart_after = $rempart_runner->state();
-	if (empty($rempart_after['finished'])) {
+	$backup_guard_runner->run();
+	$backup_guard_after = $backup_guard_runner->state();
+	if (empty($backup_guard_after['finished'])) {
 		// On to the next slice.
-		$rempart_url = parse_url($rempart_after['runner_url']);
-		$rempart_scheme = ($rempart_url['scheme'] ?? 'http') === 'https' ? 'ssl://' : 'tcp://';
-		$rempart_port = $rempart_url['port'] ?? (($rempart_url['scheme'] ?? 'http') === 'https' ? 443 : 80);
-		$rempart_context = stream_context_create(array('ssl' => array('verify_peer' => false, 'verify_peer_name' => false)));
-		$rempart_sock = @stream_socket_client($rempart_scheme . $rempart_url['host'] . ':' . $rempart_port, $rempart_errno, $rempart_errstr, 5, STREAM_CLIENT_CONNECT, $rempart_context);
-		if ($rempart_sock) {
-			$rempart_body = http_build_query(array('key' => $rempart_key, 'op' => 'run'));
-			fwrite($rempart_sock, 'POST ' . $rempart_url['path'] . " HTTP/1.1\r\nHost: " . $rempart_url['host'] . (isset($rempart_url['port']) ? ':' . $rempart_url['port'] : '')
-				. "\r\nContent-Type: application/x-www-form-urlencoded\r\nContent-Length: " . strlen($rempart_body) . "\r\nConnection: close\r\n\r\n" . $rempart_body);
-			fclose($rempart_sock);
+		$backup_guard_url = parse_url($backup_guard_after['runner_url']);
+		$backup_guard_scheme = ($backup_guard_url['scheme'] ?? 'http') === 'https' ? 'ssl://' : 'tcp://';
+		$backup_guard_port = $backup_guard_url['port'] ?? (($backup_guard_url['scheme'] ?? 'http') === 'https' ? 443 : 80);
+		$backup_guard_context = stream_context_create(array('ssl' => array('verify_peer' => false, 'verify_peer_name' => false)));
+		$backup_guard_sock = @stream_socket_client($backup_guard_scheme . $backup_guard_url['host'] . ':' . $backup_guard_port, $backup_guard_errno, $backup_guard_errstr, 5, STREAM_CLIENT_CONNECT, $backup_guard_context);
+		if ($backup_guard_sock) {
+			$backup_guard_body = http_build_query(array('key' => $backup_guard_key, 'op' => 'run'));
+			fwrite($backup_guard_sock, 'POST ' . $backup_guard_url['path'] . " HTTP/1.1\r\nHost: " . $backup_guard_url['host'] . (isset($backup_guard_url['port']) ? ':' . $backup_guard_url['port'] : '')
+				. "\r\nContent-Type: application/x-www-form-urlencoded\r\nContent-Length: " . strlen($backup_guard_body) . "\r\nConnection: close\r\n\r\n" . $backup_guard_body);
+			fclose($backup_guard_sock);
 		}
 	}
 	exit;
 }
 
 // Status: also pushes a restore that went quiet, so the open page can finish it alone.
-$rempart_from = isset($_REQUEST['from']) ? (int) $_REQUEST['from'] : 0;
+$backup_guard_from = isset($_REQUEST['from']) ? (int) $_REQUEST['from'] : 0;
 // No first slice yet, or calls to itself already failed: the watching page does the driving.
-$rempart_patience = !empty($rempart_state['direct']) ? 3 : (empty($rempart_state['loop']) ? 8 : 45);
-if (empty($rempart_state['finished']) && time() - (int) $rempart_state['heartbeat'] >= $rempart_patience) {
+$backup_guard_patience = !empty($backup_guard_state['direct']) ? 3 : (empty($backup_guard_state['loop']) ? 8 : 45);
+if (empty($backup_guard_state['finished']) && time() - (int) $backup_guard_state['heartbeat'] >= $backup_guard_patience) {
 	@set_time_limit(120);
-	$rempart_runner->mark_direct();
-	$rempart_runner->run();
-	$rempart_state = $rempart_runner->state();
+	$backup_guard_runner->mark_direct();
+	$backup_guard_runner->run();
+	$backup_guard_state = $backup_guard_runner->state();
 }
-list($rempart_lines, $rempart_next) = $rempart_runner->read_log($rempart_from);
+list($backup_guard_lines, $backup_guard_next) = $backup_guard_runner->read_log($backup_guard_from);
 echo json_encode(array(
-	'status'   => $rempart_state['status'],
-	'finished' => (int) $rempart_state['finished'],
-	'percent'  => (int) $rempart_state['percent'],
-	'phase'    => $rempart_state['phase'],
-	'errors'   => $rempart_state['errors'],
-	'warnings' => (int) $rempart_state['warnings'],
-	'log'      => $rempart_lines,
-	'next'     => $rempart_next,
+	'status'   => $backup_guard_state['status'],
+	'finished' => (int) $backup_guard_state['finished'],
+	'percent'  => (int) $backup_guard_state['percent'],
+	'phase'    => $backup_guard_state['phase'],
+	'errors'   => $backup_guard_state['errors'],
+	'warnings' => (int) $backup_guard_state['warnings'],
+	'log'      => $backup_guard_lines,
+	'next'     => $backup_guard_next,
 ), JSON_PARTIAL_OUTPUT_ON_ERROR);
 
 // The watcher now knows how it ended. Nothing needs this program any more, and the watcher's
 // session may be gone (the accounts are those of the backup), so it can't be left to clean up.
-if (!empty($rempart_state['finished'])) {
-	$rempart_runner->remove_traces();
+if (!empty($backup_guard_state['finished'])) {
+	$backup_guard_runner->remove_traces();
 }

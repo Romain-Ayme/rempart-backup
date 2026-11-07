@@ -17,7 +17,7 @@ jobs:
       - name: Vérifier que la version du tag correspond au plugin
         run: |
           tag="${GITHUB_REF_NAME#v}"
-          header=$(grep -m1 -E '^ \* Version:' rempart-backup.php | sed -E 's/^ \* Version: *//' | tr -d '\r')
+          header=$(grep -m1 -E '^ \* Version:' backup-guard.php | sed -E 's/^ \* Version: *//' | tr -d '\r')
           stable=$(grep -m1 -E '^Stable tag:' readme.txt | sed -E 's/^Stable tag: *//' | tr -d '\r')
           echo "tag=$tag en-tête=$header readme=$stable"
           [ "$tag" = "$header" ] && [ "$tag" = "$stable" ]
@@ -32,4 +32,4 @@ jobs:
       - name: Publier la release
         env:
           GH_TOKEN: ${{ github.token }}
-        run: gh release create "$GITHUB_REF_NAME" dist/rempart-backup.zip --title "$GITHUB_REF_NAME" --generate-notes
+        run: gh release create "$GITHUB_REF_NAME" dist/backup-guard.zip --title "$GITHUB_REF_NAME" --generate-notes

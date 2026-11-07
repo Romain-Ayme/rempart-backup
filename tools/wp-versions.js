@@ -9,7 +9,7 @@ const config = JSON.parse(fs.readFileSync(path.join(__dirname, '..', 'tests', 'w
 
 function get(url) {
 	return new Promise((resolve, reject) => {
-		https.get(url, { headers: { 'User-Agent': 'rempart-backup-ci' } }, (response) => {
+		https.get(url, { headers: { 'User-Agent': 'backup-guard-ci' } }, (response) => {
 			let body = '';
 			response.on('data', (chunk) => { body += chunk; });
 			response.on('end', () => (response.statusCode === 200 ? resolve(JSON.parse(body)) : reject(new Error('HTTP ' + response.statusCode))));

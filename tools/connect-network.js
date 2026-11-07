@@ -2,7 +2,7 @@
 // Run after `npm run env:start` and `npm run services:up`.
 const { execFileSync } = require('child_process');
 
-const network = 'rempart-tests';
+const network = 'backup-guard-tests';
 const names = execFileSync('docker', ['ps', '--format', '{{.Names}}'], { encoding: 'utf8' })
 	.split(/\r?\n/)
 	.filter((name) => /^wp-env-.*-(cli|wordpress)-1$/.test(name) && !name.includes('-tests-'));

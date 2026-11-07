@@ -71,8 +71,8 @@ jobs:
 
       - uses: actions/upload-artifact@v7
         with:
-          name: rempart-backup
-          path: dist/rempart-backup.zip
+          name: backup-guard
+          path: dist/backup-guard.zip
 
   versions:
     name: Versions de WordPress à tester
@@ -114,9 +114,9 @@ jobs:
         run: |
           # Deux passes : vsftpd peut s'arrêter au premier démarrage et être relancé.
           for pass in 1 2; do
-          for url in rempart-sftp:22 rempart-ftp:21 rempart-ftps:21 rempart-dav:80 rempart-gotify:80 rempart-ntfy:80 rempart-mail:8025 rempart-mock:80; do
+          for url in backup-guard-sftp:22 backup-guard-ftp:21 backup-guard-ftps:21 backup-guard-dav:80 backup-guard-gotify:80 backup-guard-ntfy:80 backup-guard-mail:8025 backup-guard-mock:80; do
             for i in $(seq 1 30); do
-              docker run --rm --network rempart-tests busybox nc -z -w 2 ${url%%:*} ${url##*:} && break
+              docker run --rm --network backup-guard-tests busybox nc -z -w 2 ${url%%:*} ${url##*:} && break
               sleep 2
             done
           done

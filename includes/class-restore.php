@@ -7,13 +7,13 @@ if (!defined('ABSPATH')) {
  * Prepares a restore. The work itself is done by a small program that doesn't load WordPress,
  * because WordPress's own files and tables get replaced while it runs.
  */
-class Rempart_Restore {
+class Backup_Guard_Restore {
 	public static function state_file() {
-		return REMPART_ROOT . 'state/restore.php';
+		return BACKUP_GUARD_ROOT . 'state/restore.php';
 	}
 
 	public static function current() {
-		return rempart_read_state(self::state_file());
+		return backup_guard_read_state(self::state_file());
 	}
 
 	public static function is_running() {
@@ -28,21 +28,21 @@ class Rempart_Restore {
 	 * @return array ['mode' => 'fetch'|'restore', ...]
 	 */
 	public static function start($name, array $options) {
-		$name = rempart_safe_backup_name($name);
-		$info = Rempart_Backups::get($name);
+		$name = backup_guard_safe_backup_name($name);
+		$info = Backup_Guard_Backups::get($name);
 		if (!$info) {
-			throw new RuntimeException(__('Sauvegarde introuvable.', 'rempart-backup'));
+			throw new RuntimeException(__('Sauvegarde introuvable.', 'backup-guard'));
 		}
 		$files = !empty($options['files']) && !empty($info['backup_dir']);
 		$db = !empty($options['db']) && !empty($info['backup_db']);
 		if (!$files && !$db) {
-			throw new RuntimeException(__('Choisissez ce qu\'il faut restaurer.', 'rempart-backup'));
+			throw new RuntimeException(__('Choisissez ce qu\'il faut restaurer.', 'backup-guard'));
 		}
 		$options = array('files' => $files, 'db' => $db);
 
-		$archive = Rempart_Backups::archive_path($name);
+		$archive = Backup_Guard_Backups::archive_path($name);
 		if (!file_exists($archive) && !empty($info['location'])) {
-			Rempart_Job::start_fetch($name, $options);
+			Backup_Guard_Job::start_fetch($name, $options);
 			return array('mode' => 'fetch');
 		}
 		return self::launch($name, $options, false);
@@ -51,13 +51,13 @@ class Rempart_Restore {
 	/** Write the program and its instructions, then start it. */
 	public static function launch($name, array $options, $delete_after) {
 		global $table_prefix;
-		$info = Rempart_Backups::get($name);
-		$archive = Rempart_Backups::archive_path($name);
+		$info = Backup_Guard_Backups::get($name);
+		$archive = Backup_Guard_Backups::archive_path($name);
 		if (!$info || !file_exists($archive)) {
-			throw new RuntimeException(__('Le fichier de cette sauvegarde est introuvable.', 'rempart-backup'));
+			throw new RuntimeException(__('Le fichier de cette sauvegarde est introuvable.', 'backup-guard'));
 		}
-		if (Rempart_Job::is_active()) {
-			throw new RuntimeException(__('Une tâche est en cours. Attendez sa fin ou arrêtez-la.', 'rempart-backup'));
+		if (Backup_Guard_Job::is_active()) {
+			throw new RuntimeException(__('Une tâche est en cours. Attendez sa fin ou arrêtez-la.', 'backup-guard'));
 		}
 
 		// Older keys in info files, from backups made by the plugin this one replaces.
@@ -67,26 +67,26 @@ class Rempart_Restore {
 
 		$target_url = site_url();
 		$target_home = home_url();
-		$target_path = rempart_clean_path(ABSPATH);
+		$target_path = backup_guard_clean_path(ABSPATH);
 		$is_migration = $source_url !== '' && (
 			untrailingslashit($source_url) !== untrailingslashit($target_url)
 			|| ($source_path !== '' && rtrim($source_path, '/') !== $target_path)
 		);
 
 		$key = wp_generate_password(48, false);
-		$runner_name = 'rempart-restore-' . rempart_random(24) . '.php';
-		$runner_path = rempart_clean_path(WP_CONTENT_DIR) . '/' . $runner_name;
-		$template = REMPART_DIR . '/runner/restore-runner.php';
-		$reader_source = file_get_contents(REMPART_DIR . '/includes/class-tar.php');
+		$runner_name = 'backup-guard-restore-' . backup_guard_random(24) . '.php';
+		$runner_path = backup_guard_clean_path(WP_CONTENT_DIR) . '/' . $runner_name;
+		$template = BACKUP_GUARD_DIR . '/runner/restore-runner.php';
+		$reader_source = file_get_contents(BACKUP_GUARD_DIR . '/includes/class-tar.php');
 		$code = file_get_contents($template);
 		if ($code === false || $reader_source === false) {
-			throw new RuntimeException(__('Fichiers du plugin incomplets : réinstallez-le.', 'rempart-backup'));
+			throw new RuntimeException(__('Fichiers du plugin incomplets : réinstallez-le.', 'backup-guard'));
 		}
 		// The program must keep working while the plugin's own folder is replaced, so it carries its own copy.
 		$reader_source = preg_replace('/^<\?php/', '', $reader_source);
-		$code = str_replace('/*REMPART_TAR_CLASSES*/', $reader_source, $code);
+		$code = str_replace('/*BACKUP_GUARD_TAR_CLASSES*/', $reader_source, $code);
 		if (@file_put_contents($runner_path, $code) === false) {
-			throw new RuntimeException(__('Impossible d\'écrire dans le dossier wp-content.', 'rempart-backup'));
+			throw new RuntimeException(__('Impossible d\'écrire dans le dossier wp-content.', 'backup-guard'));
 		}
 
 		// The program has no gettext: give it the translations of its messages, in this site's language.
@@ -94,7 +94,7 @@ class Rempart_Restore {
 		if (preg_match_all("/__\('((?:[^'\\\\]|\\\\.)*)'/", $code, $found)) {
 			foreach (array_unique($found[1]) as $raw) {
 				$text = str_replace(array("\\'", '\\\\'), array("'", '\\'), $raw);
-				$translated = translate($text, 'rempart-backup');
+				$translated = translate($text, 'backup-guard');
 				if ($translated !== $text) {
 					$i18n[$text] = $translated;
 				}
@@ -108,7 +108,7 @@ class Rempart_Restore {
 			'runner_url' => content_url($runner_name),
 			'archive'    => $archive,
 			'name'       => $name,
-			'plugin'     => plugin_basename(REMPART_FILE),
+			'plugin'     => plugin_basename(BACKUP_GUARD_FILE),
 			'files'      => !empty($options['files']),
 			'db'         => !empty($options['db']),
 			'phase'      => !empty($options['files']) ? 'extract' : 'extract_db',
@@ -123,7 +123,7 @@ class Rempart_Restore {
 			'delete_after' => (bool) $delete_after,
 			'root'       => $target_path,
 			'protected'  => array(
-				ltrim(substr(rempart_clean_path(REMPART_ROOT), strlen($target_path)), '/'),
+				ltrim(substr(backup_guard_clean_path(BACKUP_GUARD_ROOT), strlen($target_path)), '/'),
 				ltrim(substr($runner_path, strlen($target_path)), '/'),
 				'.maintenance',
 			),
@@ -136,16 +136,16 @@ class Rempart_Restore {
 			'extracted'  => 0,
 			'import'     => array('offset' => 0),
 			'replace'    => null,
-			'log_file'   => rempart_log_file('restore'),
-			'lock_file'  => REMPART_ROOT . 'state/restore.lock',
+			'log_file'   => backup_guard_log_file('restore'),
+			'lock_file'  => BACKUP_GUARD_ROOT . 'state/restore.lock',
 			'state_file' => self::state_file(),
-			'tmp_sql'    => REMPART_ROOT . 'tmp/restore-' . rempart_random(8) . '.sql',
+			'tmp_sql'    => BACKUP_GUARD_ROOT . 'tmp/restore-' . backup_guard_random(8) . '.sql',
 		);
-		rempart_log_reset('restore');
-		rempart_log(sprintf(__('Restauration démarrée : %s', 'rempart-backup'), $name) . ($is_migration ? ' ' . __('(migration vers cette adresse)', 'rempart-backup') : ''), 'info', 'restore');
-		if (!rempart_write_state(self::state_file(), $state)) {
+		backup_guard_log_reset('restore');
+		backup_guard_log(sprintf(__('Restauration démarrée : %s', 'backup-guard'), $name) . ($is_migration ? ' ' . __('(migration vers cette adresse)', 'backup-guard') : ''), 'info', 'restore');
+		if (!backup_guard_write_state(self::state_file(), $state)) {
 			@unlink($runner_path);
-			throw new RuntimeException(__('Impossible d\'écrire l\'état de la restauration.', 'rempart-backup'));
+			throw new RuntimeException(__('Impossible d\'écrire l\'état de la restauration.', 'backup-guard'));
 		}
 
 		wp_remote_post($state['runner_url'], array(
@@ -165,7 +165,7 @@ class Rempart_Restore {
 			if (!empty($state['runner'])) {
 				@unlink($state['runner']);
 			}
-			@copy(rempart_log_file('restore'), REMPART_ROOT . 'logs/last-restore.log.php');
+			@copy(backup_guard_log_file('restore'), BACKUP_GUARD_ROOT . 'logs/last-restore.log.php');
 			@unlink(self::state_file());
 			if (!empty($state['delete_after']) && !empty($state['archive'])) {
 				@unlink($state['archive']);
@@ -183,9 +183,9 @@ class Rempart_Restore {
 			if (!empty($state['tmp_sql'])) {
 				@unlink($state['tmp_sql']);
 			}
-			@unlink(rempart_clean_path(ABSPATH) . '/.maintenance');
+			@unlink(backup_guard_clean_path(ABSPATH) . '/.maintenance');
 			@unlink(self::state_file());
-			rempart_log(__('Restauration arrêtée de force.', 'rempart-backup'), 'warning', 'restore');
+			backup_guard_log(__('Restauration arrêtée de force.', 'backup-guard'), 'warning', 'restore');
 		}
 	}
 }

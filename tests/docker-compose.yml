@@ -1,6 +1,6 @@
 # Services de test pour chaque destination de sauvegarde. Lancer avec `npm run services:up`.
-# Les noms réseau (rempart-sftp, …) sont ceux que tests/integration/destinations.php attend.
-name: rempart-tests
+# Les noms réseau (backup-guard-sftp, …) sont ceux que tests/integration/destinations.php attend.
+name: backup-guard-tests
 
 services:
   sftp:
@@ -8,23 +8,23 @@ services:
     command: bob:pass123:1001::upload
     networks:
       default:
-        aliases: [rempart-sftp]
+        aliases: [backup-guard-sftp]
 
   ftp:
     image: delfer/alpine-ftp-server
     restart: always
     environment:
       USERS: 'bob|pass123'
-      ADDRESS: rempart-ftp
+      ADDRESS: backup-guard-ftp
       MIN_PORT: '21000'
       MAX_PORT: '21010'
     networks:
       default:
-        aliases: [rempart-ftp]
+        aliases: [backup-guard-ftp]
 
   tls-init:
     image: alpine/openssl
-    command: req -x509 -newkey rsa:2048 -nodes -days 1 -subj /CN=rempart-ftps -keyout /tls/k.pem -out /tls/c.pem
+    command: req -x509 -newkey rsa:2048 -nodes -days 1 -subj /CN=backup-guard-ftps -keyout /tls/k.pem -out /tls/c.pem
     volumes:
       - tls:/tls
     restart: 'no'
@@ -38,7 +38,7 @@ services:
         condition: service_completed_successfully
     environment:
       USERS: 'bob|pass123'
-      ADDRESS: rempart-ftps
+      ADDRESS: backup-guard-ftps
       MIN_PORT: '21000'
       MAX_PORT: '21010'
       TLS_CERT: /etc/vsftpd/tls/c.pem
@@ -47,7 +47,7 @@ services:
       - tls:/etc/vsftpd/tls:ro
     networks:
       default:
-        aliases: [rempart-ftps]
+        aliases: [backup-guard-ftps]
 
   webdav:
     image: bytemark/webdav
@@ -57,7 +57,7 @@ services:
       PASSWORD: pass123
     networks:
       default:
-        aliases: [rempart-dav]
+        aliases: [backup-guard-dav]
 
   # S3 : Garage, un vrai serveur S3 auto-hébergé. `npm run services:up` crée ensuite la clé et le
   # bucket (tools/init-services.js).
@@ -67,7 +67,7 @@ services:
       - ./garage.toml:/etc/garage.toml:ro
     networks:
       default:
-        aliases: [rempart-s3]
+        aliases: [backup-guard-s3]
 
   # Notifications auto-hébergées.
   gotify:
@@ -77,20 +77,20 @@ services:
       GOTIFY_DEFAULTUSER_PASS: admin
     networks:
       default:
-        aliases: [rempart-gotify]
+        aliases: [backup-guard-gotify]
 
   ntfy:
     image: binwiederhier/ntfy
     command: serve
     networks:
       default:
-        aliases: [rempart-ntfy]
+        aliases: [backup-guard-ntfy]
 
   mail:
     image: axllent/mailpit
     networks:
       default:
-        aliases: [rempart-mail]
+        aliases: [backup-guard-mail]
 
   # Pushover, Telegram, Discord, Slack et le webhook : un faux serveur qui garde les requêtes reçues.
   mock:
@@ -100,11 +100,11 @@ services:
       - ./mock/server.js:/app/server.js:ro
     networks:
       default:
-        aliases: [rempart-mock]
+        aliases: [backup-guard-mock]
 
 volumes:
   tls:
 
 networks:
   default:
-    name: rempart-tests
+    name: backup-guard-tests

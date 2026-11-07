@@ -6,7 +6,7 @@ if (!defined('ABSPATH')) {
 /**
  * FTP and FTPS (explicit TLS) over plain sockets, so PHP's optional FTP module isn't needed.
  */
-class Rempart_Storage_Ftp extends Rempart_Storage {
+class Backup_Guard_Storage_Ftp extends Backup_Guard_Storage {
 	const BLOCK = 262144;
 
 	private $control = null;
@@ -30,7 +30,7 @@ class Rempart_Storage_Ftp extends Rempart_Storage {
 		$errstr = '';
 		$this->control = @stream_socket_client('tcp://' . $host . ':' . $port, $errno, $errstr, 20);
 		if (!$this->control) {
-			throw new RuntimeException(sprintf(__('Connexion à %1$s:%2$s impossible : %3$s', 'rempart-backup'), $host, $port, $errstr));
+			throw new RuntimeException(sprintf(__('Connexion à %1$s:%2$s impossible : %3$s', 'backup-guard'), $host, $port, $errstr));
 		}
 		stream_set_timeout($this->control, 60);
 		$this->expect(array(220));
@@ -46,8 +46,8 @@ class Rempart_Storage_Ftp extends Rempart_Storage {
 			}
 			if (!$context_ok) {
 				$why = error_get_last();
-				$hint = empty($this->config['insecure_tls']) ? ' ' . __('Si le serveur utilise un certificat auto-signé, cochez « Accepter un certificat non vérifié » dans cet emplacement.', 'rempart-backup') : '';
-				throw new RuntimeException(sprintf(__('La connexion chiffrée (FTPS) a échoué : %s.', 'rempart-backup'), $why['message'] ?? __('raison inconnue', 'rempart-backup')) . $hint);
+				$hint = empty($this->config['insecure_tls']) ? ' ' . __('Si le serveur utilise un certificat auto-signé, cochez « Accepter un certificat non vérifié » dans cet emplacement.', 'backup-guard') : '';
+				throw new RuntimeException(sprintf(__('La connexion chiffrée (FTPS) a échoué : %s.', 'backup-guard'), $why['message'] ?? __('raison inconnue', 'backup-guard')) . $hint);
 			}
 		}
 		$reply = $this->send('USER ' . $this->config['user']);
@@ -55,7 +55,7 @@ class Rempart_Storage_Ftp extends Rempart_Storage {
 			$reply = $this->send('PASS ' . $this->config['pass']);
 		}
 		if ($reply[0] !== 230) {
-			throw new RuntimeException(__('Identifiant ou mot de passe FTP refusé.', 'rempart-backup'));
+			throw new RuntimeException(__('Identifiant ou mot de passe FTP refusé.', 'backup-guard'));
 		}
 		if ($this->is_tls()) {
 			$this->command('PBSZ 0', array(200));
@@ -84,7 +84,7 @@ class Rempart_Storage_Ftp extends Rempart_Storage {
 	private function read_reply() {
 		$first = fgets($this->control, 8192);
 		if ($first === false) {
-			throw new RuntimeException(__('Le serveur FTP a coupé la connexion.', 'rempart-backup'));
+			throw new RuntimeException(__('Le serveur FTP a coupé la connexion.', 'backup-guard'));
 		}
 		$code = (int) substr($first, 0, 3);
 		$text = $first;
@@ -102,14 +102,14 @@ class Rempart_Storage_Ftp extends Rempart_Storage {
 	private function expect(array $codes) {
 		$reply = $this->read_reply();
 		if (!in_array($reply[0], $codes, true)) {
-			throw new RuntimeException(sprintf(__('Réponse inattendue du serveur FTP : %s', 'rempart-backup'), $reply[1]));
+			throw new RuntimeException(sprintf(__('Réponse inattendue du serveur FTP : %s', 'backup-guard'), $reply[1]));
 		}
 		return $reply;
 	}
 
 	private function send($command) {
 		if (strpbrk($command, "\r\n") !== false) {
-			throw new RuntimeException(__('Nom de fichier ou identifiant invalide.', 'rempart-backup'));
+			throw new RuntimeException(__('Nom de fichier ou identifiant invalide.', 'backup-guard'));
 		}
 		fwrite($this->control, $command . "\r\n");
 		return $this->read_reply();
@@ -118,7 +118,7 @@ class Rempart_Storage_Ftp extends Rempart_Storage {
 	private function command($command, array $codes) {
 		$reply = $this->send($command);
 		if (!in_array($reply[0], $codes, true)) {
-			throw new RuntimeException(sprintf(__('Le serveur FTP a refusé « %1$s » : %2$s', 'rempart-backup'), strtok($command, ' '), $reply[1]));
+			throw new RuntimeException(sprintf(__('Le serveur FTP a refusé « %1$s » : %2$s', 'backup-guard'), strtok($command, ' '), $reply[1]));
 		}
 		return $reply;
 	}
@@ -132,7 +132,7 @@ class Rempart_Storage_Ftp extends Rempart_Storage {
 		} else {
 			$reply = $this->command('PASV', array(227));
 			if (!preg_match('/(\d+),(\d+),(\d+),(\d+),(\d+),(\d+)/', $reply[1], $m)) {
-				throw new RuntimeException(sprintf(__('Réponse PASV illisible : %s', 'rempart-backup'), $reply[1]));
+				throw new RuntimeException(sprintf(__('Réponse PASV illisible : %s', 'backup-guard'), $reply[1]));
 			}
 			$port = ((int) $m[5] << 8) + (int) $m[6];
 			$host = "{$m[1]}.{$m[2]}.{$m[3]}.{$m[4]}";
@@ -145,7 +145,7 @@ class Rempart_Storage_Ftp extends Rempart_Storage {
 		$errstr = '';
 		$data = @stream_socket_client('tcp://' . $host . ':' . $port, $errno, $errstr, 20);
 		if (!$data) {
-			throw new RuntimeException(sprintf(__('Connexion de données FTP impossible : %s', 'rempart-backup'), $errstr));
+			throw new RuntimeException(sprintf(__('Connexion de données FTP impossible : %s', 'backup-guard'), $errstr));
 		}
 		stream_set_timeout($data, 120);
 		return $data;
@@ -161,7 +161,7 @@ class Rempart_Storage_Ftp extends Rempart_Storage {
 				$ok = @stream_socket_enable_crypto($data, true, STREAM_CRYPTO_METHOD_TLS_CLIENT);
 			}
 			if (!$ok) {
-				throw new RuntimeException(__('La connexion de données FTPS n\'a pas pu être chiffrée.', 'rempart-backup'));
+				throw new RuntimeException(__('La connexion de données FTPS n\'a pas pu être chiffrée.', 'backup-guard'));
 			}
 		}
 	}
@@ -198,7 +198,7 @@ class Rempart_Storage_Ftp extends Rempart_Storage {
 	public function test() {
 		$this->connect();
 		$this->ensure_folder();
-		$probe = '.rempart-test-' . wp_generate_password(6, false);
+		$probe = '.backup-guard-test-' . wp_generate_password(6, false);
 		$this->put_string($probe, 'ok');
 		$this->delete($probe);
 		$this->disconnect();
@@ -214,7 +214,7 @@ class Rempart_Storage_Ftp extends Rempart_Storage {
 			if ($reply[0] === 550 || $reply[0] === 450) {
 				return array(); // Empty or missing folder.
 			}
-			throw new RuntimeException(sprintf(__('Liste des fichiers refusée : %s', 'rempart-backup'), $reply[1]));
+			throw new RuntimeException(sprintf(__('Liste des fichiers refusée : %s', 'backup-guard'), $reply[1]));
 		}
 		$this->secure_data($data);
 		$raw = stream_get_contents($data);
@@ -263,7 +263,7 @@ class Rempart_Storage_Ftp extends Rempart_Storage {
 		if (!in_array($reply[0], array(125, 150), true)) {
 			fclose($data);
 			fclose($source);
-			throw new RuntimeException(sprintf(__('Envoi refusé par le serveur FTP : %s', 'rempart-backup'), $reply[1]));
+			throw new RuntimeException(sprintf(__('Envoi refusé par le serveur FTP : %s', 'backup-guard'), $reply[1]));
 		}
 		$this->secure_data($data);
 
@@ -283,7 +283,7 @@ class Rempart_Storage_Ftp extends Rempart_Storage {
 			while ($sent < $length) {
 				$n = @fwrite($data, $sent ? substr($block, $sent) : $block);
 				if ($n === false || $n === 0) {
-					throw new RuntimeException(__('La connexion FTP a été coupée pendant l\'envoi.', 'rempart-backup'));
+					throw new RuntimeException(__('La connexion FTP a été coupée pendant l\'envoi.', 'backup-guard'));
 				}
 				$sent += $n;
 			}
@@ -304,7 +304,7 @@ class Rempart_Storage_Ftp extends Rempart_Storage {
 		if (empty($state['total'])) {
 			$state['total'] = $this->remote_size($remote);
 			if ($state['total'] < 0) {
-				throw new RuntimeException(sprintf(__('Fichier introuvable sur le serveur FTP : %s', 'rempart-backup'), $remote));
+				throw new RuntimeException(sprintf(__('Fichier introuvable sur le serveur FTP : %s', 'backup-guard'), $remote));
 			}
 		}
 		$target = fopen($local, 'c+b');
@@ -319,7 +319,7 @@ class Rempart_Storage_Ftp extends Rempart_Storage {
 		if (!in_array($reply[0], array(125, 150), true)) {
 			fclose($data);
 			fclose($target);
-			throw new RuntimeException(sprintf(__('Téléchargement refusé : %s', 'rempart-backup'), $reply[1]));
+			throw new RuntimeException(sprintf(__('Téléchargement refusé : %s', 'backup-guard'), $reply[1]));
 		}
 		$this->secure_data($data);
 
@@ -353,7 +353,7 @@ class Rempart_Storage_Ftp extends Rempart_Storage {
 		$reply = $this->send('STOR ' . $this->path($remote));
 		if (!in_array($reply[0], array(125, 150), true)) {
 			fclose($data);
-			throw new RuntimeException(sprintf(__('Envoi refusé par le serveur FTP : %s', 'rempart-backup'), $reply[1]));
+			throw new RuntimeException(sprintf(__('Envoi refusé par le serveur FTP : %s', 'backup-guard'), $reply[1]));
 		}
 		$this->secure_data($data);
 		fwrite($data, $content);
@@ -367,7 +367,7 @@ class Rempart_Storage_Ftp extends Rempart_Storage {
 		$reply = $this->send('RETR ' . $this->path($remote));
 		if (!in_array($reply[0], array(125, 150), true)) {
 			fclose($data);
-			throw new RuntimeException(sprintf(__('Fichier illisible sur le serveur FTP : %s', 'rempart-backup'), $reply[1]));
+			throw new RuntimeException(sprintf(__('Fichier illisible sur le serveur FTP : %s', 'backup-guard'), $reply[1]));
 		}
 		$this->secure_data($data);
 		$content = stream_get_contents($data);
