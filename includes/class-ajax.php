@@ -39,6 +39,7 @@ class Rempart_Ajax {
 		$state = Rempart_Job::start_backup(array(
 			'files'    => !empty($_POST['files']),
 			'db'       => !empty($_POST['db']),
+			'scope'    => self::post('scope', 'all'),
 			'location' => self::post('location'),
 			'note'     => self::post('note'),
 		));

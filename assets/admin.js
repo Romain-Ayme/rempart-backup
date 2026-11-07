@@ -178,6 +178,7 @@
 			var data = {
 				files: form.elements.files.checked ? 1 : '',
 				db: form.elements.db.checked ? 1 : '',
+				scope: form.elements.scope.value,
 				location: form.elements.location.value,
 				note: form.elements.note.value
 			};
