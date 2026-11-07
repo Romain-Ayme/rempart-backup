@@ -135,6 +135,9 @@ jobs:
       - name: Sauvegardes complètes (réussite, échec, arrêt)
         run: npm run test:backups
 
+      - name: Erreurs (identifiants, réseau coupé, tâche bloquée, restauration)
+        run: npm run test:errors
+
       - name: Journaux des services
         if: failure()
         run: docker compose -f tests/docker-compose.yml ps -a && docker compose -f tests/docker-compose.yml logs --tail 40 ftps
