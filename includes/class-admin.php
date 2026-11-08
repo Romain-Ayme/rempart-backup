@@ -158,6 +158,11 @@ class Backup_Guard_Admin {
 					$channel = Backup_Guard_Notifications::save(wp_unslash($_POST), $id);
 					self::redirect_with('notifications', sprintf(__('Canal « %s » enregistré. Utilisez « Envoyer un test » pour vérifier qu\'il fonctionne.', 'backup-guard'), $channel['name']));
 					break;
+				case 'toggle_channel':
+					$on = !empty($_POST['enabled']);
+					Backup_Guard_Notifications::set_enabled(sanitize_text_field(wp_unslash($_POST['id'])), $on);
+					self::redirect_with('notifications', $on ? __('Notification activée.', 'backup-guard') : __('Notification mise en pause.', 'backup-guard'));
+					break;
 				case 'delete_channel':
 					Backup_Guard_Notifications::delete(sanitize_text_field(wp_unslash($_POST['id'])));
 					self::redirect_with('notifications', __('Canal supprimé.', 'backup-guard'));
@@ -940,7 +945,12 @@ class Backup_Guard_Admin {
 							?>
 							<tr>
 								<td>
-									<strong><?php echo esc_html($channel['name']); ?></strong><?php echo empty($channel['enabled']) ? ' <span class="backup-guard-tag">' . esc_html__('En pause', 'backup-guard') . '</span>' : ''; ?>
+									<div class="backup-guard-name-cell">
+										<form method="post" class="backup-guard-switch-form"><?php wp_nonce_field('backup_guard_form'); ?><input type="hidden" name="backup_guard_form" value="toggle_channel"><input type="hidden" name="id" value="<?php echo esc_attr($id); ?>">
+											<label class="backup-guard-switch"><input type="checkbox" name="enabled" value="1" <?php checked(!empty($channel['enabled'])); ?> aria-label="<?php echo esc_attr__('Actif', 'backup-guard'); ?>"><span class="backup-guard-slider"></span></label>
+										</form>
+										<strong><?php echo esc_html($channel['name']); ?></strong>
+									</div>
 									<?php if ($channel['type'] === 'email' && !empty($channel['config']['address'])) : ?><br><small><?php echo esc_html($channel['config']['address']); ?></small><?php endif; ?>
 								</td>
 								<td><?php echo esc_html($types[$channel['type']]['label'] ?? $channel['type']); ?></td>
@@ -1012,7 +1022,7 @@ class Backup_Guard_Admin {
 					</div>
 					<div class="backup-guard-row">
 						<div class="backup-guard-row-label"><?php echo esc_html__('État', 'backup-guard'); ?></div>
-						<label><input type="checkbox" name="enabled" value="1" checked> <?php echo esc_html__('Actif', 'backup-guard'); ?></label>
+						<label class="backup-guard-switch-label"><span class="backup-guard-switch"><input type="checkbox" name="enabled" value="1" checked><span class="backup-guard-slider"></span></span> <?php echo esc_html__('Actif', 'backup-guard'); ?></label>
 					</div>
 					<p>
 						<button type="submit" class="button button-primary"><?php echo esc_html__('Enregistrer', 'backup-guard'); ?></button>

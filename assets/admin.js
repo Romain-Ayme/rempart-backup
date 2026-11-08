@@ -215,6 +215,9 @@
 	}
 	scheduleRadios.forEach(function (r) { r.addEventListener('change', syncSchedule); });
 	if (scheduleRadios.length) { syncSchedule(); }
+	$$('.backup-guard-switch-form input').forEach(function (box) {
+		box.addEventListener('change', function () { box.form.submit(); });
+	});
 	$$('.backup-guard-preset').forEach(function (b) {
 		b.addEventListener('click', function () { $('#backup-guard-minutes').value = b.dataset.minutes; });
 	});

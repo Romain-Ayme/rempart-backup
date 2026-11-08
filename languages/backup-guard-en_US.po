@@ -779,10 +779,6 @@ msgstr "success"
 msgid "échec"
 msgstr "failure"
 
-#: includes/class-admin.php:899
-msgid "En pause"
-msgstr "Paused"
-
 #: includes/class-admin.php:906
 msgctxt "result of the last send"
 msgid "Réussi"
@@ -2735,3 +2731,9 @@ msgstr "0 = all (default)"
 
 msgid "Toutes"
 msgstr "All"
+
+msgid "Notification activée."
+msgstr "Notification turned on."
+
+msgid "Notification mise en pause."
+msgstr "Notification paused."

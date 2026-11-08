@@ -121,3 +121,15 @@
 
 /* Selects in the location and notification forms: same width as the text fields */
 #backup-guard-location-form select, #backup-guard-ch-type, #backup-guard-ch-form select { width: 350px; max-width: 100%; }
+
+/* On/off switch */
+.backup-guard-switch { position: relative; display: inline-block; width: 38px; height: 22px; flex: none; vertical-align: middle; }
+.backup-guard-switch input { position: absolute; opacity: 0; width: 100%; height: 100%; margin: 0; cursor: pointer; z-index: 1; }
+.backup-guard-slider { position: absolute; inset: 0; background: #c3c4c7; border-radius: 999px; transition: background .15s; }
+.backup-guard-slider::before { content: ''; position: absolute; left: 3px; top: 3px; width: 16px; height: 16px; background: #fff; border-radius: 50%; transition: transform .15s; box-shadow: 0 1px 2px rgba(0, 0, 0, .3); }
+.backup-guard-switch input:checked + .backup-guard-slider { background: #2e9e4f; }
+.backup-guard-switch input:checked + .backup-guard-slider::before { transform: translateX(16px); }
+.backup-guard-switch input:focus-visible + .backup-guard-slider { outline: 2px solid #1f6f8b; outline-offset: 2px; }
+.backup-guard-switch-label { display: inline-flex; align-items: center; gap: 10px; }
+.backup-guard-switch-form { margin: 0; }
+.backup-guard-name-cell { display: flex; align-items: center; gap: 12px; }

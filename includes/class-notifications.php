@@ -168,6 +168,15 @@ class Backup_Guard_Notifications {
 		return $all[$id];
 	}
 
+	/** Turn a channel on or off without touching the rest of it. */
+	public static function set_enabled($id, $enabled) {
+		$all = self::all();
+		if (isset($all[$id])) {
+			$all[$id]['enabled'] = $enabled ? 1 : 0;
+			update_option(self::OPTION, $all, false);
+		}
+	}
+
 	public static function delete($id) {
 		$all = self::all();
 		unset($all[$id]);
