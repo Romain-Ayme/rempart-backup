@@ -2692,26 +2692,14 @@ msgstr "Notification turned on."
 msgid "Notification mise en pause."
 msgstr "Notification paused."
 
-msgid "Désactivées"
-msgstr "Off"
-
-msgid "Actives"
-msgstr "On"
-
 msgid "Fréquence"
 msgstr "Frequency"
-
-msgid "Désactivée"
-msgstr "Off"
 
 msgid "Toutes les X minutes"
 msgstr "Every X minutes"
 
 msgid "Fuseau horaire du site : %s"
 msgstr "Site time zone: %s"
-
-msgid "Quoi sauvegarder"
-msgstr "What to back up"
 
 msgid "Expression cron invalide. Exemple : 5 4 * * * (tous les jours à 4 h 05)."
 msgstr "Invalid cron expression. Example: 5 4 * * * (every day at 4:05 am)."
@@ -2722,14 +2710,8 @@ msgstr "There must be at least 5 minutes between two backups."
 msgid "Expression cron"
 msgstr "Cron expression"
 
-msgid "Tâche du serveur"
-msgstr "Server task"
-
 msgid "minute · heure · jour du mois · mois · jour de la semaine"
 msgstr "minute · hour · day of month · month · day of week"
-
-msgid "Exemples (cliquez pour utiliser)"
-msgstr "Examples (click to use)"
 
 msgid "tous les jours à 4 h 05"
 msgstr "every day at 4:05 am"
@@ -2766,3 +2748,18 @@ msgstr "Backup locked."
 
 msgid "Sauvegarde déverrouillée."
 msgstr "Backup unlocked."
+
+msgid "Pas de sauvegarde automatique"
+msgstr "No automatic backup"
+
+msgid "Personnalisée (tâche cron du serveur)"
+msgstr "Custom (server cron job)"
+
+msgid "Exemples :"
+msgstr "Examples:"
+
+msgid "Comment ça marche"
+msgstr "How it works"
+
+msgid "Commande à planifier"
+msgstr "Command to schedule"

@@ -98,28 +98,6 @@
 	.backup-guard-checklist li { flex-wrap: wrap; }
 }
 
-/* Automatic backups panel */
-.backup-guard-card-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 18px; }
-.backup-guard-card-head h2 { margin: 0; }
-.backup-guard-badge { font-size: 12px; font-weight: 600; padding: 4px 12px; border-radius: 999px; }
-.backup-guard-badge-on { background: #edf7ef; color: #1e6e38; }
-.backup-guard-badge-off { background: #f0f0f1; color: #50575e; }
-.backup-guard-section-title { margin: 22px 0 10px; font-size: 12px; font-weight: 600; letter-spacing: .04em; text-transform: uppercase; color: #50575e; }
-.backup-guard-card-head + .backup-guard-section-title { margin-top: 0; }
-.backup-guard-modes { display: inline-flex; flex-wrap: wrap; border: 1px solid #c3c4c7; border-radius: 8px; overflow: hidden; background: #fff; margin-bottom: 16px; }
-.backup-guard-mode { position: relative; display: flex; align-items: center; padding: 10px 20px; cursor: pointer; font-weight: 600; border-left: 1px solid #c3c4c7; margin: 0; user-select: none; }
-.backup-guard-mode:first-child { border-left: 0; }
-.backup-guard-mode input { position: absolute; opacity: 0; pointer-events: none; }
-.backup-guard-mode.is-on { background: #1f6f8b; color: #fff; }
-.backup-guard-mode:focus-within { outline: 2px solid #1f6f8b; outline-offset: -2px; }
-.backup-guard-panel { padding: 18px 20px; margin-bottom: 14px; background: #f6f7f7; border: 1px solid #ececec; border-radius: 8px; }
-.backup-guard-panel p { margin: 0 0 8px; }
-.backup-guard-panel-title { font-weight: 600; margin: 0 0 10px; }
-.backup-guard-panel .description { margin-top: 14px; }
-.backup-guard-presets { margin-top: 12px; display: flex; gap: 6px; flex-wrap: wrap; }
-.backup-guard-panel-note { color: #50575e; margin: 0 0 12px; }
-.backup-guard-auto-options { margin-top: 6px; }
-
 /* On/off switch */
 .backup-guard-switch { position: relative; display: inline-block; width: 38px; height: 22px; flex: none; vertical-align: middle; }
 .backup-guard-switch input { position: absolute; opacity: 0; width: 100%; height: 100%; margin: 0; cursor: pointer; z-index: 1; }
@@ -140,3 +118,6 @@
 .backup-guard-tag-locked { background: #fcf3e1; color: #8a5a00; display: inline-flex; align-items: center; gap: 2px; }
 .backup-guard-tag-locked .dashicons { width: 13px; height: 13px; font-size: 13px; }
 .backup-guard-lock .dashicons { width: 18px; height: 18px; font-size: 18px; line-height: 1.5; vertical-align: middle; }
+
+/* A row that is hidden stays hidden, whatever its display */
+.backup-guard [hidden] { display: none !important; }

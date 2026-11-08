@@ -206,23 +206,16 @@
 
 	/* ----- Rules, schedule ----- */
 
-	var scheduleRadios = $$('input[name="schedule"]');
+	var schedule = $('#backup-guard-schedule');
 	function syncSchedule() {
-		var checked = scheduleRadios.filter(function (r) { return r.checked; })[0];
-		var mode = checked ? checked.value : '';
-		$$('[data-mode]').forEach(function (el) { el.hidden = el.dataset.mode.split(' ').indexOf(mode) === -1; });
-		scheduleRadios.forEach(function (r) { r.closest('.backup-guard-mode').classList.toggle('is-on', r.checked); });
+		$$('[data-mode]').forEach(function (el) { el.hidden = el.dataset.mode.split(' ').indexOf(schedule.value) === -1; });
 	}
-	scheduleRadios.forEach(function (r) { r.addEventListener('change', syncSchedule); });
-	if (scheduleRadios.length) { syncSchedule(); }
+	if (schedule) {
+		schedule.addEventListener('change', syncSchedule);
+		syncSchedule();
+	}
 	$$('.backup-guard-switch-form input').forEach(function (box) {
 		box.addEventListener('change', function () { box.form.submit(); });
-	});
-	$$('.backup-guard-preset').forEach(function (b) {
-		b.addEventListener('click', function () { $('#backup-guard-minutes').value = b.dataset.minutes; });
-	});
-	$$('.backup-guard-example').forEach(function (b) {
-		b.addEventListener('click', function () { $('#backup-guard-cron-expr').value = b.dataset.expr; });
 	});
 	var rotation = $('#backup-guard-rotation');
 	var rotationWarn = $('#backup-guard-rotation-warning');
