@@ -210,6 +210,33 @@ $cases = array(
 			Backup_Guard_Schedule::sync();
 		}
 	},
+	'verrouillage : ni suppression, ni rotation' => function () use (&$created_backups) {
+		$make = function ($rotation) use (&$created_backups) {
+			$job = Backup_Guard_Job::start_backup(array('files' => false, 'db' => true, 'location' => '', 'auto' => true, 'rotation' => $rotation));
+			$created_backups[] = $job['name'];
+			$state = backup_guard_it_finish();
+			backup_guard_it_expect($state['status'] === 'success', 'État : ' . $state['status']);
+			return $job['name'];
+		};
+		$kept = $make(0);
+		Backup_Guard_Backups::set_locked($kept, true);
+		try {
+			Backup_Guard_Backups::delete($kept);
+			throw new RuntimeException('La suppression d\'une sauvegarde verrouillée aurait dû être refusée.');
+		} catch (RuntimeException $e) {
+			backup_guard_it_expect(strpos($e->getMessage(), 'verrouillée') !== false && Backup_Guard_Backups::get($kept) !== null, 'Message inattendu : ' . $e->getMessage());
+		}
+		sleep(1);
+		$old = $make(1);
+		sleep(1);
+		$new = $make(1);
+		backup_guard_it_expect(Backup_Guard_Backups::get($kept) !== null, 'La rotation a supprimé la sauvegarde verrouillée.');
+		backup_guard_it_expect(Backup_Guard_Backups::get($old) === null, 'La rotation aurait dû supprimer l\'ancienne sauvegarde.');
+		backup_guard_it_expect(Backup_Guard_Backups::get($new) !== null, 'La rotation a supprimé la plus récente.');
+		Backup_Guard_Backups::set_locked($kept, false);
+		Backup_Guard_Backups::delete($kept);
+		backup_guard_it_expect(Backup_Guard_Backups::get($kept) === null, 'Déverrouillée, elle aurait dû pouvoir être supprimée.');
+	},
 	'arrêt demandé par la personne' => function () use (&$created_backups) {
 		$job = Backup_Guard_Job::start_backup(array('files' => true, 'db' => true, 'location' => ''));
 		$created_backups[] = $job['name'];

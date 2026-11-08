@@ -2742,3 +2742,27 @@ msgstr "Monday to Friday at 2:30 am"
 
 msgid "le dimanche à 3 h"
 msgstr "on Sundays at 3 am"
+
+msgid "Verrouillée"
+msgstr "Locked"
+
+msgid "Déverrouiller"
+msgstr "Unlock"
+
+msgid "Verrouiller (protège de la suppression et de la rotation)"
+msgstr "Lock (protects from deletion and rotation)"
+
+msgid "Verrouiller"
+msgstr "Lock"
+
+msgid "Déverrouillez d'abord cette sauvegarde"
+msgstr "Unlock this backup first"
+
+msgid "« %s » est verrouillée : déverrouillez-la avant de la supprimer."
+msgstr ""%s" is locked: unlock it before deleting it."
+
+msgid "Sauvegarde verrouillée."
+msgstr "Backup locked."
+
+msgid "Sauvegarde déverrouillée."
+msgstr "Backup unlocked."

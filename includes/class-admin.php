@@ -378,16 +378,16 @@ class Backup_Guard_Admin {
 				<form id="backup-guard-form">
 					<p class="backup-guard-checks">
 						<label><input type="checkbox" name="files" value="1" <?php checked(!empty($settings['backup_files'])); ?>> <?php echo esc_html__('Fichiers du site', 'backup-guard'); ?></label>
-						<?php self::wordpress_files_box('wp', $settings['backup_scope']); ?>
 						<label><input type="checkbox" name="db" value="1"<?php checked(!empty($settings['backup_db'])); ?>> <?php echo esc_html__('Base de données', 'backup-guard'); ?></label>
 					</p>
-					<p class="description"><?php echo esc_html__('Sans les fichiers de WordPress, la sauvegarde se restaure sur un WordPress déjà installé, de la même version.', 'backup-guard'); ?></p>
 					<p>
 						<label for="backup-guard-location" class="backup-guard-label"><?php echo esc_html__('Où la garder', 'backup-guard'); ?></label>
 						<select name="location" id="backup-guard-location"><?php self::location_options($settings['location'], $locations, $protocols); ?></select>
 					</p>
 					<details class="backup-guard-more">
 						<summary><?php echo esc_html__('Options supplémentaires', 'backup-guard'); ?></summary>
+						<p class="backup-guard-checks"><?php self::wordpress_files_box('wp', $settings['backup_scope']); ?></p>
+						<p class="description"><?php echo esc_html__('Sans les fichiers de WordPress, la sauvegarde se restaure sur un WordPress déjà installé, de la même version.', 'backup-guard'); ?></p>
 						<label for="backup-guard-note" class="backup-guard-label"><?php echo esc_html__('Note (facultatif)', 'backup-guard'); ?></label>
 						<textarea name="note" id="backup-guard-note" maxlength="<?php echo (int) BACKUP_GUARD_NOTE_MAX; ?>" rows="2" placeholder="<?php echo esc_attr__('80 caractères au maximum', 'backup-guard'); ?>"></textarea>
 					</details>
@@ -905,6 +905,7 @@ class Backup_Guard_Admin {
 								<td>
 									<?php echo esc_html(wp_date('j M Y H:i', (int) $info['btime'])); ?>
 									<?php if (!empty($info['auto_backup'])) : ?><span class="backup-guard-tag"><?php echo esc_html__('Auto', 'backup-guard'); ?></span><?php endif; ?>
+									<?php if (!empty($info['locked'])) : ?><span class="backup-guard-tag backup-guard-tag-locked"><span class="dashicons dashicons-lock"></span> <?php echo esc_html__('Verrouillée', 'backup-guard'); ?></span><?php endif; ?>
 								</td>
 								<td><?php echo esc_html($location_label); ?></td>
 								<td><?php echo esc_html(backup_guard_format_size($info['size'] ?? 0)); ?></td>
@@ -918,7 +919,9 @@ class Backup_Guard_Admin {
 										data-source="<?php echo esc_attr($info['site_url'] ?? ($info['backup_site_url'] ?? '')); ?>"><?php echo esc_html__('Restaurer', 'backup-guard'); ?></button>
 									<?php if (!$unreachable) : ?><a class="button" href="<?php echo esc_url($download); ?>"><?php echo esc_html__('Télécharger', 'backup-guard'); ?></a><?php endif; ?>
 									<?php if ($has_log) : ?><button type="button" class="button backup-guard-show-log" data-log="<?php echo esc_attr($info['name']); ?>"><?php echo esc_html__('Journal', 'backup-guard'); ?></button><?php endif; ?>
-									<button type="button" class="button backup-guard-danger backup-guard-delete" data-name="<?php echo esc_attr($info['name']); ?>"><?php echo esc_html__('Supprimer', 'backup-guard'); ?></button>
+									<?php $locked = !empty($info['locked']); ?>
+									<button type="button" class="button backup-guard-lock" data-name="<?php echo esc_attr($info['name']); ?>" data-locked="<?php echo $locked ? '1' : ''; ?>" title="<?php echo esc_attr($locked ? __('Déverrouiller', 'backup-guard') : __('Verrouiller (protège de la suppression et de la rotation)', 'backup-guard')); ?>" aria-label="<?php echo esc_attr($locked ? __('Déverrouiller', 'backup-guard') : __('Verrouiller', 'backup-guard')); ?>"><span class="dashicons <?php echo $locked ? 'dashicons-lock' : 'dashicons-unlock'; ?>"></span></button>
+									<button type="button" class="button backup-guard-danger backup-guard-delete" data-name="<?php echo esc_attr($info['name']); ?>" <?php disabled($locked); ?> <?php echo $locked ? 'title="' . esc_attr__('Déverrouillez d\'abord cette sauvegarde', 'backup-guard') . '"' : ''; ?>><?php echo esc_html__('Supprimer', 'backup-guard'); ?></button>
 								</td>
 							</tr>
 						<?php endforeach; ?>

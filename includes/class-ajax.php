@@ -8,7 +8,7 @@ class Backup_Guard_Ajax {
 	public static function init() {
 		$actions = array(
 			'start_backup', 'stop', 'force_stop', 'status', 'restore_start', 'restore_ack', 'restore_force_stop',
-			'delete_backups', 'sync', 'test_location', 'quota', 'exclude_add', 'exclude_delete', 'tree', 'upload_chunk',
+			'delete_backups', 'lock_backup', 'sync', 'test_location', 'quota', 'exclude_add', 'exclude_delete', 'tree', 'upload_chunk',
 			'read_log', 'hide_nag', 'diagnose', 'litespeed', 'test_channel',
 		);
 		foreach ($actions as $action) {
@@ -39,7 +39,7 @@ class Backup_Guard_Ajax {
 		$state = Backup_Guard_Job::start_backup(array(
 			'files'    => !empty($_POST['files']),
 			'db'       => !empty($_POST['db']),
-			'scope'    => self::post('scope', 'all'),
+			'scope'    => self::post('scope', 'content'),
 			'location' => self::post('location'),
 			'note'     => self::post('note'),
 		));
@@ -110,6 +110,11 @@ class Backup_Guard_Ajax {
 		if ($errors) {
 			throw new RuntimeException(implode(' ', $errors));
 		}
+		return true;
+	}
+
+	private static function do_lock_backup() {
+		Backup_Guard_Backups::set_locked(sanitize_text_field(self::post('name')), self::post('locked') !== '');
 		return true;
 	}
 

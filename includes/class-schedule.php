@@ -50,7 +50,7 @@ class Backup_Guard_Schedule {
 			Backup_Guard_Job::start_backup(array(
 				'files'    => !empty($settings['auto_files']),
 				'db'       => !empty($settings['auto_db']),
-				'scope'    => $settings['auto_scope'] ?? 'all',
+				'scope'    => $settings['auto_scope'] ?? 'content',
 				'location' => $settings['auto_location'],
 				'auto'     => true,
 				'rotation' => (int) $settings['rotation'],

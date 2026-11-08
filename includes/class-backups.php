@@ -43,10 +43,23 @@ class Backup_Guard_Backups {
 		return $out;
 	}
 
+	/** A locked backup can't be deleted, by hand or by the rotation, until it is unlocked. */
+	public static function set_locked($name, $locked) {
+		$info = self::get($name);
+		if (!$info) {
+			throw new RuntimeException(__('Sauvegarde introuvable.', 'backup-guard'));
+		}
+		$info['locked'] = $locked ? 1 : 0;
+		self::save_info($info);
+	}
+
 	/** Delete a backup: its archive where it is kept, its info and its log. */
 	public static function delete($name) {
 		$name = backup_guard_safe_backup_name($name);
 		$info = self::get($name);
+		if (!empty($info['locked'])) {
+			throw new RuntimeException(sprintf(__('« %s » est verrouillée : déverrouillez-la avant de la supprimer.', 'backup-guard'), $name));
+		}
 		$location_id = $info['location'] ?? '';
 
 		if ($location_id !== '' && $location_id !== null) {
@@ -70,14 +83,14 @@ class Backup_Guard_Backups {
 		return true;
 	}
 
-	/** Keep only the newest $keep automatic backups of a location. */
+	/** Keep only the newest $keep automatic backups of a location. Locked ones are left alone and don't count. */
 	public static function rotate($location_id, $keep) {
 		$keep = (int) $keep;
 		if ($keep < 1) {
 			return 0;
 		}
 		$same = array_filter(self::all(), function ($info) use ($location_id) {
-			return !empty($info['auto_backup']) && (string) ($info['location'] ?? '') === (string) $location_id;
+			return !empty($info['auto_backup']) && empty($info['locked']) && (string) ($info['location'] ?? '') === (string) $location_id;
 		});
 		$extra = array_slice(array_values($same), $keep);
 		foreach ($extra as $info) {

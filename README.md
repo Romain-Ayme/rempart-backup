@@ -16,9 +16,10 @@ Le plugin est écrit en français. Un site en français affiche les textes tels 
 ### Sauvegarde
 
 - Fichiers, base de données, ou les deux.
-- **Fichiers du site** (les vôtres : `wp-content`, `wp-config.php`, `.htaccess`, tout fichier que WordPress ne fournit pas) et, en option, **Fichiers de WordPress** (`wp-admin`, `wp-includes`, `index.php`, etc.). Sans cette seconde case, la sauvegarde est plus légère et se restaure sur un WordPress déjà installé, de la même version. Les empreintes officielles de votre version viennent de wordpress.org : si elles sont injoignables, la sauvegarde est refusée tout de suite plutôt que de produire une archive incomplète.
+- **Fichiers du site** (les vôtres : `wp-content`, `wp-config.php`, `.htaccess`, tout fichier que WordPress ne fournit pas) et, en option (dans « Options supplémentaires »), **Fichiers de WordPress** (`wp-admin`, `wp-includes`, `index.php`, etc.). Par défaut, cette seconde case n'est pas cochée : la sauvegarde est plus légère et se restaure sur un WordPress déjà installé, de la même version. Les empreintes officielles de votre version viennent de wordpress.org : si elles sont injoignables, la sauvegarde est refusée tout de suite plutôt que de produire une archive incomplète.
 - Exclusions : tables, dossiers exacts, extensions, début ou fin de nom, motif n'importe où.
 - Niveau de compression réglable (1 à 9, 9 par défaut).
+- **Verrouillage** : un cadenas protège une sauvegarde de la suppression (bouton, sélection multiple, WP-CLI) et de la rotation. Une sauvegarde verrouillée ne compte pas dans le nombre à conserver.
 - Note libre sur chaque sauvegarde, historique filtrable par emplacement, espace utilisé par emplacement.
 - Travail découpé en tranches de 25 secondes : pas de limite de temps PHP à craindre, reprise possible, arrêt à la demande.
 - Une seule tâche à la fois : un second démarrage, y compris simultané, est refusé.
@@ -26,7 +27,7 @@ Le plugin est écrit en français. Un site en français affiche les textes tels 
 ### Automatisation
 
 - Planification : en mode simple, toutes les X minutes (5 au minimum) ; en mode cron, une expression comme `5 4 * * *` (tous les jours à 4 h 05, fuseau horaire du site) ; ou une tâche cron du serveur qui appelle une adresse du site.
-- Rotation : ne garder que les N dernières sauvegardes automatiques.
+- Rotation : ne garder que les N dernières sauvegardes automatiques (0 = toutes).
 - Sauvegarde avant les mises à jour de WordPress, manuelles ou automatiques.
 - Chien de garde : une tâche bloquée est relancée, puis déclarée en échec avec un message clair si elle ne répond plus.
 
@@ -50,10 +51,12 @@ Au choix pour une réussite, un échec, ou les deux, par canal : e-mail, Pushove
 ### WP-CLI
 
 ```
-wp backup-guard backup [--files-only] [--db-only] [--scope=<all|content|modified>] [--location=<id>] [--note=<texte>]
+wp backup-guard backup [--files-only] [--db-only] [--scope=<content|all|modified>] [--location=<id>] [--note=<texte>]
 wp backup-guard list
 wp backup-guard locations
 wp backup-guard delete <nom>
+wp backup-guard lock <nom>
+wp backup-guard unlock <nom>
 wp backup-guard restore <nom> [--files-only] [--db-only] [--yes]
 ```
 
@@ -82,6 +85,7 @@ composer --working-dir=tests run lint      # syntaxe
 composer --working-dir=tests run compat    # compatibilité PHP 8.3 à 8.5 (PHPCompatibilityWP)
 composer --working-dir=tests run stan      # analyse statique (PHPStan niveau 3, stubs WordPress)
 composer --working-dir=tests run unit      # tests unitaires (PHPUnit)
+npm run lint:js                           # syntaxe du JavaScript de l'administration
 ```
 
 Sans PHP installé, on peut passer par Docker :

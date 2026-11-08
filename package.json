@@ -9,6 +9,7 @@
 	},
 	"scripts": {
 		"build": "node tools/build-zip.js",
+		"lint:js": "node --check assets/admin.js",
 		"env:start": "npx --yes @wordpress/env@12 start && npx --yes @wordpress/env@12 run cli wp plugin activate backup-guard",
 		"env:stop": "npx --yes @wordpress/env@12 stop",
 		"env:destroy": "npx --yes @wordpress/env@12 destroy",

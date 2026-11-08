@@ -55,6 +55,9 @@ jobs:
       - name: Lint, compatibilité PHP 8.3-8.5, analyse statique et tests unitaires
         run: composer --working-dir=tests run check
 
+      - name: Syntaxe du JavaScript de l'administration
+        run: node --check assets/admin.js
+
   package:
     name: Paquet du plugin
     runs-on: ubuntu-latest

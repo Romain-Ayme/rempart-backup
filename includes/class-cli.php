@@ -42,7 +42,7 @@ class Backup_Guard_CLI {
 				'files'    => $files,
 				'db'       => $db,
 				'location' => $assoc['location'] ?? '',
-				'scope'    => $assoc['scope'] ?? 'all',
+				'scope'    => $assoc['scope'] ?? 'content',
 				'note'     => $assoc['note'] ?? '',
 			));
 		} catch (Exception $e) {
@@ -135,6 +135,40 @@ class Backup_Guard_CLI {
 			WP_CLI::error($e->getMessage());
 		}
 		WP_CLI::success(__('Sauvegarde supprimée.', 'backup-guard'));
+	}
+
+	/**
+	 * Lock a backup: it can't be deleted, by hand or by the rotation, until it is unlocked.
+	 *
+	 * ## OPTIONS
+	 *
+	 * <name>
+	 * : The backup's name.
+	 */
+	public function lock($args) {
+		try {
+			Backup_Guard_Backups::set_locked($args[0], true);
+		} catch (Exception $e) {
+			WP_CLI::error($e->getMessage());
+		}
+		WP_CLI::success(__('Sauvegarde verrouillée.', 'backup-guard'));
+	}
+
+	/**
+	 * Unlock a backup.
+	 *
+	 * ## OPTIONS
+	 *
+	 * <name>
+	 * : The backup's name.
+	 */
+	public function unlock($args) {
+		try {
+			Backup_Guard_Backups::set_locked($args[0], false);
+		} catch (Exception $e) {
+			WP_CLI::error($e->getMessage());
+		}
+		WP_CLI::success(__('Sauvegarde déverrouillée.', 'backup-guard'));
 	}
 
 	/**

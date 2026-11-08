@@ -224,27 +224,6 @@
 	$$('.backup-guard-example').forEach(function (b) {
 		b.addEventListener('click', function () { $('#backup-guard-cron-expr').value = b.dataset.expr; });
 	});
-		});
-	});
-	function updateSummary() {
-		var el = $('#backup-guard-summary');
-		var checked = scheduleRadios.filter(function (r) { return r.checked; })[0];
-		if (!el || !checked) { return; }
-		var perWeek = 0;
-		if (checked.value === 'interval') {
-			var minutes = parseInt($('#backup-guard-minutes').value, 10) || 0;
-			perWeek = minutes >= 5 ? Math.round(10080 / minutes) : 0;
-		} else if (checked.value === 'advanced') {
-			perWeek = $$('input[name="schedule_days[]"]:checked').length * $$('input[name="schedule_hours[]"]:checked').length;
-		}
-		el.textContent = T('Sauvegardes par semaine : %d').replace('%d', perWeek);
-	}
-	$$('#backup-guard-minutes, input[name="schedule_days[]"], input[name="schedule_hours[]"]').forEach(function (i) {
-		i.addEventListener('input', updateSummary);
-		i.addEventListener('change', updateSummary);
-	});
-	scheduleRadios.forEach(function (r) { r.addEventListener('change', updateSummary); });
-	updateSummary();
 	var rotation = $('#backup-guard-rotation');
 	var rotationWarn = $('#backup-guard-rotation-warning');
 	function syncRotation() {
@@ -528,6 +507,13 @@
 			if (!confirm(T('Supprimer définitivement cette sauvegarde ?'))) { return; }
 			b.disabled = true;
 			call('delete_backups', { names: [b.dataset.name] }).then(function () { location.reload(); }).catch(function (e) { b.disabled = false; alert(e.message); });
+		});
+	});
+
+	$$('.backup-guard-lock').forEach(function (b) {
+		b.addEventListener('click', function () {
+			b.disabled = true;
+			call('lock_backup', { name: b.dataset.name, locked: b.dataset.locked ? '' : 1 }).then(function () { location.reload(); }).catch(function (e) { b.disabled = false; alert(e.message); });
 		});
 	});
 

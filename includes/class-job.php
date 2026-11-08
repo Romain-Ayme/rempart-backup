@@ -80,7 +80,7 @@ class Backup_Guard_Job {
 			Backup_Guard_Storage::make(Backup_Guard_Locations::get($location))->test();
 		}
 
-		$scope = backup_guard_valid_scope($options['scope'] ?? 'all');
+		$scope = backup_guard_valid_scope($options['scope'] ?? 'content');
 		// The list of WordPress's own files is fetched now, so a failure shows before any work is done.
 		$core = ($files && $scope !== 'all') ? backup_guard_core_checksums() : array();
 
@@ -322,7 +322,7 @@ class Backup_Guard_Job {
 			file_put_contents($list, '');
 			$state['scan'] = array('stack' => array(''), 'count' => 0, 'bytes' => 0, 'committed' => 0, 'core' => 0);
 		}
-		$scope = $state['scope'] ?? 'all';
+		$scope = $state['scope'] ?? 'content';
 		$core = array();
 		if ($scope !== 'all') {
 			$core = (array) json_decode((string) @file_get_contents(self::tmp_dir($state['name']) . '/core.json'), true);
@@ -415,7 +415,7 @@ class Backup_Guard_Job {
 			'name'         => $state['name'],
 			'backup_dir'   => $state['files'],
 			'backup_db'    => $state['db'],
-			'scope'        => $state['scope'] ?? 'all',
+			'scope'        => $state['scope'] ?? 'content',
 			'email'        => $state['user_email'] ?? '',
 			'date_time'    => wp_date('Y-m-d H:i:s'),
 			'btime'        => (int) $state['started'],

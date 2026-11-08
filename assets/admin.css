@@ -135,3 +135,8 @@
 .backup-guard-examples { margin: 0 0 6px; }
 .backup-guard-examples li { margin: 4px 0; }
 .backup-guard-examples code { background: #fff; border: 1px solid #dcdcde; padding: 3px 8px; border-radius: 4px; }
+
+/* Locked backups */
+.backup-guard-tag-locked { background: #fcf3e1; color: #8a5a00; display: inline-flex; align-items: center; gap: 2px; }
+.backup-guard-tag-locked .dashicons { width: 13px; height: 13px; font-size: 13px; }
+.backup-guard-lock .dashicons { width: 18px; height: 18px; font-size: 18px; line-height: 1.5; vertical-align: middle; }

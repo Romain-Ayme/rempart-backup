@@ -55,7 +55,7 @@ final class HelpersTest extends TestCase {
 	}
 
 	public function testUnknownScopeFallsBackToAll(): void {
-		$this->assertSame('all', backup_guard_valid_scope('nimporte quoi'));
+		$this->assertSame('content', backup_guard_valid_scope('nimporte quoi'));
 		$this->assertSame('content', backup_guard_valid_scope('content'));
 	}
 

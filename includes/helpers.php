@@ -23,7 +23,7 @@ function backup_guard_scopes() {
 }
 
 function backup_guard_valid_scope($scope) {
-	return isset(backup_guard_scopes()[$scope]) ? $scope : 'all';
+	return isset(backup_guard_scopes()[$scope]) ? $scope : 'content';
 }
 
 /**
@@ -77,8 +77,8 @@ function backup_guard_default_settings() {
 	return array(
 		'backup_files'       => 1,
 		'backup_db'          => 1,
-		'backup_scope'       => 'all',
-		'auto_scope'         => 'all',
+		'backup_scope'       => 'content',
+		'auto_scope'         => 'content',
 		// gzip level of the archive, 1 (fastest, biggest) to 9 (smallest, slowest).
 		'gzip_level'         => 9,
 		'location'           => '',
