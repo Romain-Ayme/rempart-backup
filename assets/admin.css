@@ -1,4 +1,4 @@
-.backup-guard { max-width: none; }
+.backup-guard { max-width: 1180px; }
 .backup-guard-top { display: flex; align-items: center; gap: 14px; margin: 14px 0 18px; }
 .backup-guard-logo { width: 46px; height: 46px; flex: none; }
 .backup-guard-top h1 { padding: 0; margin: 0; font-size: 24px; font-weight: 600; }
@@ -33,7 +33,7 @@
 .backup-guard-scroll { max-height: 240px; overflow: auto; border: 1px solid #dcdcde; border-radius: 4px; padding: 8px 10px; margin-top: 8px; }
 .backup-guard-line { display: block; padding: 2px 0; }
 
-.backup-guard-cron-note p { margin: 0 0 8px; }
+.backup-guard-cron-note p { margin: 0 0 8px; max-width: 640px; }
 .backup-guard-cron-status { padding: 8px 12px; border-left: 4px solid #1f6f8b; background: #e7f3f7; }
 .backup-guard-cron-ok { border-color: #2e9e4f; background: #edf7ef; }
 .backup-guard-cron-warning { border-color: #b32d2e; background: #fcf0f1; }
@@ -115,6 +115,6 @@
 .backup-guard-pill span { display: inline-block; min-width: 44px; text-align: center; padding: 6px 10px; border: 1px solid #c3c4c7; border-radius: 999px; background: #fff; cursor: pointer; user-select: none; }
 .backup-guard-pill input:checked + span { background: #1f6f8b; border-color: #1f6f8b; color: #fff; }
 .backup-guard-pill input:focus-visible + span { outline: 2px solid #1f6f8b; outline-offset: 2px; }
-.backup-guard-hours { display: flex; }
-.backup-guard-panel-note { color: #50575e; margin: 0 0 12px; }
+.backup-guard-hours { max-width: 620px; display: flex; }
+.backup-guard-panel-note { color: #50575e; margin: 0 0 12px; max-width: 640px; }
 .backup-guard-auto-options { margin-top: 6px; }
