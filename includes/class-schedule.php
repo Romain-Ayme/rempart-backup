@@ -19,22 +19,77 @@ class Backup_Guard_Schedule {
 	public static function register_intervals($schedules) {
 		$schedules += self::intervals();
 		$schedules['backup_guard_five_minutes'] = array('interval' => 300, 'display' => __('Toutes les 5 minutes', 'backup-guard'));
+		$minutes = self::minutes(backup_guard_settings());
+		$schedules['backup_guard_every'] = array('interval' => $minutes * 60, 'display' => sprintf(__('Toutes les %d minutes', 'backup-guard'), $minutes));
 		return $schedules;
+	}
+
+	/** The wait between two backups in the basic mode, in minutes (5 at least). */
+	public static function minutes(array $settings) {
+		return max(5, (int) ($settings['schedule_minutes'] ?? 60));
+	}
+
+	/**
+	 * Settings from an older version name a fixed interval ("every hour"): they become the basic
+	 * mode with the same wait.
+	 */
+	public static function normalize(array $settings) {
+		$intervals = self::intervals();
+		$schedule = $settings['schedule'] ?? '';
+		if (isset($intervals[$schedule])) {
+			$settings['schedule'] = 'interval';
+			$settings['schedule_minutes'] = (int) round($intervals[$schedule]['interval'] / 60);
+		}
+		return $settings;
+	}
+
+	/**
+	 * The next time (timestamp) that falls on one of the days (0 = Sunday) and at the start of one
+	 * of the hours (0 to 23), in the site's time zone. Null when there is none.
+	 */
+	public static function next_slot(array $days, array $hours, $from = null) {
+		$days = array_map('intval', $days);
+		$hours = array_map('intval', $hours);
+		sort($hours);
+		if (!$days || !$hours) {
+			return null;
+		}
+		$from = $from ?? time();
+		$zone = wp_timezone();
+		$day = (new DateTimeImmutable('@' . $from))->setTimezone($zone)->setTime(0, 0);
+		for ($i = 0; $i < 9; $i++, $day = $day->modify('+1 day')) {
+			if (!in_array((int) $day->format('w'), $days, true)) {
+				continue;
+			}
+			foreach ($hours as $hour) {
+				$slot = $day->setTime($hour, 0)->getTimestamp();
+				if ($slot > $from) {
+					return $slot;
+				}
+			}
+		}
+		return null;
 	}
 
 	/** Make WP-Cron match the saved settings. */
 	public static function sync() {
 		$settings = backup_guard_settings();
-		$schedule = $settings['schedule'];
 		wp_clear_scheduled_hook('backup_guard_auto_backup');
-		$intervals = self::intervals();
-		if ($schedule !== '' && $schedule !== 'custom' && isset($intervals[$schedule])) {
-			wp_schedule_event(time() + $intervals[$schedule]['interval'], $schedule, 'backup_guard_auto_backup');
+		if ($settings['schedule'] === 'interval') {
+			wp_schedule_event(time() + self::minutes($settings) * 60, 'backup_guard_every', 'backup_guard_auto_backup');
+		} elseif ($settings['schedule'] === 'advanced') {
+			$next = self::next_slot((array) $settings['schedule_days'], (array) $settings['schedule_hours']);
+			if ($next) {
+				wp_schedule_single_event($next, 'backup_guard_auto_backup');
+			}
 		}
 	}
 
 	public static function run_auto_backup() {
 		$settings = backup_guard_settings();
+		if ($settings['schedule'] === 'advanced') {
+			self::sync();
+		}
 		if (Backup_Guard_Job::is_active() || Backup_Guard_Restore::is_running()) {
 			return;
 		}

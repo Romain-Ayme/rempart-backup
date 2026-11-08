@@ -16,10 +16,7 @@ Le plugin est écrit en français. Un site en français affiche les textes tels 
 ### Sauvegarde
 
 - Fichiers, base de données, ou les deux.
-- **Choix des fichiers à garder** :
-  - *Tout WordPress* (par défaut) ;
-  - *Mes fichiers seulement* : sans les fichiers d'origine de WordPress (`wp-admin`, `wp-includes`, `index.php`, `wp-cron.php`, etc.). Restent `wp-config.php`, `.htaccess`, `wp-content` et tout fichier que WordPress ne fournit pas ;
-  - *Mes fichiers et les fichiers WordPress modifiés* : comme le précédent, plus les fichiers d'origine que vous avez modifiés. Les empreintes officielles de votre version viennent de wordpress.org. Si elles sont injoignables, la sauvegarde est refusée tout de suite plutôt que de produire une archive incomplète.
+- **Fichiers du site** (les vôtres : `wp-content`, `wp-config.php`, `.htaccess`, tout fichier que WordPress ne fournit pas) et, en option, **Fichiers de WordPress** (`wp-admin`, `wp-includes`, `index.php`, etc.). Sans cette seconde case, la sauvegarde est plus légère et se restaure sur un WordPress déjà installé, de la même version. Les empreintes officielles de votre version viennent de wordpress.org : si elles sont injoignables, la sauvegarde est refusée tout de suite plutôt que de produire une archive incomplète.
 - Exclusions : tables, dossiers exacts, extensions, début ou fin de nom, motif n'importe où.
 - Niveau de compression réglable (1 à 9, 9 par défaut).
 - Note libre sur chaque sauvegarde, historique filtrable par emplacement, espace utilisé par emplacement.
@@ -28,7 +25,7 @@ Le plugin est écrit en français. Un site en français affiche les textes tels 
 
 ### Automatisation
 
-- Planification : 30 minutes, 1 heure, 2 heures, jour, semaine, mois, ou tâche cron du serveur.
+- Planification : en mode simple, toutes les X minutes (5 au minimum) ; en mode avancé, les jours et les heures de votre choix (fuseau horaire du site) ; ou une tâche cron du serveur.
 - Rotation : ne garder que les N dernières sauvegardes automatiques.
 - Sauvegarde avant les mises à jour de WordPress, manuelles ou automatiques.
 - Chien de garde : une tâche bloquée est relancée, puis déclarée en échec avec un message clair si elle ne répond plus.

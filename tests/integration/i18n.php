@@ -93,7 +93,7 @@ $cases = array(
 		};
 		backup_guard_it_locale('en_US');
 		$english = $render();
-		foreach (array('Create a backup', 'Dashboard', 'Backup locations', 'Space used', 'Files to keep') as $expected) {
+		foreach (array('Create a backup', 'Dashboard', 'Backup locations', 'Space used', 'WordPress files') as $expected) {
 			backup_guard_it_expect(strpos($english, $expected) !== false, '« ' . $expected . ' » absent de la page en anglais.');
 		}
 		backup_guard_it_expect(strpos($english, 'Créer une sauvegarde') === false, 'Du français reste dans la page en anglais.');

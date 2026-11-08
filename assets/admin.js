@@ -188,7 +188,7 @@
 			var data = {
 				files: form.elements.files.checked ? 1 : '',
 				db: form.elements.db.checked ? 1 : '',
-				scope: form.elements.scope.value,
+				scope: form.elements.wp.checked ? 'all' : 'content',
 				location: form.elements.location.value,
 				note: form.elements.note.value
 			};
@@ -210,6 +210,7 @@
 	function syncSchedule() {
 		$('#backup-guard-cron-row').hidden = schedule.value !== 'custom';
 		var kind = schedule.value === '' ? 'none' : (schedule.value === 'custom' ? 'custom' : 'auto');
+		$$('[data-mode]').forEach(function (row) { row.hidden = row.dataset.mode !== schedule.value; });
 		$$('.backup-guard-cron-note p[data-for]').forEach(function (p) { p.hidden = p.dataset.for !== kind; });
 	}
 	if (schedule) {
@@ -217,16 +218,12 @@
 		syncSchedule();
 	}
 	var rotation = $('#backup-guard-rotation');
-	var rotationCustom = $('#backup-guard-rotation-custom');
 	var rotationWarn = $('#backup-guard-rotation-warning');
 	function syncRotation() {
-		var custom = rotation.value === 'custom';
-		rotationCustom.hidden = !custom;
-		rotationWarn.hidden = !(custom && parseInt(rotationCustom.value, 10) > 30);
+		rotationWarn.hidden = !(parseInt(rotation.value, 10) > 30);
 	}
 	if (rotation) {
-		rotation.addEventListener('change', syncRotation);
-		rotationCustom.addEventListener('input', syncRotation);
+		rotation.addEventListener('input', syncRotation);
 		syncRotation();
 	}
 

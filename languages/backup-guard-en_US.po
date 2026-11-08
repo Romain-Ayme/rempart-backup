@@ -355,12 +355,12 @@ msgstr "Database"
 
 #: includes/class-admin.php:356
 #: includes/class-admin.php:468
-msgid "Fichiers à garder"
-msgstr "Files to keep"
+msgid "Fichiers de WordPress"
+msgstr "WordPress files"
 
 #: includes/class-admin.php:358
-msgid "Sans le cœur de WordPress, la sauvegarde se restaure sur un WordPress déjà installé, de la même version."
-msgstr "Without WordPress core, the backup is restored onto a WordPress that is already installed, of the same version."
+msgid "Sans les fichiers de WordPress, la sauvegarde se restaure sur un WordPress déjà installé, de la même version."
+msgstr "Without the WordPress files, the backup is restored onto a WordPress that is already installed, of the same version."
 
 #: includes/class-admin.php:361
 msgid "Où la garder"
@@ -389,10 +389,6 @@ msgstr "Backups"
 #: includes/class-admin.php:391
 msgid "Par défaut, sauvegarder"
 msgstr "By default, back up"
-
-#: includes/class-admin.php:398
-msgid "Fichiers à garder par défaut"
-msgstr "Files to keep by default"
 
 #: includes/class-admin.php:402
 msgid "Emplacement par défaut"
@@ -439,8 +435,8 @@ msgid "Automatique :"
 msgstr "Automatic:"
 
 #: includes/class-admin.php:430
-msgid "rien d'autre à configurer. Elle part à la première visite du site après l'heure prévue. Pour une heure précise, choisissez « Personnalisée »."
-msgstr "nothing else to set up. It starts on the first visit to the site after the scheduled time. For an exact time, choose \"Custom\"."
+msgid "rien d'autre à configurer. Elle part à la première visite du site après l'heure prévue. Pour une heure exacte même sans visite, choisissez « Personnalisée »."
+msgstr "nothing else to set up. It starts on the first visit to the site after the scheduled time. For an exact time even without a visit, choose \"Custom\"."
 
 #: includes/class-admin.php:431
 msgid "Ajoutez la commande ci-dessous aux tâches cron de votre hébergement."
@@ -458,14 +454,6 @@ msgstr "Copy"
 #: includes/class-admin.php:447
 msgid "Sauvegardes automatiques à conserver"
 msgstr "Automatic backups to keep"
-
-#: includes/class-admin.php:450
-msgid "Toutes"
-msgstr "All"
-
-#: includes/class-admin.php:454
-msgid "Autre nombre"
-msgstr "Other number"
 
 #: includes/class-admin.php:457
 msgid "Plus de 30 sauvegardes peuvent occuper beaucoup de place."
@@ -2724,3 +2712,39 @@ msgstr "https://karom.studio"
 #: backup-guard.php
 msgid "https://karom.studio/wp/plugin/backup-guard"
 msgstr "https://karom.studio/wp/plugin/backup-guard"
+
+msgid "Choisissez au moins un jour et une heure."
+msgstr "Choose at least one day and one hour."
+
+msgid "il y a %s"
+msgstr "%s ago"
+
+msgid "en retard de %s"
+msgstr "%s late"
+
+msgid "dans %s"
+msgstr "in %s"
+
+msgid "Simple : toutes les X minutes"
+msgstr "Simple: every X minutes"
+
+msgid "Avancé : jours et heures choisis"
+msgstr "Advanced: chosen days and hours"
+
+msgid "Toutes les"
+msgstr "Every"
+
+msgid "minutes (5 au minimum)"
+msgstr "minutes (5 at least)"
+
+msgid "Jours"
+msgstr "Days"
+
+msgid "Heures"
+msgstr "Hours"
+
+msgid "Toutes les %d minutes"
+msgstr "Every %d minutes"
+
+msgid "0 = toutes (par défaut)"
+msgstr "0 = all (default)"

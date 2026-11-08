@@ -85,6 +85,10 @@ function backup_guard_default_settings() {
 		'pre_update_backup'  => 0,
 		'auto_update_backup' => 0,
 		'schedule'           => '',
+		// Basic mode: minutes between two backups. Advanced mode: days (0 = Sunday) and hours (0-23).
+		'schedule_minutes'   => 60,
+		'schedule_days'      => array(1, 2, 3, 4, 5, 6, 0),
+		'schedule_hours'     => array(2),
 		'rotation'           => 0,
 		'auto_files'         => 1,
 		'auto_db'            => 1,
@@ -96,7 +100,7 @@ function backup_guard_default_settings() {
 }
 
 function backup_guard_settings() {
-	return array_merge(backup_guard_default_settings(), (array) get_option('backup_guard_settings', array()));
+	return Backup_Guard_Schedule::normalize(array_merge(backup_guard_default_settings(), (array) get_option('backup_guard_settings', array())));
 }
 
 function backup_guard_excludes() {
@@ -305,8 +309,7 @@ function backup_guard_self_heal() {
 	}
 	Backup_Guard_Notifications::migrate_email();
 	$settings = backup_guard_settings();
-	$intervals = Backup_Guard_Schedule::intervals();
-	if (isset($intervals[$settings['schedule']]) && !wp_next_scheduled('backup_guard_auto_backup')) {
+	if (in_array($settings['schedule'], array('interval', 'advanced'), true) && !wp_next_scheduled('backup_guard_auto_backup')) {
 		Backup_Guard_Schedule::sync();
 	}
 	$restore = Backup_Guard_Restore::current();
