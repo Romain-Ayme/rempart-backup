@@ -426,76 +426,95 @@ class Backup_Guard_Admin {
 					</div>
 				</div>
 
-				<div class="backup-guard-card">
+				<?php $mode = $settings['schedule']; ?>
+				<div class="backup-guard-card backup-guard-auto">
 					<h2><?php echo esc_html__('Sauvegardes automatiques', 'backup-guard'); ?></h2>
-					<div class="backup-guard-row">
-						<label class="backup-guard-row-label" for="backup-guard-schedule"><?php echo esc_html__('Fréquence', 'backup-guard'); ?></label>
-						<select name="schedule" id="backup-guard-schedule">
-							<option value=""><?php echo esc_html__('Pas de sauvegarde automatique', 'backup-guard'); ?></option>
-							<option value="interval" <?php selected($settings['schedule'], 'interval'); ?>><?php echo esc_html__('Simple : toutes les X minutes', 'backup-guard'); ?></option>
-							<option value="advanced" <?php selected($settings['schedule'], 'advanced'); ?>><?php echo esc_html__('Avancé : jours et heures choisis', 'backup-guard'); ?></option>
-							<option value="custom" <?php selected($settings['schedule'], 'custom'); ?>><?php echo esc_html__('Personnalisée (tâche cron du serveur)', 'backup-guard'); ?></option>
-						</select>
+
+					<div class="backup-guard-modes" role="radiogroup">
+						<?php
+						$modes = array(
+							''         => __('Pas de sauvegarde automatique', 'backup-guard'),
+							'interval' => __('Simple : toutes les X minutes', 'backup-guard'),
+							'advanced' => __('Avancé : jours et heures choisis', 'backup-guard'),
+							'custom'   => __('Personnalisée (tâche cron du serveur)', 'backup-guard'),
+						);
+						foreach ($modes as $value => $label) :
+							?>
+							<label class="backup-guard-mode">
+								<input type="radio" name="schedule" value="<?php echo esc_attr($value); ?>" <?php checked($mode, $value); ?>>
+								<span><?php echo esc_html($label); ?></span>
+							</label>
+						<?php endforeach; ?>
 					</div>
-					<div class="backup-guard-row" data-mode="interval">
-						<label class="backup-guard-row-label" for="backup-guard-minutes"><?php echo esc_html__('Toutes les', 'backup-guard'); ?></label>
-						<span><input type="number" min="5" max="10080" step="1" name="schedule_minutes" id="backup-guard-minutes" value="<?php echo (int) Backup_Guard_Schedule::minutes($settings); ?>" class="small-text"> <?php echo esc_html__('minutes (5 au minimum)', 'backup-guard'); ?></span>
-					</div>
-					<div class="backup-guard-row" data-mode="advanced">
-						<div class="backup-guard-row-label"><?php echo esc_html__('Jours', 'backup-guard'); ?></div>
-						<div class="backup-guard-checks">
-							<?php foreach (array(1, 2, 3, 4, 5, 6, 0) as $day) : ?>
-								<label><input type="checkbox" name="schedule_days[]" value="<?php echo (int) $day; ?>" <?php checked(in_array($day, (array) $settings['schedule_days'], true)); ?>> <?php echo esc_html($GLOBALS['wp_locale']->get_weekday($day)); ?></label>
+
+					<div class="backup-guard-panel" data-mode="interval">
+						<div class="backup-guard-inline">
+							<label for="backup-guard-minutes"><strong><?php echo esc_html__('Toutes les', 'backup-guard'); ?></strong></label>
+							<input type="number" min="5" max="10080" step="1" name="schedule_minutes" id="backup-guard-minutes" value="<?php echo (int) Backup_Guard_Schedule::minutes($settings); ?>" class="small-text">
+							<span><?php echo esc_html__('minutes (5 au minimum)', 'backup-guard'); ?></span>
+						</div>
+						<div class="backup-guard-presets">
+							<?php foreach (array(15 => '15 min', 60 => '1 h', 360 => '6 h', 1440 => '24 h') as $minutes => $label) : ?>
+								<button type="button" class="button button-small backup-guard-preset" data-minutes="<?php echo (int) $minutes; ?>"><?php echo esc_html($label); ?></button>
 							<?php endforeach; ?>
 						</div>
 					</div>
-					<div class="backup-guard-row" data-mode="advanced">
-						<div class="backup-guard-row-label"><?php echo esc_html__('Heures', 'backup-guard'); ?></div>
-						<div class="backup-guard-checks backup-guard-hours">
+
+					<div class="backup-guard-panel" data-mode="advanced">
+						<p class="backup-guard-panel-title"><?php echo esc_html__('Jours', 'backup-guard'); ?></p>
+						<div class="backup-guard-pills">
+							<?php foreach (array(1, 2, 3, 4, 5, 6, 0) as $day) : ?>
+								<label class="backup-guard-pill"><input type="checkbox" name="schedule_days[]" value="<?php echo (int) $day; ?>" <?php checked(in_array($day, (array) $settings['schedule_days'], true)); ?>><span><?php echo esc_html($GLOBALS['wp_locale']->get_weekday_abbrev($GLOBALS['wp_locale']->get_weekday($day))); ?></span></label>
+							<?php endforeach; ?>
+						</div>
+						<p class="backup-guard-panel-title"><?php echo esc_html__('Heures', 'backup-guard'); ?>
+							<button type="button" class="button-link backup-guard-pick" data-target="schedule_hours[]" data-state="1"><?php echo esc_html__('Toutes', 'backup-guard'); ?></button>
+							<button type="button" class="button-link backup-guard-pick" data-target="schedule_hours[]" data-state="0"><?php echo esc_html__('Aucune', 'backup-guard'); ?></button>
+						</p>
+						<div class="backup-guard-pills backup-guard-hours">
 							<?php for ($hour = 0; $hour < 24; $hour++) : ?>
-								<label><input type="checkbox" name="schedule_hours[]" value="<?php echo (int) $hour; ?>" <?php checked(in_array($hour, (array) $settings['schedule_hours'], true)); ?>> <?php echo esc_html(sprintf('%02d h', $hour)); ?></label>
+								<label class="backup-guard-pill"><input type="checkbox" name="schedule_hours[]" value="<?php echo (int) $hour; ?>" <?php checked(in_array($hour, (array) $settings['schedule_hours'], true)); ?>><span><?php echo esc_html(sprintf('%02d h', $hour)); ?></span></label>
 							<?php endfor; ?>
 						</div>
 					</div>
-					<div class="backup-guard-row">
-						<div class="backup-guard-row-label"><?php echo esc_html__('Comment ça marche', 'backup-guard'); ?></div>
-						<div class="backup-guard-cron-note">
-							<p data-for="none"><?php echo esc_html__('Aucune sauvegarde automatique.', 'backup-guard'); ?></p>
-							<p data-for="auto"><strong><?php echo esc_html__('Automatique :', 'backup-guard'); ?></strong> <?php echo esc_html__('rien d\'autre à configurer. Elle part à la première visite du site après l\'heure prévue. Pour une heure exacte même sans visite, choisissez « Personnalisée ».', 'backup-guard'); ?></p>
-							<p data-for="custom"><?php echo esc_html__('Ajoutez la commande ci-dessous aux tâches cron de votre hébergement.', 'backup-guard'); ?></p>
-							<?php
-							$cron_status = self::cron_status($settings);
-							if ($cron_status) :
-								?>
-								<p class="backup-guard-cron-status backup-guard-cron-<?php echo esc_attr($cron_status[0]); ?>"><?php echo esc_html($cron_status[1]); ?></p>
-							<?php endif; ?>
+
+					<div class="backup-guard-panel" data-mode="custom">
+						<p><?php echo esc_html__('Ajoutez la commande ci-dessous aux tâches cron de votre hébergement.', 'backup-guard'); ?></p>
+						<code class="backup-guard-code" id="backup-guard-cron-command">wget -q -O /dev/null "<?php echo esc_html(Backup_Guard_Schedule::cron_url()); ?>"</code>
+						<button type="button" class="button backup-guard-copy" data-copy="#backup-guard-cron-command"><?php echo esc_html__('Copier', 'backup-guard'); ?></button>
+					</div>
+
+					<div class="backup-guard-panel-note" data-mode="interval advanced">
+						<strong><?php echo esc_html__('Automatique :', 'backup-guard'); ?></strong> <?php echo esc_html__('rien d\'autre à configurer. Elle part à la première visite du site après l\'heure prévue. Pour une heure exacte même sans visite, choisissez « Personnalisée ».', 'backup-guard'); ?>
+					</div>
+					<?php
+					$cron_status = self::cron_status($settings);
+					if ($cron_status) :
+						?>
+						<p class="backup-guard-cron-status backup-guard-cron-<?php echo esc_attr($cron_status[0]); ?>"><?php echo esc_html($cron_status[1]); ?></p>
+					<?php endif; ?>
+
+					<div class="backup-guard-auto-options" data-mode="interval advanced custom">
+						<div class="backup-guard-row">
+							<div class="backup-guard-row-label"><?php echo esc_html__('Contenu', 'backup-guard'); ?></div>
+							<div class="backup-guard-checks">
+								<label><input type="checkbox" name="auto_files" value="1" <?php checked(!empty($settings['auto_files'])); ?>> <?php echo esc_html__('Fichiers du site', 'backup-guard'); ?></label>
+								<?php self::wordpress_files_box('auto_wp', $settings['auto_scope']); ?>
+								<label><input type="checkbox" name="auto_db" value="1" <?php checked(!empty($settings['auto_db'])); ?>> <?php echo esc_html__('Base de données', 'backup-guard'); ?></label>
+							</div>
 						</div>
-					</div>
-					<div class="backup-guard-row" id="backup-guard-cron-row">
-						<div class="backup-guard-row-label"><?php echo esc_html__('Commande à planifier', 'backup-guard'); ?></div>
-						<div>
-							<code class="backup-guard-code" id="backup-guard-cron-command">wget -q -O /dev/null "<?php echo esc_html(Backup_Guard_Schedule::cron_url()); ?>"</code>
-							<button type="button" class="button backup-guard-copy" data-copy="#backup-guard-cron-command"><?php echo esc_html__('Copier', 'backup-guard'); ?></button>						</div>
-					</div>
-					<div class="backup-guard-row">
-						<label class="backup-guard-row-label" for="backup-guard-rotation"><?php echo esc_html__('Sauvegardes automatiques à conserver', 'backup-guard'); ?></label>
-						<div class="backup-guard-inline">
-							<input type="number" min="0" step="1" name="rotation" id="backup-guard-rotation" class="small-text" value="<?php echo (int) $rotation; ?>">
-							<span class="description"><?php echo esc_html__('0 = toutes (par défaut)', 'backup-guard'); ?></span>
-							<span id="backup-guard-rotation-warning" class="backup-guard-warn"><?php echo esc_html__('Plus de 30 sauvegardes peuvent occuper beaucoup de place.', 'backup-guard'); ?></span>
+						<div class="backup-guard-row">
+							<label class="backup-guard-row-label" for="backup-guard-auto-location"><?php echo esc_html__('Emplacement', 'backup-guard'); ?></label>
+							<select name="auto_location" id="backup-guard-auto-location"><?php self::location_options($settings['auto_location'], $locations, $protocols); ?></select>
 						</div>
-					</div>
-					<div class="backup-guard-row">
-						<div class="backup-guard-row-label"><?php echo esc_html__('Contenu', 'backup-guard'); ?></div>
-						<div class="backup-guard-checks">
-							<label><input type="checkbox" name="auto_files" value="1" <?php checked(!empty($settings['auto_files'])); ?>> <?php echo esc_html__('Fichiers du site', 'backup-guard'); ?></label>
-							<?php self::wordpress_files_box('auto_wp', $settings['auto_scope']); ?>
-							<label><input type="checkbox" name="auto_db" value="1" <?php checked(!empty($settings['auto_db'])); ?>> <?php echo esc_html__('Base de données', 'backup-guard'); ?></label>
+						<div class="backup-guard-row">
+							<label class="backup-guard-row-label" for="backup-guard-rotation"><?php echo esc_html__('Sauvegardes automatiques à conserver', 'backup-guard'); ?></label>
+							<div class="backup-guard-inline">
+								<input type="number" min="0" step="1" name="rotation" id="backup-guard-rotation" class="small-text" value="<?php echo (int) $rotation; ?>">
+								<span class="description"><?php echo esc_html__('0 = toutes (par défaut)', 'backup-guard'); ?></span>
+								<span id="backup-guard-rotation-warning" class="backup-guard-warn"><?php echo esc_html__('Plus de 30 sauvegardes peuvent occuper beaucoup de place.', 'backup-guard'); ?></span>
+							</div>
 						</div>
-					</div>
-					<div class="backup-guard-row">
-						<label class="backup-guard-row-label" for="backup-guard-auto-location"><?php echo esc_html__('Emplacement', 'backup-guard'); ?></label>
-						<select name="auto_location" id="backup-guard-auto-location"><?php self::location_options($settings['auto_location'], $locations, $protocols); ?></select>
 					</div>
 				</div>
 

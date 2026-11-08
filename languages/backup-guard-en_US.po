@@ -410,10 +410,6 @@ msgstr "Hold automatic updates until a backup has finished"
 msgid "Sauvegardes automatiques"
 msgstr "Automatic backups"
 
-#: includes/class-admin.php:417
-msgid "Fréquence"
-msgstr "Frequency"
-
 #: includes/class-admin.php:419
 msgid "Pas de sauvegarde automatique"
 msgstr "No automatic backup"
@@ -421,14 +417,6 @@ msgstr "No automatic backup"
 #: includes/class-admin.php:423
 msgid "Personnalisée (tâche cron du serveur)"
 msgstr "Custom (server cron job)"
-
-#: includes/class-admin.php:427
-msgid "Comment ça marche"
-msgstr "How it works"
-
-#: includes/class-admin.php:429
-msgid "Aucune sauvegarde automatique."
-msgstr "No automatic backup."
 
 #: includes/class-admin.php:430
 msgid "Automatique :"
@@ -441,10 +429,6 @@ msgstr "nothing else to set up. It starts on the first visit to the site after t
 #: includes/class-admin.php:431
 msgid "Ajoutez la commande ci-dessous aux tâches cron de votre hébergement."
 msgstr "Add the command below to your host's cron jobs."
-
-#: includes/class-admin.php:441
-msgid "Commande à planifier"
-msgstr "Command to schedule"
 
 #: includes/class-admin.php:444
 #: includes/class-admin.php:704
@@ -2748,3 +2732,6 @@ msgstr "Every %d minutes"
 
 msgid "0 = toutes (par défaut)"
 msgstr "0 = all (default)"
+
+msgid "Toutes"
+msgstr "All"

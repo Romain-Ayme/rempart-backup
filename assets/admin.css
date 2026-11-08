@@ -15,7 +15,6 @@
 .backup-guard-fact small { color: #50575e; font-size: 12px; }
 .backup-guard-fact small.backup-guard-late { color: #b32d2e; font-weight: 600; }
 .backup-guard-fact .button-link { margin-top: 6px; }
-.backup-guard-hours { display: grid; grid-template-columns: repeat(auto-fill, minmax(62px, 1fr)); gap: 4px 12px; max-width: 560px; }
 
 .backup-guard-label { display: block; font-weight: 600; margin-bottom: 5px; }
 .backup-guard-checks label { margin-right: 18px; }
@@ -98,3 +97,24 @@
 	.backup-guard-row { grid-template-columns: 1fr; gap: 6px; }
 	.backup-guard-checklist li { flex-wrap: wrap; }
 }
+
+/* Automatic backups panel */
+.backup-guard-modes { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 10px; margin-bottom: 16px; }
+.backup-guard-mode { position: relative; display: flex; align-items: center; gap: 8px; padding: 12px 14px; border: 1px solid #c3c4c7; border-radius: 8px; background: #fff; cursor: pointer; font-weight: 600; }
+.backup-guard-mode input { margin: 0; }
+.backup-guard-mode.is-on { border-color: #1f6f8b; background: #e7f3f7; box-shadow: 0 0 0 1px #1f6f8b inset; }
+.backup-guard-panel { padding: 14px 16px; margin-bottom: 14px; background: #f6f7f7; border-radius: 8px; }
+.backup-guard-panel p { margin: 0 0 8px; }
+.backup-guard-panel-title { font-weight: 600; margin: 0 0 8px; }
+.backup-guard-panel-title .button-link { margin-left: 10px; font-weight: 400; }
+.backup-guard-panel .backup-guard-panel-title:not(:first-child) { margin-top: 14px; }
+.backup-guard-presets { margin-top: 10px; display: flex; gap: 6px; flex-wrap: wrap; }
+.backup-guard-pills { display: flex; flex-wrap: wrap; gap: 6px; }
+.backup-guard-pill { margin: 0 !important; }
+.backup-guard-pill input { position: absolute; opacity: 0; pointer-events: none; }
+.backup-guard-pill span { display: inline-block; min-width: 44px; text-align: center; padding: 6px 10px; border: 1px solid #c3c4c7; border-radius: 999px; background: #fff; cursor: pointer; user-select: none; }
+.backup-guard-pill input:checked + span { background: #1f6f8b; border-color: #1f6f8b; color: #fff; }
+.backup-guard-pill input:focus-visible + span { outline: 2px solid #1f6f8b; outline-offset: 2px; }
+.backup-guard-hours { max-width: 620px; display: flex; }
+.backup-guard-panel-note { color: #50575e; margin: 0 0 12px; max-width: 640px; }
+.backup-guard-auto-options { margin-top: 6px; }

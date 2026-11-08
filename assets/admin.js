@@ -206,17 +206,23 @@
 
 	/* ----- Rules, schedule ----- */
 
-	var schedule = $('#backup-guard-schedule');
+	var scheduleRadios = $$('input[name="schedule"]');
 	function syncSchedule() {
-		$('#backup-guard-cron-row').hidden = schedule.value !== 'custom';
-		var kind = schedule.value === '' ? 'none' : (schedule.value === 'custom' ? 'custom' : 'auto');
-		$$('[data-mode]').forEach(function (row) { row.hidden = row.dataset.mode !== schedule.value; });
-		$$('.backup-guard-cron-note p[data-for]').forEach(function (p) { p.hidden = p.dataset.for !== kind; });
+		var checked = scheduleRadios.filter(function (r) { return r.checked; })[0];
+		var mode = checked ? checked.value : '';
+		$$('[data-mode]').forEach(function (el) { el.hidden = el.dataset.mode.split(' ').indexOf(mode) === -1; });
+		scheduleRadios.forEach(function (r) { r.closest('.backup-guard-mode').classList.toggle('is-on', r.checked); });
 	}
-	if (schedule) {
-		schedule.addEventListener('change', syncSchedule);
-		syncSchedule();
-	}
+	scheduleRadios.forEach(function (r) { r.addEventListener('change', syncSchedule); });
+	if (scheduleRadios.length) { syncSchedule(); }
+	$$('.backup-guard-preset').forEach(function (b) {
+		b.addEventListener('click', function () { $('#backup-guard-minutes').value = b.dataset.minutes; });
+	});
+	$$('.backup-guard-pick').forEach(function (b) {
+		b.addEventListener('click', function () {
+			$$('input[name="' + b.dataset.target + '"]').forEach(function (c) { c.checked = b.dataset.state === '1'; });
+		});
+	});
 	var rotation = $('#backup-guard-rotation');
 	var rotationWarn = $('#backup-guard-rotation-warning');
 	function syncRotation() {
