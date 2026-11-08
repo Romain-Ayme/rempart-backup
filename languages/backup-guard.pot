@@ -9,14 +9,14 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-11-08T01:41:30+00:00\n"
+"POT-Creation-Date: 2026-11-08T01:51:47+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: backup-guard\n"
 
 #. Plugin Name of the plugin
 #: backup-guard.php
-#: includes/class-admin.php:275
+#: includes/class-admin.php:276
 msgid "Backup Guard"
 msgstr ""
 
@@ -46,623 +46,662 @@ msgid "%1$s sauvegarde(s) ajoutée(s), %2$s retirée(s) de la liste."
 msgstr ""
 
 #: includes/class-admin.php:44
-#: includes/class-admin.php:730
-#: includes/class-admin.php:734
+#: includes/class-admin.php:751
+#: includes/class-admin.php:755
 msgid "Ajouter un emplacement"
 msgstr ""
 
 #: includes/class-admin.php:45
-#: includes/class-admin.php:978
-msgid "Ajouter un service"
+#, php-format
+msgid "Sauvegardes par semaine : %d"
 msgstr ""
 
 #: includes/class-admin.php:46
-msgid "Ce journal est vide."
+#: includes/class-admin.php:999
+msgid "Ajouter un service"
 msgstr ""
 
 #: includes/class-admin.php:47
+msgid "Ce journal est vide."
+msgstr ""
+
+#: includes/class-admin.php:48
 #, php-format
 msgid "Cette sauvegarde vient de %s. Son adresse sera remplacée par celle de ce site."
 msgstr ""
 
-#: includes/class-admin.php:48
+#: includes/class-admin.php:49
 msgid "Chargement…"
 msgstr ""
 
-#: includes/class-admin.php:49
+#: includes/class-admin.php:50
 msgid "Commence par"
 msgstr ""
 
-#: includes/class-admin.php:50
+#: includes/class-admin.php:51
 msgid "Contient"
 msgstr ""
 
-#: includes/class-admin.php:51
+#: includes/class-admin.php:52
 msgid "Copié"
 msgstr ""
 
-#: includes/class-admin.php:52
-#: includes/class-admin.php:757
-#: includes/class-admin.php:1026
+#: includes/class-admin.php:53
+#: includes/class-admin.php:778
+#: includes/class-admin.php:1047
 msgid "Enregistrer"
 msgstr ""
 
-#: includes/class-admin.php:53
+#: includes/class-admin.php:54
 msgid "Enregistrer et connecter le compte"
 msgstr ""
 
-#: includes/class-admin.php:54
+#: includes/class-admin.php:55
 #, php-format
 msgid "Envoi : %s"
 msgstr ""
 
-#: includes/class-admin.php:55
+#: includes/class-admin.php:56
 msgid "Envoi…"
 msgstr ""
 
-#: includes/class-admin.php:56
+#: includes/class-admin.php:57
 msgid "Erreur inconnue."
 msgstr ""
 
-#: includes/class-admin.php:57
+#: includes/class-admin.php:58
 msgid "Exclu"
 msgstr ""
 
-#: includes/class-admin.php:58
+#: includes/class-admin.php:59
 msgid "Exclure"
 msgstr ""
 
-#: includes/class-admin.php:59
+#: includes/class-admin.php:60
 msgid "Extension"
 msgstr ""
 
-#: includes/class-admin.php:60
+#: includes/class-admin.php:61
 msgid "Finit par"
 msgstr ""
 
-#: includes/class-admin.php:61
+#: includes/class-admin.php:62
 msgid "Gardez cette page ouverte jusqu'à la fin."
 msgstr ""
 
-#: includes/class-admin.php:62
+#: includes/class-admin.php:63
 msgid "La restauration n'a pas abouti"
 msgstr ""
 
-#: includes/class-admin.php:63
+#: includes/class-admin.php:64
 msgid "La tâche n'a pas abouti"
 msgstr ""
 
-#: includes/class-admin.php:64
+#: includes/class-admin.php:65
 msgid "Le programme de restauration ne répond plus. Un pare-feu bloque peut-être les fichiers PHP dans wp-content. Attendez encore, ou forcez l'arrêt."
 msgstr ""
 
-#: includes/class-admin.php:65
+#: includes/class-admin.php:66
 msgid "Modifier l'emplacement"
 msgstr ""
 
-#: includes/class-admin.php:66
+#: includes/class-admin.php:67
 msgid "Modifier le service"
 msgstr ""
 
-#: includes/class-admin.php:67
+#: includes/class-admin.php:68
 msgid "Restauration arrêtée"
 msgstr ""
 
-#: includes/class-admin.php:68
+#: includes/class-admin.php:69
 msgid "Restauration en cours"
 msgstr ""
 
-#: includes/class-admin.php:69
+#: includes/class-admin.php:70
 msgid "Restauration terminée"
 msgstr ""
 
-#: includes/class-admin.php:70
+#: includes/class-admin.php:71
 msgid "Retirer"
 msgstr ""
 
-#: includes/class-admin.php:71
+#: includes/class-admin.php:72
 msgid "Récupération de la sauvegarde"
 msgstr ""
 
-#: includes/class-admin.php:72
+#: includes/class-admin.php:73
 msgid "Réponse illisible du serveur."
 msgstr ""
 
-#: includes/class-admin.php:73
-#: includes/class-admin.php:1120
+#: includes/class-admin.php:74
+#: includes/class-admin.php:1141
 msgid "Sauvegarde en cours"
 msgstr ""
 
-#: includes/class-admin.php:74
+#: includes/class-admin.php:75
 msgid "Sauvegarde terminée"
 msgstr ""
 
-#: includes/class-admin.php:75
+#: includes/class-admin.php:76
 msgid "Si la page vous demande de vous connecter, c'est normal : vos comptes sont ceux de la sauvegarde."
 msgstr ""
 
-#: includes/class-admin.php:76
+#: includes/class-admin.php:77
 #, php-format
 msgid "Supprimer définitivement %s sauvegarde(s) ?"
 msgstr ""
 
-#: includes/class-admin.php:77
+#: includes/class-admin.php:78
 msgid "Supprimer définitivement cette sauvegarde ?"
 msgstr ""
 
-#: includes/class-admin.php:78
+#: includes/class-admin.php:79
 msgid "Sélectionnez au moins une sauvegarde."
 msgstr ""
 
-#: includes/class-admin.php:79
+#: includes/class-admin.php:80
 msgid "Test…"
 msgstr ""
 
-#: includes/class-admin.php:80
+#: includes/class-admin.php:81
 msgid "Tâche arrêtée"
 msgstr ""
 
-#: includes/class-admin.php:81
+#: includes/class-admin.php:82
 msgid "Tâche en cours"
 msgstr ""
 
-#: includes/class-admin.php:82
+#: includes/class-admin.php:83
 #, php-format
 msgid "par exemple %s"
 msgstr ""
 
-#: includes/class-admin.php:111
+#: includes/class-admin.php:112
 #, php-format
 msgid "Votre dernière sauvegarde date de %d jours."
 msgstr ""
 
-#: includes/class-admin.php:112
+#: includes/class-admin.php:113
 msgid "Vous n'avez encore aucune sauvegarde de ce site."
 msgstr ""
 
-#: includes/class-admin.php:114
+#: includes/class-admin.php:115
 msgid "Faire une sauvegarde"
 msgstr ""
 
-#: includes/class-admin.php:132
+#: includes/class-admin.php:133
 msgid "L'autorisation a été annulée."
 msgstr ""
 
-#: includes/class-admin.php:147
+#: includes/class-admin.php:148
 msgid "Réglages enregistrés."
 msgstr ""
 
-#: includes/class-admin.php:154
+#: includes/class-admin.php:155
 msgid "Emplacement supprimé."
 msgstr ""
 
-#: includes/class-admin.php:159
+#: includes/class-admin.php:160
 #, php-format
 msgid "Canal « %s » enregistré. Utilisez « Envoyer un test » pour vérifier qu'il fonctionne."
 msgstr ""
 
-#: includes/class-admin.php:164
+#: includes/class-admin.php:165
 msgid "Notification activée."
 msgstr ""
 
-#: includes/class-admin.php:164
+#: includes/class-admin.php:165
 msgid "Notification mise en pause."
 msgstr ""
 
-#: includes/class-admin.php:168
+#: includes/class-admin.php:169
 msgid "Canal supprimé."
 msgstr ""
 
-#: includes/class-admin.php:193
+#: includes/class-admin.php:194
 #, php-format
 msgid "« %s » est connecté."
 msgstr ""
 
-#: includes/class-admin.php:219
+#: includes/class-admin.php:220
 msgid "Choisissez au moins un jour et une heure."
 msgstr ""
 
-#: includes/class-admin.php:226
+#: includes/class-admin.php:227
 msgid "Pour les sauvegardes automatiques, choisissez les fichiers, la base de données ou les deux."
 msgstr ""
 
-#: includes/class-admin.php:253
+#: includes/class-admin.php:254
 msgid "Emplacement enregistré."
 msgstr ""
 
-#: includes/class-admin.php:258
+#: includes/class-admin.php:259
 #, php-format
 msgid "Emplacement enregistré, mais la connexion a échoué : %s"
 msgstr ""
 
-#: includes/class-admin.php:260
+#: includes/class-admin.php:261
 msgid "Emplacement enregistré. La connexion fonctionne."
 msgstr ""
 
-#: includes/class-admin.php:276
+#: includes/class-admin.php:277
 msgid "Sauvegarde, restauration, migration et clonage. Tout est inclus, sans licence."
 msgstr ""
 
-#: includes/class-admin.php:285
+#: includes/class-admin.php:286
 msgid "Tableau de bord"
 msgstr ""
 
-#: includes/class-admin.php:286
+#: includes/class-admin.php:287
 msgid "Réglages"
 msgstr ""
 
-#: includes/class-admin.php:287
+#: includes/class-admin.php:288
 msgid "Emplacements"
 msgstr ""
 
-#: includes/class-admin.php:288
+#: includes/class-admin.php:289
 msgid "Historique"
 msgstr ""
 
-#: includes/class-admin.php:289
+#: includes/class-admin.php:290
 msgid "Notifications"
 msgstr ""
 
-#: includes/class-admin.php:290
+#: includes/class-admin.php:291
 msgid "Aide"
 msgstr ""
 
-#: includes/class-admin.php:312
+#: includes/class-admin.php:313
 msgid "Fichiers de WordPress"
 msgstr ""
 
-#: includes/class-admin.php:317
+#: includes/class-admin.php:318
 msgid "Dossier local (par défaut)"
 msgstr ""
 
-#: includes/class-admin.php:333
-#: includes/class-admin.php:640
+#: includes/class-admin.php:334
+#: includes/class-admin.php:661
 msgctxt "date and time format"
 msgid "j F Y à H:i"
 msgstr ""
 
-#: includes/class-admin.php:338
-msgid "Dernière sauvegarde"
-msgstr ""
-
 #: includes/class-admin.php:339
-#: includes/class-admin.php:345
-#: includes/class-admin.php:477
-msgid "Aucune"
+msgid "Dernière sauvegarde"
 msgstr ""
 
 #: includes/class-admin.php:340
 #: includes/class-admin.php:346
-#, php-format
-msgid "il y a %s"
+#: includes/class-admin.php:495
+msgid "Aucune"
 msgstr ""
 
 #: includes/class-admin.php:341
 #: includes/class-admin.php:347
+#, php-format
+msgid "il y a %s"
+msgstr ""
+
+#: includes/class-admin.php:342
+#: includes/class-admin.php:348
 msgid "Voir le journal"
 msgstr ""
 
-#: includes/class-admin.php:344
+#: includes/class-admin.php:345
 msgid "Dernière restauration"
 msgstr ""
 
-#: includes/class-admin.php:350
+#: includes/class-admin.php:351
 msgid "Prochaine sauvegarde automatique"
 msgstr ""
 
-#: includes/class-admin.php:355
+#: includes/class-admin.php:356
+#: includes/class-admin.php:440
 msgid "Tâche cron personnalisée"
 msgstr ""
 
-#: includes/class-admin.php:357
+#: includes/class-admin.php:358
 msgid "Rien de prévu"
 msgstr ""
 
-#: includes/class-admin.php:362
+#: includes/class-admin.php:363
 #, php-format
 msgid "en retard de %s"
 msgstr ""
 
-#: includes/class-admin.php:364
+#: includes/class-admin.php:365
 #, php-format
 msgid "dans %s"
 msgstr ""
 
-#: includes/class-admin.php:372
+#: includes/class-admin.php:373
 msgid "Serveur LiteSpeed détecté."
 msgstr ""
 
-#: includes/class-admin.php:372
+#: includes/class-admin.php:373
 msgid "Si une sauvegarde se bloque sans erreur,"
 msgstr ""
 
-#: includes/class-admin.php:372
+#: includes/class-admin.php:373
 msgid "ajoutez la règle LiteSpeed dans l'onglet Aide"
 msgstr ""
 
-#: includes/class-admin.php:375
+#: includes/class-admin.php:376
 msgid "Créer une sauvegarde"
 msgstr ""
 
-#: includes/class-admin.php:378
-#: includes/class-admin.php:416
-#: includes/class-admin.php:506
-#: includes/class-admin.php:1137
+#: includes/class-admin.php:379
+#: includes/class-admin.php:417
+#: includes/class-admin.php:527
+#: includes/class-admin.php:1158
 msgid "Fichiers du site"
 msgstr ""
 
-#: includes/class-admin.php:380
-#: includes/class-admin.php:418
-#: includes/class-admin.php:508
-#: includes/class-admin.php:876
-#: includes/class-admin.php:1138
+#: includes/class-admin.php:381
+#: includes/class-admin.php:419
+#: includes/class-admin.php:529
+#: includes/class-admin.php:897
+#: includes/class-admin.php:1159
 #: includes/class-job.php:709
 msgid "Base de données"
 msgstr ""
 
-#: includes/class-admin.php:382
+#: includes/class-admin.php:383
 msgid "Sans les fichiers de WordPress, la sauvegarde se restaure sur un WordPress déjà installé, de la même version."
 msgstr ""
 
-#: includes/class-admin.php:384
+#: includes/class-admin.php:385
 msgid "Où la garder"
 msgstr ""
 
-#: includes/class-admin.php:388
+#: includes/class-admin.php:389
 msgid "Options supplémentaires"
 msgstr ""
 
-#: includes/class-admin.php:389
+#: includes/class-admin.php:390
 msgid "Note (facultatif)"
 msgstr ""
 
-#: includes/class-admin.php:390
+#: includes/class-admin.php:391
 msgid "80 caractères au maximum"
 msgstr ""
 
-#: includes/class-admin.php:393
+#: includes/class-admin.php:394
 msgid "Créer la sauvegarde"
 msgstr ""
 
-#: includes/class-admin.php:412
+#: includes/class-admin.php:413
 msgid "Sauvegardes"
 msgstr ""
 
-#: includes/class-admin.php:414
+#: includes/class-admin.php:415
 msgid "Par défaut, sauvegarder"
 msgstr ""
 
-#: includes/class-admin.php:422
+#: includes/class-admin.php:423
 msgid "Emplacement par défaut"
 msgstr ""
 
-#: includes/class-admin.php:426
+#: includes/class-admin.php:427
 msgid "Avant les mises à jour de WordPress"
 msgstr ""
 
-#: includes/class-admin.php:428
+#: includes/class-admin.php:429
 msgid "Sauvegarder avant une mise à jour manuelle"
 msgstr ""
 
-#: includes/class-admin.php:429
+#: includes/class-admin.php:430
 msgid "Retenir les mises à jour automatiques jusqu'à la fin d'une sauvegarde"
 msgstr ""
 
-#: includes/class-admin.php:436
-msgid "Sauvegardes automatiques"
-msgstr ""
-
-#: includes/class-admin.php:441
-msgid "Pas de sauvegarde automatique"
+#: includes/class-admin.php:438
+msgid "Désactivées"
 msgstr ""
 
 #: includes/class-admin.php:442
-msgid "Simple : toutes les X minutes"
+msgid "Actives"
 msgstr ""
 
-#: includes/class-admin.php:443
-msgid "Avancé : jours et heures choisis"
+#: includes/class-admin.php:447
+msgid "Sauvegardes automatiques"
 msgstr ""
 
-#: includes/class-admin.php:444
-msgid "Personnalisée (tâche cron du serveur)"
+#: includes/class-admin.php:451
+msgid "Fréquence"
+msgstr ""
+
+#: includes/class-admin.php:455
+msgid "Désactivée"
+msgstr ""
+
+#: includes/class-admin.php:456
+msgid "Toutes les X minutes"
 msgstr ""
 
 #: includes/class-admin.php:457
+msgid "Jours et heures"
+msgstr ""
+
+#: includes/class-admin.php:458
+msgid "Cron du serveur"
+msgstr ""
+
+#: includes/class-admin.php:471
 msgid "Toutes les"
 msgstr ""
 
-#: includes/class-admin.php:459
+#: includes/class-admin.php:473
 msgid "minutes (5 au minimum)"
 msgstr ""
 
-#: includes/class-admin.php:469
+#: includes/class-admin.php:483
 msgid "Jours"
 msgstr ""
 
-#: includes/class-admin.php:475
+#: includes/class-admin.php:484
+msgid "Tous les jours"
+msgstr ""
+
+#: includes/class-admin.php:485
+msgid "Jours ouvrés"
+msgstr ""
+
+#: includes/class-admin.php:486
+msgid "Week-end"
+msgstr ""
+
+#: includes/class-admin.php:493
 msgid "Heures"
 msgstr ""
 
-#: includes/class-admin.php:476
+#: includes/class-admin.php:494
 msgid "Toutes"
 msgstr ""
 
-#: includes/class-admin.php:487
+#: includes/class-admin.php:502
+#, php-format
+msgid "Fuseau horaire du site : %s"
+msgstr ""
+
+#: includes/class-admin.php:506
 msgid "Ajoutez la commande ci-dessous aux tâches cron de votre hébergement."
 msgstr ""
 
-#: includes/class-admin.php:489
-#: includes/class-admin.php:753
+#: includes/class-admin.php:508
+#: includes/class-admin.php:774
 msgid "Copier"
 msgstr ""
 
-#: includes/class-admin.php:493
+#: includes/class-admin.php:519
 msgid "Automatique :"
 msgstr ""
 
-#: includes/class-admin.php:493
+#: includes/class-admin.php:519
 msgid "rien d'autre à configurer. Elle part à la première visite du site après l'heure prévue. Pour une heure exacte même sans visite, choisissez « Personnalisée »."
 msgstr ""
 
-#: includes/class-admin.php:504
-#: includes/class-admin.php:861
+#: includes/class-admin.php:523
+msgid "Quoi sauvegarder"
+msgstr ""
+
+#: includes/class-admin.php:525
+#: includes/class-admin.php:882
 #: includes/class-job.php:714
 msgid "Contenu"
 msgstr ""
 
-#: includes/class-admin.php:512
-#: includes/class-admin.php:861
+#: includes/class-admin.php:533
+#: includes/class-admin.php:882
 #: includes/class-job.php:714
 msgid "Emplacement"
 msgstr ""
 
-#: includes/class-admin.php:516
+#: includes/class-admin.php:537
 msgid "Sauvegardes automatiques à conserver"
 msgstr ""
 
-#: includes/class-admin.php:519
+#: includes/class-admin.php:540
 msgid "0 = toutes (par défaut)"
 msgstr ""
 
-#: includes/class-admin.php:520
+#: includes/class-admin.php:541
 msgid "Plus de 30 sauvegardes peuvent occuper beaucoup de place."
 msgstr ""
 
-#: includes/class-admin.php:527
+#: includes/class-admin.php:548
 msgid "Exclusions"
 msgstr ""
 
-#: includes/class-admin.php:529
+#: includes/class-admin.php:550
 msgid "Tables de la base à exclure"
 msgstr ""
 
-#: includes/class-admin.php:531
+#: includes/class-admin.php:552
 msgid "Choisir dans la liste"
 msgstr ""
 
-#: includes/class-admin.php:540
+#: includes/class-admin.php:561
 msgid "Fichiers et dossiers à exclure"
 msgstr ""
 
-#: includes/class-admin.php:543
+#: includes/class-admin.php:564
 msgid "Par nom"
 msgstr ""
 
-#: includes/class-admin.php:546
+#: includes/class-admin.php:567
 msgid "Avec l'extension"
 msgstr ""
 
-#: includes/class-admin.php:547
+#: includes/class-admin.php:568
 msgid "Dont le nom commence par"
 msgstr ""
 
-#: includes/class-admin.php:548
+#: includes/class-admin.php:569
 msgid "Dont le nom finit par"
 msgstr ""
 
-#: includes/class-admin.php:549
+#: includes/class-admin.php:570
 msgid "Dont le chemin contient"
 msgstr ""
 
-#: includes/class-admin.php:551
+#: includes/class-admin.php:572
 msgid "par exemple zip"
 msgstr ""
 
-#: includes/class-admin.php:552
+#: includes/class-admin.php:573
 msgid "Ajouter"
 msgstr ""
 
-#: includes/class-admin.php:566
+#: includes/class-admin.php:587
 msgid "Dossiers ou fichiers précis"
 msgstr ""
 
-#: includes/class-admin.php:567
+#: includes/class-admin.php:588
 msgid "Parcourir le site…"
 msgstr ""
 
-#: includes/class-admin.php:581
+#: includes/class-admin.php:602
 msgid "Autres réglages"
 msgstr ""
 
-#: includes/class-admin.php:587
+#: includes/class-admin.php:608
 msgid "Autres éléments à la racine du site"
 msgstr ""
 
-#: includes/class-admin.php:589
+#: includes/class-admin.php:610
 msgid "Choisir ceux à inclure"
 msgstr ""
 
-#: includes/class-admin.php:599
+#: includes/class-admin.php:620
 msgid "Compression"
 msgstr ""
 
-#: includes/class-admin.php:600
+#: includes/class-admin.php:621
 msgid "Niveau"
 msgstr ""
 
-#: includes/class-admin.php:602
+#: includes/class-admin.php:623
 msgid "(archive la plus petite, la plus lente)"
 msgstr ""
 
-#: includes/class-admin.php:602
+#: includes/class-admin.php:623
 msgid "(la plus rapide, archive plus grosse)"
 msgstr ""
 
-#: includes/class-admin.php:607
+#: includes/class-admin.php:628
 msgid "Mode débogage"
 msgstr ""
 
-#: includes/class-admin.php:608
+#: includes/class-admin.php:629
 msgid "Écrire plus de détails dans le journal (ne le laissez pas activé)"
 msgstr ""
 
-#: includes/class-admin.php:612
+#: includes/class-admin.php:633
 msgid "Enregistrer les réglages"
 msgstr ""
 
-#: includes/class-admin.php:631
+#: includes/class-admin.php:652
 msgid "WP-Cron est désactivé sur ce site : rien ne partira seul. Choisissez « Personnalisée »."
 msgstr ""
 
-#: includes/class-admin.php:635
+#: includes/class-admin.php:656
 msgid "Cliquez sur « Enregistrer les réglages » pour activer la planification."
 msgstr ""
 
-#: includes/class-admin.php:638
+#: includes/class-admin.php:659
 #, php-format
 msgid "En retard de %s : en attente d'une visite du site."
 msgstr ""
 
-#: includes/class-admin.php:640
+#: includes/class-admin.php:661
 #, php-format
 msgid "Prochaine sauvegarde automatique : %s."
 msgstr ""
 
-#: includes/class-admin.php:675
+#: includes/class-admin.php:696
 msgid "Emplacements de sauvegarde"
 msgstr ""
 
-#: includes/class-admin.php:677
-#: includes/class-admin.php:740
-#: includes/class-admin.php:929
+#: includes/class-admin.php:698
+#: includes/class-admin.php:761
+#: includes/class-admin.php:950
 #: includes/class-job.php:714
 #: includes/class-job.php:787
 msgid "Nom"
 msgstr ""
 
-#: includes/class-admin.php:677
-#: includes/class-admin.php:744
+#: includes/class-admin.php:698
+#: includes/class-admin.php:765
 msgid "Type"
 msgstr ""
 
-#: includes/class-admin.php:677
+#: includes/class-admin.php:698
 #: includes/class-locations.php:14
 #: includes/class-notifications.php:31
 msgid "Serveur"
 msgstr ""
 
-#: includes/class-admin.php:677
+#: includes/class-admin.php:698
 #: includes/class-locations.php:49
 #: includes/class-locations.php:50
 #: includes/class-locations.php:51
@@ -670,437 +709,437 @@ msgstr ""
 msgid "Dossier"
 msgstr ""
 
-#: includes/class-admin.php:677
+#: includes/class-admin.php:698
 msgid "Espace utilisé"
 msgstr ""
 
-#: includes/class-admin.php:677
-#: includes/class-admin.php:861
-#: includes/class-admin.php:929
+#: includes/class-admin.php:698
+#: includes/class-admin.php:882
+#: includes/class-admin.php:950
 msgid "Actions"
 msgstr ""
 
-#: includes/class-admin.php:680
-#: includes/class-admin.php:832
-#: includes/class-admin.php:843
+#: includes/class-admin.php:701
+#: includes/class-admin.php:853
+#: includes/class-admin.php:864
 #: includes/class-job.php:708
 msgid "Dossier local"
 msgstr ""
 
-#: includes/class-admin.php:712
+#: includes/class-admin.php:733
 msgid "Actualiser"
 msgstr ""
 
-#: includes/class-admin.php:719
+#: includes/class-admin.php:740
 msgid "Connecter le compte"
 msgstr ""
 
-#: includes/class-admin.php:721
+#: includes/class-admin.php:742
 msgid "Tester"
 msgstr ""
 
-#: includes/class-admin.php:723
-#: includes/class-admin.php:967
+#: includes/class-admin.php:744
+#: includes/class-admin.php:988
 msgid "Modifier"
 msgstr ""
 
-#: includes/class-admin.php:724
+#: includes/class-admin.php:745
 msgid "Supprimer cet emplacement ? Les sauvegardes déjà envoyées y restent."
 msgstr ""
 
-#: includes/class-admin.php:724
-#: includes/class-admin.php:855
-#: includes/class-admin.php:900
-#: includes/class-admin.php:968
+#: includes/class-admin.php:745
+#: includes/class-admin.php:876
+#: includes/class-admin.php:921
+#: includes/class-admin.php:989
 msgid "Supprimer"
 msgstr ""
 
-#: includes/class-admin.php:753
+#: includes/class-admin.php:774
 msgid "Adresse de retour à déclarer dans votre application :"
 msgstr ""
 
-#: includes/class-admin.php:754
+#: includes/class-admin.php:775
 msgid "Ce service demande votre propre application : l'onglet Aide explique comment la créer. Après l'enregistrement, vous serez envoyé sur sa page pour accepter l'accès."
 msgstr ""
 
-#: includes/class-admin.php:758
-#: includes/class-admin.php:1027
-#: includes/class-admin.php:1144
+#: includes/class-admin.php:779
+#: includes/class-admin.php:1048
+#: includes/class-admin.php:1165
 msgid "Annuler"
 msgstr ""
 
-#: includes/class-admin.php:799
-#: includes/class-admin.php:1007
+#: includes/class-admin.php:820
+#: includes/class-admin.php:1028
 msgid "Laissez vide pour garder la valeur enregistrée."
 msgstr ""
 
-#: includes/class-admin.php:829
+#: includes/class-admin.php:850
 msgid "Afficher :"
 msgstr ""
 
-#: includes/class-admin.php:831
+#: includes/class-admin.php:852
 msgid "Tous les emplacements"
 msgstr ""
 
-#: includes/class-admin.php:838
+#: includes/class-admin.php:859
 msgid "Filtrer"
 msgstr ""
 
-#: includes/class-admin.php:841
+#: includes/class-admin.php:862
 msgid "Synchroniser depuis :"
 msgstr ""
 
-#: includes/class-admin.php:849
+#: includes/class-admin.php:870
 msgid "Synchroniser"
 msgstr ""
 
-#: includes/class-admin.php:850
+#: includes/class-admin.php:871
 msgid "Importer une sauvegarde"
 msgstr ""
 
-#: includes/class-admin.php:854
+#: includes/class-admin.php:875
 msgid "Tout sélectionner"
 msgstr ""
 
-#: includes/class-admin.php:861
+#: includes/class-admin.php:882
 msgid "Date"
 msgstr ""
 
-#: includes/class-admin.php:861
+#: includes/class-admin.php:882
 #: includes/class-job.php:714
 msgid "Taille"
 msgstr ""
 
-#: includes/class-admin.php:861
+#: includes/class-admin.php:882
 msgid "Note"
 msgstr ""
 
-#: includes/class-admin.php:864
+#: includes/class-admin.php:885
 msgid "Aucune sauvegarde pour le moment."
 msgstr ""
 
-#: includes/class-admin.php:864
+#: includes/class-admin.php:885
 msgid "Aucune sauvegarde à cet emplacement."
 msgstr ""
 
-#: includes/class-admin.php:869
+#: includes/class-admin.php:890
 msgid "Local"
 msgstr ""
 
-#: includes/class-admin.php:869
+#: includes/class-admin.php:890
 msgid "Emplacement supprimé"
 msgstr ""
 
-#: includes/class-admin.php:873
+#: includes/class-admin.php:894
 #: includes/class-job.php:709
 msgid "Fichiers"
 msgstr ""
 
-#: includes/class-admin.php:886
+#: includes/class-admin.php:907
 msgid "Auto"
 msgstr ""
 
-#: includes/class-admin.php:897
-#: includes/class-admin.php:1145
+#: includes/class-admin.php:918
+#: includes/class-admin.php:1166
 msgid "Restaurer"
 msgstr ""
 
-#: includes/class-admin.php:898
+#: includes/class-admin.php:919
 msgid "Télécharger"
 msgstr ""
 
-#: includes/class-admin.php:899
-#: includes/class-admin.php:1152
+#: includes/class-admin.php:920
+#: includes/class-admin.php:1173
 msgid "Journal"
 msgstr ""
 
-#: includes/class-admin.php:909
+#: includes/class-admin.php:930
 msgid "sauvegardes"
 msgstr ""
 
-#: includes/class-admin.php:926
+#: includes/class-admin.php:947
 msgid "Être prévenu"
 msgstr ""
 
-#: includes/class-admin.php:927
+#: includes/class-admin.php:948
 msgid "Chaque sauvegarde réussie ou ratée peut envoyer un message. L'e-mail est un service comme les autres : ajoutez-en autant que vous voulez, de toutes sortes, et choisissez pour chacun s'il veut les réussites, les échecs ou les deux."
 msgstr ""
 
-#: includes/class-admin.php:929
-#: includes/class-admin.php:1022
+#: includes/class-admin.php:950
+#: includes/class-admin.php:1043
 msgid "État"
 msgstr ""
 
-#: includes/class-admin.php:929
-#: includes/class-admin.php:984
+#: includes/class-admin.php:950
+#: includes/class-admin.php:1005
 #: includes/class-locations.php:40
 msgid "Service"
 msgstr ""
 
-#: includes/class-admin.php:929
-#: includes/class-admin.php:1015
+#: includes/class-admin.php:950
+#: includes/class-admin.php:1036
 msgid "Prévenir en cas de"
 msgstr ""
 
-#: includes/class-admin.php:929
+#: includes/class-admin.php:950
 msgid "Dernier envoi"
 msgstr ""
 
-#: includes/class-admin.php:932
+#: includes/class-admin.php:953
 msgid "Aucune notification pour le moment. Ajoutez un e-mail ou un service."
 msgstr ""
 
-#: includes/class-admin.php:939
+#: includes/class-admin.php:960
 msgid "réussite"
 msgstr ""
 
-#: includes/class-admin.php:942
+#: includes/class-admin.php:963
 msgid "échec"
 msgstr ""
 
-#: includes/class-admin.php:952
-#: includes/class-admin.php:1023
+#: includes/class-admin.php:973
+#: includes/class-admin.php:1044
 #: includes/class-ajax.php:324
 msgid "Actif"
 msgstr ""
 
-#: includes/class-admin.php:958
+#: includes/class-admin.php:979
 msgctxt "result of the last send"
 msgid "Réussi"
 msgstr ""
 
-#: includes/class-admin.php:958
+#: includes/class-admin.php:979
 msgctxt "result of the last send"
 msgid "Échec"
 msgstr ""
 
-#: includes/class-admin.php:966
+#: includes/class-admin.php:987
 msgid "Envoyer un test"
 msgstr ""
 
-#: includes/class-admin.php:968
+#: includes/class-admin.php:989
 msgid "Supprimer ce canal de notification ?"
 msgstr ""
 
-#: includes/class-admin.php:974
+#: includes/class-admin.php:995
 msgid "Ajouter une notification"
 msgstr ""
 
-#: includes/class-admin.php:992
+#: includes/class-admin.php:1013
 msgid "Nom (facultatif)"
 msgstr ""
 
-#: includes/class-admin.php:993
+#: includes/class-admin.php:1014
 msgid "Par exemple : Salon alertes"
 msgstr ""
 
-#: includes/class-admin.php:1017
+#: includes/class-admin.php:1038
 msgid "Réussite"
 msgstr ""
 
-#: includes/class-admin.php:1018
+#: includes/class-admin.php:1039
 msgid "Échec"
 msgstr ""
 
-#: includes/class-admin.php:1039
+#: includes/class-admin.php:1060
 msgid "Vérifier mon site"
 msgstr ""
 
-#: includes/class-admin.php:1040
+#: includes/class-admin.php:1061
 msgid "Contrôle ce dont les sauvegardes ont besoin sur votre hébergement."
 msgstr ""
 
-#: includes/class-admin.php:1041
+#: includes/class-admin.php:1062
 msgid "Lancer la vérification"
 msgstr ""
 
-#: includes/class-admin.php:1046
+#: includes/class-admin.php:1067
 msgid "Sauvegarde qui se bloque sans erreur (LiteSpeed)"
 msgstr ""
 
-#: includes/class-admin.php:1047
+#: includes/class-admin.php:1068
 msgid "Sur certains serveurs LiteSpeed, une sauvegarde est tuée en route, sans message : elle reste coincée à un pourcentage fixe. La parade est une règle « noabort » dans le fichier .htaccess du site."
 msgstr ""
 
-#: includes/class-admin.php:1050
+#: includes/class-admin.php:1071
 msgid "Ajouter la règle"
 msgstr ""
 
-#: includes/class-admin.php:1051
+#: includes/class-admin.php:1072
 msgid "Essayer l'autre forme"
 msgstr ""
 
-#: includes/class-admin.php:1052
+#: includes/class-admin.php:1073
 msgid "Retirer la règle"
 msgstr ""
 
-#: includes/class-admin.php:1054
+#: includes/class-admin.php:1075
 msgid "La règle est ajoutée au début du .htaccess, après en avoir gardé une copie. Si le site se met à planter à cause d'elle, elle est retirée toute seule. L'autre forme sert quand la première reste sans effet."
 msgstr ""
 
-#: includes/class-admin.php:1057
+#: includes/class-admin.php:1078
 msgid "Déplacer ou cloner un site"
 msgstr ""
 
-#: includes/class-admin.php:1059
+#: includes/class-admin.php:1080
 msgid "Sur le site d'origine, créez une sauvegarde complète et téléchargez-la, ou gardez-la sur un emplacement distant."
 msgstr ""
 
-#: includes/class-admin.php:1060
+#: includes/class-admin.php:1081
 msgid "Sur le nouveau site, installez WordPress puis ce plugin."
 msgstr ""
 
-#: includes/class-admin.php:1061
+#: includes/class-admin.php:1082
 msgid "Dans Historique, importez le fichier, ou ajoutez le même emplacement et cliquez sur Synchroniser."
 msgstr ""
 
-#: includes/class-admin.php:1062
+#: includes/class-admin.php:1083
 msgid "Cliquez sur Restaurer. L'adresse du site est remplacée partout dans la base de données ; la connexion à la base et les règles du serveur du nouveau site sont conservées."
 msgstr ""
 
-#: includes/class-admin.php:1064
+#: includes/class-admin.php:1085
 msgid "Les sauvegardes faites avec le plugin Backuply peuvent aussi être importées et restaurées ici."
 msgstr ""
 
-#: includes/class-admin.php:1067
+#: includes/class-admin.php:1088
 msgid "Connecter un compte cloud"
 msgstr ""
 
-#: includes/class-admin.php:1068
+#: includes/class-admin.php:1089
 msgid "Google Drive, OneDrive, Dropbox et pCloud demandent une application à votre nom : c'est gratuit, et vos autorisations ne passent par aucun service tiers. L'adresse de retour à déclarer est :"
 msgstr ""
 
-#: includes/class-admin.php:1071
+#: includes/class-admin.php:1092
 msgid "Sur console.cloud.google.com, créez un projet et activez l'API Google Drive."
 msgstr ""
 
-#: includes/class-admin.php:1072
+#: includes/class-admin.php:1093
 msgid "Configurez l'écran de consentement OAuth, avec votre adresse comme utilisateur de test."
 msgstr ""
 
-#: includes/class-admin.php:1073
+#: includes/class-admin.php:1094
 msgid "Créez des identifiants « ID client OAuth », de type Application Web, avec l'adresse de retour ci-dessus."
 msgstr ""
 
-#: includes/class-admin.php:1074
+#: includes/class-admin.php:1095
 msgid "Copiez l'identifiant et le secret dans le formulaire de l'emplacement."
 msgstr ""
 
-#: includes/class-admin.php:1075
+#: includes/class-admin.php:1096
 msgid "Tant que l'application reste en mode Test, Google retire son autorisation au bout de 7 jours. Publiez-la pour une connexion durable."
 msgstr ""
 
-#: includes/class-admin.php:1076
+#: includes/class-admin.php:1097
 msgid "Microsoft OneDrive"
 msgstr ""
 
-#: includes/class-admin.php:1077
+#: includes/class-admin.php:1098
 msgid "Sur entra.microsoft.com, ouvrez « Inscriptions d'applications » et créez-en une pour tous les comptes Microsoft."
 msgstr ""
 
-#: includes/class-admin.php:1078
+#: includes/class-admin.php:1099
 msgid "Ajoutez l'adresse de retour ci-dessus, de type Web."
 msgstr ""
 
-#: includes/class-admin.php:1079
+#: includes/class-admin.php:1100
 msgid "Dans « Certificats et secrets », créez un secret. Copiez sa valeur et l'ID d'application dans le formulaire."
 msgstr ""
 
-#: includes/class-admin.php:1082
+#: includes/class-admin.php:1103
 msgid "Sur dropbox.com/developers/apps, créez une application avec l'accès « Scoped », type « Full Dropbox »."
 msgstr ""
 
-#: includes/class-admin.php:1083
+#: includes/class-admin.php:1104
 msgid "Dans Permissions, cochez files.content.read, files.content.write et files.metadata.read."
 msgstr ""
 
-#: includes/class-admin.php:1084
+#: includes/class-admin.php:1105
 msgid "Dans Settings, ajoutez l'adresse de retour puis copiez App key et App secret dans le formulaire."
 msgstr ""
 
-#: includes/class-admin.php:1087
+#: includes/class-admin.php:1108
 msgid "Sur docs.pcloud.com/my_apps, créez une application avec l'accès aux fichiers."
 msgstr ""
 
-#: includes/class-admin.php:1088
+#: includes/class-admin.php:1109
 msgid "Ajoutez l'adresse de retour puis copiez Client ID et Client secret dans le formulaire."
 msgstr ""
 
-#: includes/class-admin.php:1092
+#: includes/class-admin.php:1113
 msgid "Recevoir les notifications sur son téléphone ou un salon"
 msgstr ""
 
-#: includes/class-admin.php:1093
+#: includes/class-admin.php:1114
 msgid "Dans l'onglet Notifications, ajoutez un e-mail ou un service, collez l'adresse ou le jeton qu'il vous donne, puis cliquez sur « Envoyer un test »."
 msgstr ""
 
-#: includes/class-admin.php:1095
+#: includes/class-admin.php:1116
 msgid ": le jeton d'application se crée sur pushover.net/apps, la clé utilisateur est sur votre tableau de bord."
 msgstr ""
 
-#: includes/class-admin.php:1096
+#: includes/class-admin.php:1117
 msgid ": adresse de votre serveur, puis un jeton d'application créé dans son interface."
 msgstr ""
 
-#: includes/class-admin.php:1097
+#: includes/class-admin.php:1118
 msgid ": choisissez un sujet long et secret, abonnez-vous-y dans l'application ntfy."
 msgstr ""
 
-#: includes/class-admin.php:1098
+#: includes/class-admin.php:1119
 msgid ": créez un bot avec @BotFather, écrivez-lui, puis relevez l'identifiant de la discussion."
 msgstr ""
 
-#: includes/class-admin.php:1099
+#: includes/class-admin.php:1120
 msgid ": réglages du salon, Intégrations, Webhooks, Copier l'URL."
 msgstr ""
 
-#: includes/class-admin.php:1100
+#: includes/class-admin.php:1121
 msgid ": créez un « Incoming Webhook » dans votre espace de travail."
 msgstr ""
 
-#: includes/class-admin.php:1101
+#: includes/class-admin.php:1122
 msgid ": n'importe quelle adresse qui accepte un POST en JSON (Zapier, n8n, Home Assistant...)."
 msgstr ""
 
-#: includes/class-admin.php:1105
+#: includes/class-admin.php:1126
 msgid "En ligne de commande"
 msgstr ""
 
-#: includes/class-admin.php:1123
+#: includes/class-admin.php:1144
 msgid "Vous pouvez fermer cette page, sauf si l'onglet Aide indique que le site ne peut pas s'appeler lui-même."
 msgstr ""
 
-#: includes/class-admin.php:1126
+#: includes/class-admin.php:1147
 msgid "Arrêter"
 msgstr ""
 
-#: includes/class-admin.php:1127
+#: includes/class-admin.php:1148
 msgid "Forcer l'arrêt"
 msgstr ""
 
-#: includes/class-admin.php:1128
-#: includes/class-admin.php:1154
-#: includes/class-admin.php:1163
+#: includes/class-admin.php:1149
+#: includes/class-admin.php:1175
+#: includes/class-admin.php:1184
 msgid "Fermer"
 msgstr ""
 
-#: includes/class-admin.php:1135
+#: includes/class-admin.php:1156
 msgid "Restaurer cette sauvegarde"
 msgstr ""
 
-#: includes/class-admin.php:1141
+#: includes/class-admin.php:1162
 msgid "Le contenu actuel sera remplacé"
 msgstr ""
 
-#: includes/class-admin.php:1141
+#: includes/class-admin.php:1162
 msgid "par celui de cette sauvegarde. Le site sera en maintenance pendant l'opération."
 msgstr ""
 
-#: includes/class-admin.php:1142
+#: includes/class-admin.php:1163
 msgid "J'ai compris"
 msgstr ""
 
-#: includes/class-admin.php:1160
+#: includes/class-admin.php:1181
 msgid "Choisir ce qu'il faut exclure"
 msgstr ""
 

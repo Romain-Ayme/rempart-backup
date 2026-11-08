@@ -219,13 +219,36 @@
 		box.addEventListener('change', function () { box.form.submit(); });
 	});
 	$$('.backup-guard-preset').forEach(function (b) {
-		b.addEventListener('click', function () { $('#backup-guard-minutes').value = b.dataset.minutes; });
+		b.addEventListener('click', function () { $('#backup-guard-minutes').value = b.dataset.minutes; updateSummary(); });
 	});
 	$$('.backup-guard-pick').forEach(function (b) {
 		b.addEventListener('click', function () {
-			$$('input[name="' + b.dataset.target + '"]').forEach(function (c) { c.checked = b.dataset.state === '1'; });
+			var only = b.dataset.values ? b.dataset.values.split(',') : null;
+			$$('input[name="' + b.dataset.target + '"]').forEach(function (c) {
+				c.checked = only ? only.indexOf(c.value) !== -1 : b.dataset.state === '1';
+			});
+			updateSummary();
 		});
 	});
+	function updateSummary() {
+		var el = $('#backup-guard-summary');
+		var checked = scheduleRadios.filter(function (r) { return r.checked; })[0];
+		if (!el || !checked) { return; }
+		var perWeek = 0;
+		if (checked.value === 'interval') {
+			var minutes = parseInt($('#backup-guard-minutes').value, 10) || 0;
+			perWeek = minutes >= 5 ? Math.round(10080 / minutes) : 0;
+		} else if (checked.value === 'advanced') {
+			perWeek = $$('input[name="schedule_days[]"]:checked').length * $$('input[name="schedule_hours[]"]:checked').length;
+		}
+		el.textContent = T('Sauvegardes par semaine : %d').replace('%d', perWeek);
+	}
+	$$('#backup-guard-minutes, input[name="schedule_days[]"], input[name="schedule_hours[]"]').forEach(function (i) {
+		i.addEventListener('input', updateSummary);
+		i.addEventListener('change', updateSummary);
+	});
+	scheduleRadios.forEach(function (r) { r.addEventListener('change', updateSummary); });
+	updateSummary();
 	var rotation = $('#backup-guard-rotation');
 	var rotationWarn = $('#backup-guard-rotation-warning');
 	function syncRotation() {

@@ -410,14 +410,6 @@ msgstr "Hold automatic updates until a backup has finished"
 msgid "Sauvegardes automatiques"
 msgstr "Automatic backups"
 
-#: includes/class-admin.php:419
-msgid "Pas de sauvegarde automatique"
-msgstr "No automatic backup"
-
-#: includes/class-admin.php:423
-msgid "Personnalisée (tâche cron du serveur)"
-msgstr "Custom (server cron job)"
-
 #: includes/class-admin.php:430
 msgid "Automatique :"
 msgstr "Automatic:"
@@ -2705,12 +2697,6 @@ msgstr "%s late"
 msgid "dans %s"
 msgstr "in %s"
 
-msgid "Simple : toutes les X minutes"
-msgstr "Simple: every X minutes"
-
-msgid "Avancé : jours et heures choisis"
-msgstr "Advanced: chosen days and hours"
-
 msgid "Toutes les"
 msgstr "Every"
 
@@ -2737,3 +2723,42 @@ msgstr "Notification turned on."
 
 msgid "Notification mise en pause."
 msgstr "Notification paused."
+
+msgid "Sauvegardes par semaine : %d"
+msgstr "Backups per week: %d"
+
+msgid "Désactivées"
+msgstr "Off"
+
+msgid "Actives"
+msgstr "On"
+
+msgid "Fréquence"
+msgstr "Frequency"
+
+msgid "Désactivée"
+msgstr "Off"
+
+msgid "Toutes les X minutes"
+msgstr "Every X minutes"
+
+msgid "Jours et heures"
+msgstr "Days and hours"
+
+msgid "Cron du serveur"
+msgstr "Server cron"
+
+msgid "Tous les jours"
+msgstr "Every day"
+
+msgid "Jours ouvrés"
+msgstr "Weekdays"
+
+msgid "Week-end"
+msgstr "Weekend"
+
+msgid "Fuseau horaire du site : %s"
+msgstr "Site time zone: %s"
+
+msgid "Quoi sauvegarder"
+msgstr "What to back up"
