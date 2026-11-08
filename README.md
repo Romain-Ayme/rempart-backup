@@ -25,7 +25,7 @@ Le plugin est écrit en français. Un site en français affiche les textes tels 
 
 ### Automatisation
 
-- Planification : en mode simple, toutes les X minutes (5 au minimum) ; en mode avancé, les jours et les heures de votre choix (fuseau horaire du site) ; ou une tâche cron du serveur.
+- Planification : en mode simple, toutes les X minutes (5 au minimum) ; en mode cron, une expression comme `5 4 * * *` (tous les jours à 4 h 05, fuseau horaire du site) ; ou une tâche cron du serveur qui appelle une adresse du site.
 - Rotation : ne garder que les N dernières sauvegardes automatiques.
 - Sauvegarde avant les mises à jour de WordPress, manuelles ou automatiques.
 - Chien de garde : une tâche bloquée est relancée, puis déclarée en échec avec un message clair si elle ne répond plus.

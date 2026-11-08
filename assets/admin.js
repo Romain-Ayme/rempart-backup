@@ -219,15 +219,11 @@
 		box.addEventListener('change', function () { box.form.submit(); });
 	});
 	$$('.backup-guard-preset').forEach(function (b) {
-		b.addEventListener('click', function () { $('#backup-guard-minutes').value = b.dataset.minutes; updateSummary(); });
+		b.addEventListener('click', function () { $('#backup-guard-minutes').value = b.dataset.minutes; });
 	});
-	$$('.backup-guard-pick').forEach(function (b) {
-		b.addEventListener('click', function () {
-			var only = b.dataset.values ? b.dataset.values.split(',') : null;
-			$$('input[name="' + b.dataset.target + '"]').forEach(function (c) {
-				c.checked = only ? only.indexOf(c.value) !== -1 : b.dataset.state === '1';
-			});
-			updateSummary();
+	$$('.backup-guard-example').forEach(function (b) {
+		b.addEventListener('click', function () { $('#backup-guard-cron-expr').value = b.dataset.expr; });
+	});
 		});
 	});
 	function updateSummary() {

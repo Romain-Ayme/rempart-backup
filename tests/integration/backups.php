@@ -179,7 +179,7 @@ $cases = array(
 			backup_guard_it_expect(!in_array($core, $names, true), $core . ' est inchangé, il ne devrait pas être gardé.');
 		}
 	},
-	'planification : mode simple et mode avancé' => function () {
+	'planification : mode simple et expression cron' => function () {
 		$saved = get_option('backup_guard_settings', null);
 		$base = (array) $saved;
 		try {
@@ -188,16 +188,15 @@ $cases = array(
 			$event = wp_get_scheduled_event('backup_guard_auto_backup');
 			backup_guard_it_expect($event && (int) $event->interval === 900, 'Le mode simple devrait répéter toutes les 15 minutes.');
 
-			update_option('backup_guard_settings', array_merge($base, array('schedule' => 'advanced', 'schedule_days' => array(0, 1, 2, 3, 4, 5, 6), 'schedule_hours' => range(0, 23))), false);
+			update_option('backup_guard_settings', array_merge($base, array('schedule' => 'cron', 'schedule_cron' => '0 * * * *')), false);
 			Backup_Guard_Schedule::sync();
 			$next = wp_next_scheduled('backup_guard_auto_backup');
 			backup_guard_it_expect($next && $next > time() && $next <= time() + 3600 && wp_date('i', $next) === '00', 'Toutes les heures : la prochaine devrait être dans l\'heure, à pile.');
 
-			$tomorrow = (int) wp_date('w', time() + 86400);
-			update_option('backup_guard_settings', array_merge($base, array('schedule' => 'advanced', 'schedule_days' => array($tomorrow), 'schedule_hours' => array(3))), false);
+			update_option('backup_guard_settings', array_merge($base, array('schedule' => 'cron', 'schedule_cron' => '5 4 * * *')), false);
 			Backup_Guard_Schedule::sync();
 			$next = wp_next_scheduled('backup_guard_auto_backup');
-			backup_guard_it_expect($next && (int) wp_date('w', $next) === $tomorrow && wp_date('G:i', $next) === '3:00' && $next > time(), 'Un seul jour et une seule heure : le jour et l\'heure choisis attendus.');
+			backup_guard_it_expect($next && $next > time() && $next <= time() + 86400 + 60 && wp_date('G:i', $next) === '4:05', '5 4 * * * : la prochaine devrait être à 4 h 05, obtenu ' . ($next ? wp_date('c', $next) : 'rien'));
 
 			update_option('backup_guard_settings', array_merge($base, array('schedule' => '')), false);
 			Backup_Guard_Schedule::sync();

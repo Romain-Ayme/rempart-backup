@@ -85,10 +85,9 @@ function backup_guard_default_settings() {
 		'pre_update_backup'  => 0,
 		'auto_update_backup' => 0,
 		'schedule'           => '',
-		// Basic mode: minutes between two backups. Advanced mode: days (0 = Sunday) and hours (0-23).
+		// Basic mode: minutes between two backups. Cron mode: an expression such as "5 4 * * *".
 		'schedule_minutes'   => 60,
-		'schedule_days'      => array(1, 2, 3, 4, 5, 6, 0),
-		'schedule_hours'     => array(2),
+		'schedule_cron'      => '0 2 * * *',
 		'rotation'           => 0,
 		'auto_files'         => 1,
 		'auto_db'            => 1,
@@ -100,7 +99,7 @@ function backup_guard_default_settings() {
 }
 
 function backup_guard_settings() {
-	return Backup_Guard_Schedule::normalize(array_merge(backup_guard_default_settings(), (array) get_option('backup_guard_settings', array())));
+	return array_merge(backup_guard_default_settings(), (array) get_option('backup_guard_settings', array()));
 }
 
 function backup_guard_excludes() {
@@ -309,7 +308,7 @@ function backup_guard_self_heal() {
 	}
 	Backup_Guard_Notifications::migrate_email();
 	$settings = backup_guard_settings();
-	if (in_array($settings['schedule'], array('interval', 'advanced'), true) && !wp_next_scheduled('backup_guard_auto_backup')) {
+	if (in_array($settings['schedule'], array('interval', 'cron'), true) && !wp_next_scheduled('backup_guard_auto_backup')) {
 		Backup_Guard_Schedule::sync();
 	}
 	$restore = Backup_Guard_Restore::current();
@@ -371,4 +370,88 @@ function backup_guard_is_excluded($relative, array $excludes) {
 		}
 	}
 	return false;
+}
+
+/**
+ * Read a cron expression of five fields (minute hour day-of-month month day-of-week). Each field
+ * takes *, a number, a range (1-5), a list (1,3) and a step (every 5: star slash 5, or 10-30/5).
+ * Returns the allowed values of each field, or null when the expression is not valid.
+ */
+function backup_guard_cron_parse($expression) {
+	$fields = preg_split('/\s+/', trim((string) $expression));
+	if (count($fields) !== 5) {
+		return null;
+	}
+	$limits = array(array(0, 59), array(0, 23), array(1, 31), array(1, 12), array(0, 7));
+	$sets = array();
+	foreach ($fields as $i => $field) {
+		list($low, $high) = $limits[$i];
+		$allowed = array();
+		foreach (explode(',', $field) as $part) {
+			if (!preg_match('/^(\*|(\d+)(?:-(\d+))?)(?:\/(\d+))?$/', $part, $m)) {
+				return null;
+			}
+			$step = isset($m[4]) && $m[4] !== '' ? (int) $m[4] : 1;
+			if ($step < 1) {
+				return null;
+			}
+			if ($m[1] === '*') {
+				$from = $low;
+				$to = $high;
+			} else {
+				$from = (int) $m[2];
+				$to = isset($m[3]) && $m[3] !== '' ? (int) $m[3] : (isset($m[4]) && $m[4] !== '' ? $high : $from);
+			}
+			if ($from < $low || $to > $high || $from > $to) {
+				return null;
+			}
+			for ($v = $from; $v <= $to; $v += $step) {
+				$allowed[$v === 7 && $i === 4 ? 0 : $v] = true;
+			}
+		}
+		$sets[] = $allowed;
+	}
+	return array(
+		'minutes'  => array_keys($sets[0]),
+		'hours'    => array_keys($sets[1]),
+		'days'     => $sets[2],
+		'months'   => $sets[3],
+		'weekdays' => $sets[4],
+		// As in a real crontab: when both the day of the month and of the week are restricted, either one is enough.
+		'either'   => strpos(preg_split('/\s+/', trim((string) $expression))[2], '*') !== 0 && strpos(preg_split('/\s+/', trim((string) $expression))[4], '*') !== 0,
+	);
+}
+
+function backup_guard_cron_valid($expression) {
+	return backup_guard_cron_parse($expression) !== null;
+}
+
+/** The first moment after $from (timestamp) that the expression allows, in this time zone. Null when never. */
+function backup_guard_cron_next($expression, $from, DateTimeZone $zone) {
+	$cron = backup_guard_cron_parse($expression);
+	if (!$cron) {
+		return null;
+	}
+	sort($cron['minutes']);
+	sort($cron['hours']);
+	$day = (new DateTimeImmutable('@' . (int) $from))->setTimezone($zone)->setTime(0, 0);
+	for ($i = 0; $i < 1500; $i++, $day = $day->modify('+1 day')) {
+		if (!isset($cron['months'][(int) $day->format('n')])) {
+			continue;
+		}
+		$by_day = isset($cron['days'][(int) $day->format('j')]);
+		$by_weekday = isset($cron['weekdays'][(int) $day->format('w')]);
+		if (!($cron['either'] ? ($by_day || $by_weekday) : ($by_day && $by_weekday))) {
+			continue;
+		}
+		foreach ($cron['hours'] as $hour) {
+			foreach ($cron['minutes'] as $minute) {
+				$moment = $day->setTime($hour, $minute)->getTimestamp();
+				if ($moment > $from) {
+					return $moment;
+				}
+			}
+		}
+	}
+	return null;
 }

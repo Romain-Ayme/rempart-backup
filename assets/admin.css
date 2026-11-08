@@ -115,18 +115,8 @@
 .backup-guard-panel { padding: 18px 20px; margin-bottom: 14px; background: #f6f7f7; border: 1px solid #ececec; border-radius: 8px; }
 .backup-guard-panel p { margin: 0 0 8px; }
 .backup-guard-panel-title { font-weight: 600; margin: 0 0 10px; }
-.backup-guard-panel-title .button-link { margin-left: 12px; font-weight: 400; }
-.backup-guard-panel .backup-guard-panel-title:not(:first-child) { margin-top: 18px; }
 .backup-guard-panel .description { margin-top: 14px; }
 .backup-guard-presets { margin-top: 12px; display: flex; gap: 6px; flex-wrap: wrap; }
-.backup-guard-pills { display: flex; flex-wrap: wrap; gap: 6px; }
-.backup-guard-pill { margin: 0 !important; }
-.backup-guard-pill input { position: absolute; opacity: 0; pointer-events: none; }
-.backup-guard-pill span { display: inline-block; min-width: 44px; text-align: center; padding: 6px 10px; border: 1px solid #c3c4c7; border-radius: 999px; background: #fff; cursor: pointer; user-select: none; }
-.backup-guard-pill input:checked + span { background: #1f6f8b; border-color: #1f6f8b; color: #fff; }
-.backup-guard-pill input:focus-visible + span { outline: 2px solid #1f6f8b; outline-offset: 2px; }
-.backup-guard-hours { display: flex; }
-.backup-guard-summary { margin: 0 0 12px; font-weight: 600; color: #1f6f8b; }
 .backup-guard-panel-note { color: #50575e; margin: 0 0 12px; }
 .backup-guard-auto-options { margin-top: 6px; }
 
@@ -141,3 +131,7 @@
 .backup-guard-switch-label { display: inline-flex; align-items: center; gap: 10px; }
 .backup-guard-switch-form { margin: 0; }
 .backup-guard-name-cell { display: flex; align-items: center; gap: 12px; }
+
+.backup-guard-examples { margin: 0 0 6px; }
+.backup-guard-examples li { margin: 4px 0; }
+.backup-guard-examples code { background: #fff; border: 1px solid #dcdcde; padding: 3px 8px; border-radius: 4px; }

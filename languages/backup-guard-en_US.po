@@ -1955,29 +1955,9 @@ msgstr "Could not write the restore state."
 msgid "Restauration arrêtée de force."
 msgstr "Restore force-stopped."
 
-#: includes/class-schedule.php:10
-msgid "Toutes les 30 minutes"
-msgstr "Every 30 minutes"
-
-#: includes/class-schedule.php:11
-msgid "Toutes les heures"
-msgstr "Every hour"
-
-#: includes/class-schedule.php:12
-msgid "Toutes les 2 heures"
-msgstr "Every 2 hours"
-
 #: includes/class-schedule.php:13
 msgid "Une fois par jour"
 msgstr "Once a day"
-
-#: includes/class-schedule.php:14
-msgid "Une fois par semaine"
-msgstr "Once a week"
-
-#: includes/class-schedule.php:15
-msgid "Une fois par mois"
-msgstr "Once a month"
 
 #: includes/class-schedule.php:21
 msgid "Toutes les 5 minutes"
@@ -2685,9 +2665,6 @@ msgstr "https://karom.studio"
 msgid "https://karom.studio/wp/plugin/backup-guard"
 msgstr "https://karom.studio/wp/plugin/backup-guard"
 
-msgid "Choisissez au moins un jour et une heure."
-msgstr "Choose at least one day and one hour."
-
 msgid "il y a %s"
 msgstr "%s ago"
 
@@ -2703,29 +2680,17 @@ msgstr "Every"
 msgid "minutes (5 au minimum)"
 msgstr "minutes (5 at least)"
 
-msgid "Jours"
-msgstr "Days"
-
-msgid "Heures"
-msgstr "Hours"
-
 msgid "Toutes les %d minutes"
 msgstr "Every %d minutes"
 
 msgid "0 = toutes (par défaut)"
 msgstr "0 = all (default)"
 
-msgid "Toutes"
-msgstr "All"
-
 msgid "Notification activée."
 msgstr "Notification turned on."
 
 msgid "Notification mise en pause."
 msgstr "Notification paused."
-
-msgid "Sauvegardes par semaine : %d"
-msgstr "Backups per week: %d"
 
 msgid "Désactivées"
 msgstr "Off"
@@ -2742,23 +2707,38 @@ msgstr "Off"
 msgid "Toutes les X minutes"
 msgstr "Every X minutes"
 
-msgid "Jours et heures"
-msgstr "Days and hours"
-
-msgid "Cron du serveur"
-msgstr "Server cron"
-
-msgid "Tous les jours"
-msgstr "Every day"
-
-msgid "Jours ouvrés"
-msgstr "Weekdays"
-
-msgid "Week-end"
-msgstr "Weekend"
-
 msgid "Fuseau horaire du site : %s"
 msgstr "Site time zone: %s"
 
 msgid "Quoi sauvegarder"
 msgstr "What to back up"
+
+msgid "Expression cron invalide. Exemple : 5 4 * * * (tous les jours à 4 h 05)."
+msgstr "Invalid cron expression. Example: 5 4 * * * (every day at 4:05 am)."
+
+msgid "Il faut au moins 5 minutes entre deux sauvegardes."
+msgstr "There must be at least 5 minutes between two backups."
+
+msgid "Expression cron"
+msgstr "Cron expression"
+
+msgid "Tâche du serveur"
+msgstr "Server task"
+
+msgid "minute · heure · jour du mois · mois · jour de la semaine"
+msgstr "minute · hour · day of month · month · day of week"
+
+msgid "Exemples (cliquez pour utiliser)"
+msgstr "Examples (click to use)"
+
+msgid "tous les jours à 4 h 05"
+msgstr "every day at 4:05 am"
+
+msgid "toutes les 6 heures"
+msgstr "every 6 hours"
+
+msgid "du lundi au vendredi à 2 h 30"
+msgstr "Monday to Friday at 2:30 am"
+
+msgid "le dimanche à 3 h"
+msgstr "on Sundays at 3 am"

@@ -7,12 +7,7 @@ if (!defined('ABSPATH')) {
 class Backup_Guard_Schedule {
 	public static function intervals() {
 		return array(
-			'backup_guard_thirty_minutes' => array('interval' => 1800, 'display' => __('Toutes les 30 minutes', 'backup-guard')),
-			'backup_guard_one_hour'       => array('interval' => 3600, 'display' => __('Toutes les heures', 'backup-guard')),
-			'backup_guard_two_hours'      => array('interval' => 7200, 'display' => __('Toutes les 2 heures', 'backup-guard')),
-			'backup_guard_daily'          => array('interval' => 86400, 'display' => __('Une fois par jour', 'backup-guard')),
-			'backup_guard_weekly'         => array('interval' => 604800, 'display' => __('Une fois par semaine', 'backup-guard')),
-			'backup_guard_monthly'        => array('interval' => 2635200, 'display' => __('Une fois par mois', 'backup-guard')),
+			'backup_guard_daily' => array('interval' => 86400, 'display' => __('Une fois par jour', 'backup-guard')),
 		);
 	}
 
@@ -29,56 +24,14 @@ class Backup_Guard_Schedule {
 		return max(5, (int) ($settings['schedule_minutes'] ?? 60));
 	}
 
-	/**
-	 * Settings from an older version name a fixed interval ("every hour"): they become the basic
-	 * mode with the same wait.
-	 */
-	public static function normalize(array $settings) {
-		$intervals = self::intervals();
-		$schedule = $settings['schedule'] ?? '';
-		if (isset($intervals[$schedule])) {
-			$settings['schedule'] = 'interval';
-			$settings['schedule_minutes'] = (int) round($intervals[$schedule]['interval'] / 60);
-		}
-		return $settings;
-	}
-
-	/**
-	 * The next time (timestamp) that falls on one of the days (0 = Sunday) and at the start of one
-	 * of the hours (0 to 23), in the site's time zone. Null when there is none.
-	 */
-	public static function next_slot(array $days, array $hours, $from = null) {
-		$days = array_map('intval', $days);
-		$hours = array_map('intval', $hours);
-		sort($hours);
-		if (!$days || !$hours) {
-			return null;
-		}
-		$from = $from ?? time();
-		$zone = wp_timezone();
-		$day = (new DateTimeImmutable('@' . $from))->setTimezone($zone)->setTime(0, 0);
-		for ($i = 0; $i < 9; $i++, $day = $day->modify('+1 day')) {
-			if (!in_array((int) $day->format('w'), $days, true)) {
-				continue;
-			}
-			foreach ($hours as $hour) {
-				$slot = $day->setTime($hour, 0)->getTimestamp();
-				if ($slot > $from) {
-					return $slot;
-				}
-			}
-		}
-		return null;
-	}
-
 	/** Make WP-Cron match the saved settings. */
 	public static function sync() {
 		$settings = backup_guard_settings();
 		wp_clear_scheduled_hook('backup_guard_auto_backup');
 		if ($settings['schedule'] === 'interval') {
 			wp_schedule_event(time() + self::minutes($settings) * 60, 'backup_guard_every', 'backup_guard_auto_backup');
-		} elseif ($settings['schedule'] === 'advanced') {
-			$next = self::next_slot((array) $settings['schedule_days'], (array) $settings['schedule_hours']);
+		} elseif ($settings['schedule'] === 'cron') {
+			$next = backup_guard_cron_next($settings['schedule_cron'], time(), wp_timezone());
 			if ($next) {
 				wp_schedule_single_event($next, 'backup_guard_auto_backup');
 			}
@@ -87,7 +40,7 @@ class Backup_Guard_Schedule {
 
 	public static function run_auto_backup() {
 		$settings = backup_guard_settings();
-		if ($settings['schedule'] === 'advanced') {
+		if ($settings['schedule'] === 'cron') {
 			self::sync();
 		}
 		if (Backup_Guard_Job::is_active() || Backup_Guard_Restore::is_running()) {
