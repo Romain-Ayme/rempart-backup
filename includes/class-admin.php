@@ -24,8 +24,8 @@ class Backup_Guard_Admin {
 		if ($hook !== 'toplevel_page_backup-guard') {
 			return;
 		}
-		wp_enqueue_style('backup-guard-admin', BACKUP_GUARD_URL . '/assets/admin.css', array(), BACKUP_GUARD_VERSION);
-		wp_enqueue_script('backup-guard-admin', BACKUP_GUARD_URL . '/assets/admin.js', array(), BACKUP_GUARD_VERSION, true);
+		wp_enqueue_style('backup-guard-admin', BACKUP_GUARD_URL . '/assets/admin.css', array(), BACKUP_GUARD_VERSION . '.' . (int) @filemtime(BACKUP_GUARD_DIR . '/assets/admin.css'));
+		wp_enqueue_script('backup-guard-admin', BACKUP_GUARD_URL . '/assets/admin.js', array(), BACKUP_GUARD_VERSION . '.' . (int) @filemtime(BACKUP_GUARD_DIR . '/assets/admin.js'), true);
 		wp_localize_script('backup-guard-admin', 'BackupGuardData', array(
 			'ajax'      => admin_url('admin-ajax.php'),
 			'nonce'     => wp_create_nonce('backup-guard'),
