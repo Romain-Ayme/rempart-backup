@@ -118,3 +118,6 @@
 .backup-guard-hours { max-width: 620px; display: flex; }
 .backup-guard-panel-note { color: #50575e; margin: 0 0 12px; max-width: 640px; }
 .backup-guard-auto-options { margin-top: 6px; }
+
+/* Selects in the location and notification forms: same width as the text fields */
+#backup-guard-location-form select, #backup-guard-ch-type, #backup-guard-ch-form select { width: 350px; max-width: 100%; }
