@@ -9,7 +9,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-11-08T01:36:40+00:00\n"
+"POT-Creation-Date: 2026-11-08T01:41:30+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: backup-guard\n"
@@ -52,7 +52,7 @@ msgid "Ajouter un emplacement"
 msgstr ""
 
 #: includes/class-admin.php:45
-#: includes/class-admin.php:980
+#: includes/class-admin.php:978
 msgid "Ajouter un service"
 msgstr ""
 
@@ -83,7 +83,7 @@ msgstr ""
 
 #: includes/class-admin.php:52
 #: includes/class-admin.php:757
-#: includes/class-admin.php:1028
+#: includes/class-admin.php:1026
 msgid "Enregistrer"
 msgstr ""
 
@@ -169,7 +169,7 @@ msgid "Réponse illisible du serveur."
 msgstr ""
 
 #: includes/class-admin.php:73
-#: includes/class-admin.php:1122
+#: includes/class-admin.php:1120
 msgid "Sauvegarde en cours"
 msgstr ""
 
@@ -387,7 +387,7 @@ msgstr ""
 #: includes/class-admin.php:378
 #: includes/class-admin.php:416
 #: includes/class-admin.php:506
-#: includes/class-admin.php:1139
+#: includes/class-admin.php:1137
 msgid "Fichiers du site"
 msgstr ""
 
@@ -395,7 +395,7 @@ msgstr ""
 #: includes/class-admin.php:418
 #: includes/class-admin.php:508
 #: includes/class-admin.php:876
-#: includes/class-admin.php:1140
+#: includes/class-admin.php:1138
 #: includes/class-job.php:709
 msgid "Base de données"
 msgstr ""
@@ -700,7 +700,7 @@ msgid "Tester"
 msgstr ""
 
 #: includes/class-admin.php:723
-#: includes/class-admin.php:969
+#: includes/class-admin.php:967
 msgid "Modifier"
 msgstr ""
 
@@ -711,7 +711,7 @@ msgstr ""
 #: includes/class-admin.php:724
 #: includes/class-admin.php:855
 #: includes/class-admin.php:900
-#: includes/class-admin.php:970
+#: includes/class-admin.php:968
 msgid "Supprimer"
 msgstr ""
 
@@ -724,13 +724,13 @@ msgid "Ce service demande votre propre application : l'onglet Aide explique comm
 msgstr ""
 
 #: includes/class-admin.php:758
-#: includes/class-admin.php:1029
-#: includes/class-admin.php:1146
+#: includes/class-admin.php:1027
+#: includes/class-admin.php:1144
 msgid "Annuler"
 msgstr ""
 
 #: includes/class-admin.php:799
-#: includes/class-admin.php:1009
+#: includes/class-admin.php:1007
 msgid "Laissez vide pour garder la valeur enregistrée."
 msgstr ""
 
@@ -801,7 +801,7 @@ msgid "Auto"
 msgstr ""
 
 #: includes/class-admin.php:897
-#: includes/class-admin.php:1147
+#: includes/class-admin.php:1145
 msgid "Restaurer"
 msgstr ""
 
@@ -810,7 +810,7 @@ msgid "Télécharger"
 msgstr ""
 
 #: includes/class-admin.php:899
-#: includes/class-admin.php:1154
+#: includes/class-admin.php:1152
 msgid "Journal"
 msgstr ""
 
@@ -827,13 +827,18 @@ msgid "Chaque sauvegarde réussie ou ratée peut envoyer un message. L'e-mail es
 msgstr ""
 
 #: includes/class-admin.php:929
-#: includes/class-admin.php:986
+#: includes/class-admin.php:1022
+msgid "État"
+msgstr ""
+
+#: includes/class-admin.php:929
+#: includes/class-admin.php:984
 #: includes/class-locations.php:40
 msgid "Service"
 msgstr ""
 
 #: includes/class-admin.php:929
-#: includes/class-admin.php:1017
+#: includes/class-admin.php:1015
 msgid "Prévenir en cas de"
 msgstr ""
 
@@ -853,253 +858,249 @@ msgstr ""
 msgid "échec"
 msgstr ""
 
-#: includes/class-admin.php:950
-#: includes/class-admin.php:1025
+#: includes/class-admin.php:952
+#: includes/class-admin.php:1023
 #: includes/class-ajax.php:324
 msgid "Actif"
 msgstr ""
 
-#: includes/class-admin.php:960
+#: includes/class-admin.php:958
 msgctxt "result of the last send"
 msgid "Réussi"
 msgstr ""
 
-#: includes/class-admin.php:960
+#: includes/class-admin.php:958
 msgctxt "result of the last send"
 msgid "Échec"
 msgstr ""
 
-#: includes/class-admin.php:968
+#: includes/class-admin.php:966
 msgid "Envoyer un test"
 msgstr ""
 
-#: includes/class-admin.php:970
+#: includes/class-admin.php:968
 msgid "Supprimer ce canal de notification ?"
 msgstr ""
 
-#: includes/class-admin.php:976
+#: includes/class-admin.php:974
 msgid "Ajouter une notification"
 msgstr ""
 
-#: includes/class-admin.php:994
+#: includes/class-admin.php:992
 msgid "Nom (facultatif)"
 msgstr ""
 
-#: includes/class-admin.php:995
+#: includes/class-admin.php:993
 msgid "Par exemple : Salon alertes"
 msgstr ""
 
-#: includes/class-admin.php:1019
+#: includes/class-admin.php:1017
 msgid "Réussite"
 msgstr ""
 
-#: includes/class-admin.php:1020
+#: includes/class-admin.php:1018
 msgid "Échec"
 msgstr ""
 
-#: includes/class-admin.php:1024
-msgid "État"
-msgstr ""
-
-#: includes/class-admin.php:1041
+#: includes/class-admin.php:1039
 msgid "Vérifier mon site"
 msgstr ""
 
-#: includes/class-admin.php:1042
+#: includes/class-admin.php:1040
 msgid "Contrôle ce dont les sauvegardes ont besoin sur votre hébergement."
 msgstr ""
 
-#: includes/class-admin.php:1043
+#: includes/class-admin.php:1041
 msgid "Lancer la vérification"
 msgstr ""
 
-#: includes/class-admin.php:1048
+#: includes/class-admin.php:1046
 msgid "Sauvegarde qui se bloque sans erreur (LiteSpeed)"
 msgstr ""
 
-#: includes/class-admin.php:1049
+#: includes/class-admin.php:1047
 msgid "Sur certains serveurs LiteSpeed, une sauvegarde est tuée en route, sans message : elle reste coincée à un pourcentage fixe. La parade est une règle « noabort » dans le fichier .htaccess du site."
 msgstr ""
 
-#: includes/class-admin.php:1052
+#: includes/class-admin.php:1050
 msgid "Ajouter la règle"
 msgstr ""
 
-#: includes/class-admin.php:1053
+#: includes/class-admin.php:1051
 msgid "Essayer l'autre forme"
 msgstr ""
 
-#: includes/class-admin.php:1054
+#: includes/class-admin.php:1052
 msgid "Retirer la règle"
 msgstr ""
 
-#: includes/class-admin.php:1056
+#: includes/class-admin.php:1054
 msgid "La règle est ajoutée au début du .htaccess, après en avoir gardé une copie. Si le site se met à planter à cause d'elle, elle est retirée toute seule. L'autre forme sert quand la première reste sans effet."
 msgstr ""
 
-#: includes/class-admin.php:1059
+#: includes/class-admin.php:1057
 msgid "Déplacer ou cloner un site"
 msgstr ""
 
-#: includes/class-admin.php:1061
+#: includes/class-admin.php:1059
 msgid "Sur le site d'origine, créez une sauvegarde complète et téléchargez-la, ou gardez-la sur un emplacement distant."
 msgstr ""
 
-#: includes/class-admin.php:1062
+#: includes/class-admin.php:1060
 msgid "Sur le nouveau site, installez WordPress puis ce plugin."
 msgstr ""
 
-#: includes/class-admin.php:1063
+#: includes/class-admin.php:1061
 msgid "Dans Historique, importez le fichier, ou ajoutez le même emplacement et cliquez sur Synchroniser."
 msgstr ""
 
-#: includes/class-admin.php:1064
+#: includes/class-admin.php:1062
 msgid "Cliquez sur Restaurer. L'adresse du site est remplacée partout dans la base de données ; la connexion à la base et les règles du serveur du nouveau site sont conservées."
 msgstr ""
 
-#: includes/class-admin.php:1066
+#: includes/class-admin.php:1064
 msgid "Les sauvegardes faites avec le plugin Backuply peuvent aussi être importées et restaurées ici."
 msgstr ""
 
-#: includes/class-admin.php:1069
+#: includes/class-admin.php:1067
 msgid "Connecter un compte cloud"
 msgstr ""
 
-#: includes/class-admin.php:1070
+#: includes/class-admin.php:1068
 msgid "Google Drive, OneDrive, Dropbox et pCloud demandent une application à votre nom : c'est gratuit, et vos autorisations ne passent par aucun service tiers. L'adresse de retour à déclarer est :"
 msgstr ""
 
-#: includes/class-admin.php:1073
+#: includes/class-admin.php:1071
 msgid "Sur console.cloud.google.com, créez un projet et activez l'API Google Drive."
 msgstr ""
 
-#: includes/class-admin.php:1074
+#: includes/class-admin.php:1072
 msgid "Configurez l'écran de consentement OAuth, avec votre adresse comme utilisateur de test."
 msgstr ""
 
-#: includes/class-admin.php:1075
+#: includes/class-admin.php:1073
 msgid "Créez des identifiants « ID client OAuth », de type Application Web, avec l'adresse de retour ci-dessus."
 msgstr ""
 
-#: includes/class-admin.php:1076
+#: includes/class-admin.php:1074
 msgid "Copiez l'identifiant et le secret dans le formulaire de l'emplacement."
 msgstr ""
 
-#: includes/class-admin.php:1077
+#: includes/class-admin.php:1075
 msgid "Tant que l'application reste en mode Test, Google retire son autorisation au bout de 7 jours. Publiez-la pour une connexion durable."
 msgstr ""
 
-#: includes/class-admin.php:1078
+#: includes/class-admin.php:1076
 msgid "Microsoft OneDrive"
 msgstr ""
 
-#: includes/class-admin.php:1079
+#: includes/class-admin.php:1077
 msgid "Sur entra.microsoft.com, ouvrez « Inscriptions d'applications » et créez-en une pour tous les comptes Microsoft."
 msgstr ""
 
-#: includes/class-admin.php:1080
+#: includes/class-admin.php:1078
 msgid "Ajoutez l'adresse de retour ci-dessus, de type Web."
 msgstr ""
 
-#: includes/class-admin.php:1081
+#: includes/class-admin.php:1079
 msgid "Dans « Certificats et secrets », créez un secret. Copiez sa valeur et l'ID d'application dans le formulaire."
 msgstr ""
 
-#: includes/class-admin.php:1084
+#: includes/class-admin.php:1082
 msgid "Sur dropbox.com/developers/apps, créez une application avec l'accès « Scoped », type « Full Dropbox »."
 msgstr ""
 
-#: includes/class-admin.php:1085
+#: includes/class-admin.php:1083
 msgid "Dans Permissions, cochez files.content.read, files.content.write et files.metadata.read."
 msgstr ""
 
-#: includes/class-admin.php:1086
+#: includes/class-admin.php:1084
 msgid "Dans Settings, ajoutez l'adresse de retour puis copiez App key et App secret dans le formulaire."
 msgstr ""
 
-#: includes/class-admin.php:1089
+#: includes/class-admin.php:1087
 msgid "Sur docs.pcloud.com/my_apps, créez une application avec l'accès aux fichiers."
 msgstr ""
 
-#: includes/class-admin.php:1090
+#: includes/class-admin.php:1088
 msgid "Ajoutez l'adresse de retour puis copiez Client ID et Client secret dans le formulaire."
 msgstr ""
 
-#: includes/class-admin.php:1094
+#: includes/class-admin.php:1092
 msgid "Recevoir les notifications sur son téléphone ou un salon"
 msgstr ""
 
-#: includes/class-admin.php:1095
+#: includes/class-admin.php:1093
 msgid "Dans l'onglet Notifications, ajoutez un e-mail ou un service, collez l'adresse ou le jeton qu'il vous donne, puis cliquez sur « Envoyer un test »."
 msgstr ""
 
-#: includes/class-admin.php:1097
+#: includes/class-admin.php:1095
 msgid ": le jeton d'application se crée sur pushover.net/apps, la clé utilisateur est sur votre tableau de bord."
 msgstr ""
 
-#: includes/class-admin.php:1098
+#: includes/class-admin.php:1096
 msgid ": adresse de votre serveur, puis un jeton d'application créé dans son interface."
 msgstr ""
 
-#: includes/class-admin.php:1099
+#: includes/class-admin.php:1097
 msgid ": choisissez un sujet long et secret, abonnez-vous-y dans l'application ntfy."
 msgstr ""
 
-#: includes/class-admin.php:1100
+#: includes/class-admin.php:1098
 msgid ": créez un bot avec @BotFather, écrivez-lui, puis relevez l'identifiant de la discussion."
 msgstr ""
 
-#: includes/class-admin.php:1101
+#: includes/class-admin.php:1099
 msgid ": réglages du salon, Intégrations, Webhooks, Copier l'URL."
 msgstr ""
 
-#: includes/class-admin.php:1102
+#: includes/class-admin.php:1100
 msgid ": créez un « Incoming Webhook » dans votre espace de travail."
 msgstr ""
 
-#: includes/class-admin.php:1103
+#: includes/class-admin.php:1101
 msgid ": n'importe quelle adresse qui accepte un POST en JSON (Zapier, n8n, Home Assistant...)."
 msgstr ""
 
-#: includes/class-admin.php:1107
+#: includes/class-admin.php:1105
 msgid "En ligne de commande"
 msgstr ""
 
-#: includes/class-admin.php:1125
+#: includes/class-admin.php:1123
 msgid "Vous pouvez fermer cette page, sauf si l'onglet Aide indique que le site ne peut pas s'appeler lui-même."
 msgstr ""
 
-#: includes/class-admin.php:1128
+#: includes/class-admin.php:1126
 msgid "Arrêter"
 msgstr ""
 
-#: includes/class-admin.php:1129
+#: includes/class-admin.php:1127
 msgid "Forcer l'arrêt"
 msgstr ""
 
-#: includes/class-admin.php:1130
-#: includes/class-admin.php:1156
-#: includes/class-admin.php:1165
+#: includes/class-admin.php:1128
+#: includes/class-admin.php:1154
+#: includes/class-admin.php:1163
 msgid "Fermer"
 msgstr ""
 
-#: includes/class-admin.php:1137
+#: includes/class-admin.php:1135
 msgid "Restaurer cette sauvegarde"
 msgstr ""
 
-#: includes/class-admin.php:1143
+#: includes/class-admin.php:1141
 msgid "Le contenu actuel sera remplacé"
 msgstr ""
 
-#: includes/class-admin.php:1143
+#: includes/class-admin.php:1141
 msgid "par celui de cette sauvegarde. Le site sera en maintenance pendant l'opération."
 msgstr ""
 
-#: includes/class-admin.php:1144
+#: includes/class-admin.php:1142
 msgid "J'ai compris"
 msgstr ""
 
-#: includes/class-admin.php:1162
+#: includes/class-admin.php:1160
 msgid "Choisir ce qu'il faut exclure"
 msgstr ""
 

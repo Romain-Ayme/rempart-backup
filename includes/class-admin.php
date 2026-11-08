@@ -926,10 +926,10 @@ class Backup_Guard_Admin {
 				<h2><?php echo esc_html__('Être prévenu', 'backup-guard'); ?></h2>
 				<p><?php echo esc_html__('Chaque sauvegarde réussie ou ratée peut envoyer un message. L\'e-mail est un service comme les autres : ajoutez-en autant que vous voulez, de toutes sortes, et choisissez pour chacun s\'il veut les réussites, les échecs ou les deux.', 'backup-guard'); ?></p>
 				<table class="widefat striped backup-guard-table">
-					<thead><tr><th><?php echo esc_html__('Nom', 'backup-guard'); ?></th><th><?php echo esc_html__('Service', 'backup-guard'); ?></th><th><?php echo esc_html__('Prévenir en cas de', 'backup-guard'); ?></th><th><?php echo esc_html__('Dernier envoi', 'backup-guard'); ?></th><th><?php echo esc_html__('Actions', 'backup-guard'); ?></th></tr></thead>
+					<thead><tr><th><?php echo esc_html__('Nom', 'backup-guard'); ?></th><th><?php echo esc_html__('État', 'backup-guard'); ?></th><th><?php echo esc_html__('Service', 'backup-guard'); ?></th><th><?php echo esc_html__('Prévenir en cas de', 'backup-guard'); ?></th><th><?php echo esc_html__('Dernier envoi', 'backup-guard'); ?></th><th><?php echo esc_html__('Actions', 'backup-guard'); ?></th></tr></thead>
 					<tbody>
 						<?php if (!$channels) : ?>
-							<tr><td colspan="5" class="backup-guard-empty"><?php echo esc_html__('Aucune notification pour le moment. Ajoutez un e-mail ou un service.', 'backup-guard'); ?></td></tr>
+							<tr><td colspan="6" class="backup-guard-empty"><?php echo esc_html__('Aucune notification pour le moment. Ajoutez un e-mail ou un service.', 'backup-guard'); ?></td></tr>
 						<?php endif; ?>
 						<?php
 						foreach ($channels as $id => $channel) :
@@ -945,14 +945,12 @@ class Backup_Guard_Admin {
 							?>
 							<tr>
 								<td>
-									<div class="backup-guard-name-cell">
-										<form method="post" class="backup-guard-switch-form"><?php wp_nonce_field('backup_guard_form'); ?><input type="hidden" name="backup_guard_form" value="toggle_channel"><input type="hidden" name="id" value="<?php echo esc_attr($id); ?>">
-											<label class="backup-guard-switch"><input type="checkbox" name="enabled" value="1" <?php checked(!empty($channel['enabled'])); ?> aria-label="<?php echo esc_attr__('Actif', 'backup-guard'); ?>"><span class="backup-guard-slider"></span></label>
-										</form>
-										<strong><?php echo esc_html($channel['name']); ?></strong>
-									</div>
+									<strong><?php echo esc_html($channel['name']); ?></strong>
 									<?php if ($channel['type'] === 'email' && !empty($channel['config']['address'])) : ?><br><small><?php echo esc_html($channel['config']['address']); ?></small><?php endif; ?>
 								</td>
+								<td><form method="post" class="backup-guard-switch-form"><?php wp_nonce_field('backup_guard_form'); ?><input type="hidden" name="backup_guard_form" value="toggle_channel"><input type="hidden" name="id" value="<?php echo esc_attr($id); ?>">
+											<label class="backup-guard-switch"><input type="checkbox" name="enabled" value="1" <?php checked(!empty($channel['enabled'])); ?> aria-label="<?php echo esc_attr__('Actif', 'backup-guard'); ?>"><span class="backup-guard-slider"></span></label>
+										</form></td>
 								<td><?php echo esc_html($types[$channel['type']]['label'] ?? $channel['type']); ?></td>
 								<td><?php echo esc_html($events ? implode(' et ', $events) : 'rien'); ?></td>
 								<td>
