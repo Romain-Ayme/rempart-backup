@@ -16,7 +16,6 @@ msgstr ""
 "X-Domain: backup-guard\nLanguage: en_US\nPlural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #. Plugin Name of the plugin
-#. Author of the plugin
 #: backup-guard.php
 #: includes/class-admin.php:259
 msgid "Backup Guard"
@@ -2710,3 +2709,18 @@ msgstr "Restore complete, with %d warnings. See the log."
 #: runner/restore-runner.php:976
 msgid "Accès refusé."
 msgstr "Access denied."
+
+#. Author of the plugin
+#: backup-guard.php
+msgid "Karom Studio - Romain AYME"
+msgstr "Karom Studio - Romain AYME"
+
+#. Author URI of the plugin
+#: backup-guard.php
+msgid "https://karom.studio"
+msgstr "https://karom.studio"
+
+#. Plugin URI of the plugin
+#: backup-guard.php
+msgid "https://karom.studio/wp/plugin/backup-guard"
+msgstr "https://karom.studio/wp/plugin/backup-guard"

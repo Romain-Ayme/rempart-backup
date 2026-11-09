@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="#a7aaad">
+	<defs>
+		<mask id="cut">
+			<rect width="20" height="20" fill="#fff"/>
+			<circle cx="14.4" cy="14.4" r="5.8" fill="#000"/>
+		</mask>
+		<mask id="hands">
+			<rect width="20" height="20" fill="#fff"/>
+			<path d="M14.4 14.4v-2.3M14.4 14.4l1.6 1" fill="none" stroke="#000" stroke-width="1.2" stroke-linecap="round"/>
+		</mask>
+	</defs>
+	<g mask="url(#cut)">
+		<ellipse cx="8.5" cy="3.9" rx="6.5" ry="2.3"/>
+		<path d="M2.0 4.9a6.5 2.3 0 0 0 13.0 0v2.5a6.5 2.3 0 0 1-13.0 0z M2.0 8.4a6.5 2.3 0 0 0 13.0 0v2.5a6.5 2.3 0 0 1-13.0 0z M2.0 11.9a6.5 2.3 0 0 0 13.0 0v2.5a6.5 2.3 0 0 1-13.0 0z"/>
+	</g>
+	<circle cx="14.4" cy="14.4" r="4.4" mask="url(#hands)"/>
+</svg>

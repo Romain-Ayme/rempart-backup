@@ -15,7 +15,9 @@ class Backup_Guard_Admin {
 	}
 
 	public static function menu() {
-		add_menu_page('Backup Guard', 'Backup Guard', 'manage_options', 'backup-guard', array(__CLASS__, 'page'), 'dashicons-shield', 76);
+		$icon = BACKUP_GUARD_DIR . '/assets/menu-icon.svg';
+		$menu_icon = is_readable($icon) ? 'data:image/svg+xml;base64,' . base64_encode((string) file_get_contents($icon)) : 'dashicons-database';
+		add_menu_page('Backup Guard', 'Backup Guard', 'manage_options', 'backup-guard', array(__CLASS__, 'page'), $menu_icon, 76);
 	}
 
 	public static function assets($hook) {
@@ -254,7 +256,7 @@ class Backup_Guard_Admin {
 		?>
 		<div class="wrap backup-guard">
 			<header class="backup-guard-top">
-				<svg class="backup-guard-logo" viewBox="0 0 48 48" aria-hidden="true"><path d="M24 3 6 10v13c0 11 7.5 18.6 18 22 10.500-3.400 18-11 18-22V10z" fill="#1f6f8b"/><path d="M15 17h4v-4h3v4h4v-4h3v4h4v8c0 6-4 10-9 12-5-2-9-6-9-12z" fill="#fff"/></svg>
+				<img class="backup-guard-logo" src="<?php echo esc_url(BACKUP_GUARD_URL . '/assets/icon.svg'); ?>" alt="" width="46" height="46">
 				<div>
 					<h1><?php echo esc_html__('Backup Guard', 'backup-guard'); ?></h1>
 					<p><?php echo esc_html__('Sauvegarde, restauration, migration et clonage. Tout est inclus, sans licence.', 'backup-guard'); ?></p>
